@@ -21,11 +21,11 @@ const About = () => {
               <div className="relative">
                 <div className="absolute -inset-4 bg-gradient-to-r from-gold/20 to-transparent blur-2xl"></div>
                 <div className="relative aspect-[3/4] overflow-hidden rounded-lg border-4 border-gold/30">
-                  {/* PLACEHOLDER: Replace with professional headshot of Lorena Ontiveros-Ortega */}
                   <img
-                    src="https://placehold.co/800x1000/1A1A1A/C9A84C?text=Lorena+Ontiveros"
+                    src="/images/lorena-portrait.png"
                     alt="Lorena Ontiveros-Ortega, professional real estate agent"
                     className="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-700"
+                    loading="lazy"
                   />
                 </div>
                 {/* Floating Stats */}

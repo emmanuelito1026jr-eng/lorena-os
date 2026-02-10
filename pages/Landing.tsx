@@ -21,8 +21,7 @@ const Landing  = () => {
       <section className="relative pt-32 pb-20 md:pt-40 md:pb-32 px-4 flex-grow">
         {/* Background */}
         <div className="absolute inset-0 z-0">
-          {/* PLACEHOLDER: Replace with actual luxury home interior or El Paso property photo */}
-          <img src="https://placehold.co/1920x1080/1A1A1A/C9A84C?text=Luxury+El+Paso+Home" alt="Luxury home in El Paso" className="w-full h-full object-cover opacity-30" />
+          <img src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=1920&h=1080&fit=crop&q=80" alt="Luxury home in El Paso" className="w-full h-full object-cover opacity-30" loading="lazy" />
           <div className="absolute inset-0 bg-gradient-to-t from-dark via-dark/80 to-dark/60"></div>
         </div>
 
@@ -58,10 +57,9 @@ const Landing  = () => {
                 {/* Social Proof Strip */}
                 <div className="pt-8 flex items-center gap-4">
                     <div className="flex -space-x-3">
-                        {/* PLACEHOLDER: Replace with actual client testimonial photos */}
-                        <img src="https://placehold.co/50x50/1A1A1A/C9A84C?text=1" alt="Happy client testimonial" className="w-10 h-10 rounded-full border-2 border-dark" />
-                        <img src="https://placehold.co/50x50/1A1A1A/C9A84C?text=2" alt="Happy client testimonial" className="w-10 h-10 rounded-full border-2 border-dark" />
-                        <img src="https://placehold.co/50x50/1A1A1A/C9A84C?text=3" alt="Happy client testimonial" className="w-10 h-10 rounded-full border-2 border-dark" />
+                        <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=50&h=50&fit=crop&q=80" alt="Happy client testimonial" className="w-10 h-10 rounded-full border-2 border-dark" loading="lazy" />
+                        <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=50&h=50&fit=crop&q=80" alt="Happy client testimonial" className="w-10 h-10 rounded-full border-2 border-dark" loading="lazy" />
+                        <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=50&h=50&fit=crop&q=80" alt="Happy client testimonial" className="w-10 h-10 rounded-full border-2 border-dark" loading="lazy" />
                     </div>
                     <div>
                         <div className="flex text-gold">
