@@ -2,6 +2,8 @@ import React from 'react';
 import { HashRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import Home from './pages/Home';
 import Landing from './pages/Landing';
+import Properties from './pages/Properties';
+import PropertyDetail from './pages/PropertyDetail';
 import ErrorBoundary from './components/ErrorBoundary';
 
 // ScrollToTop component to handle scroll behavior on navigation
@@ -32,6 +34,8 @@ const App = () => {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/landing" element={<Landing />} />
+          <Route path="/properties" element={<Properties />} />
+          <Route path="/property/:id" element={<PropertyDetail />} />
         </Routes>
       </Router>
     </ErrorBoundary>
