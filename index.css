@@ -120,6 +120,17 @@
   .pulse-gold {
     animation: pulseGold 2s ease-in-out infinite;
   }
+
+  /* Mobile Touch Targets - Minimum 44px for accessibility */
+  .touch-target {
+    min-width: 44px;
+    min-height: 44px;
+  }
+
+  /* Mobile-friendly tap highlight */
+  .tap-highlight-gold {
+    -webkit-tap-highlight-color: rgba(201, 168, 76, 0.3);
+  }
 }
 
 @keyframes fadeInUp {
@@ -215,4 +226,34 @@ html {
   left: 50%;
   top: 1rem;
   transform: translateX(-50%);
+}
+
+/* Mobile Optimizations */
+@media (max-width: 768px) {
+  /* Reduce animations on mobile for better performance */
+  .animate-fade-in-up,
+  .animate-fade-in,
+  .animate-scale-in,
+  .animate-slide-in-left,
+  .animate-slide-in-right {
+    animation-duration: 0.4s;
+  }
+
+  /* Ensure readable text sizes */
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+
+  /* Improve hover effects on touch devices */
+  .hover-lift:active {
+    transform: translateY(-4px);
+  }
+}
+
+/* Prevent text selection on buttons and interactive elements */
+button, a[role="button"], .tap-highlight-gold {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 }

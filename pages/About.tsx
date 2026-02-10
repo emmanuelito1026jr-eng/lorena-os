@@ -65,11 +65,11 @@ const About = () => {
               </div>
 
               {/* Quick Stats */}
-              <div className="mt-8 grid grid-cols-2 gap-4">
+              <div className="mt-8 grid grid-cols-2 gap-3 sm:gap-4">
                 {STATS.map((stat, index) => (
-                  <div key={index} className="glass rounded-lg p-4 hover-lift">
-                    <div className="text-2xl font-serif text-gold mb-1">{stat.value}</div>
-                    <div className="text-xs text-gray-400 uppercase tracking-wider">{stat.label}</div>
+                  <div key={index} className="glass rounded-lg p-3 sm:p-4 hover-lift">
+                    <div className="text-xl sm:text-2xl font-serif text-gold mb-1">{stat.value}</div>
+                    <div className="text-[10px] sm:text-xs text-gray-400 uppercase tracking-wider">{stat.label}</div>
                   </div>
                 ))}
               </div>
@@ -117,8 +117,8 @@ const About = () => {
                 },
                 {
                   year: '2024',
-                  title: 'Realty ONE Group',
-                  description: 'Joined one of the fastest-growing real estate companies, serving 100+ families across El Paso.',
+                  title: 'Independent Practice',
+                  description: 'Established independent real estate practice, serving 100+ families across El Paso with personalized service.',
                   icon: Users,
                   side: 'right'
                 }
@@ -132,10 +132,16 @@ const About = () => {
                     <>
                       {/* Content Left */}
                       <div className="md:text-right">
-                        <div className="glass-strong rounded-lg p-6 hover-lift inline-block">
-                          <div className="text-gold text-xs uppercase tracking-wider mb-2">{item.year}</div>
-                          <h3 className="text-ivory text-2xl font-serif mb-3">{item.title}</h3>
-                          <p className="text-gray-400">{item.description}</p>
+                        <div className="glass-strong rounded-lg p-4 sm:p-6 hover-lift inline-block w-full md:w-auto">
+                          <div className="flex md:hidden items-center gap-3 mb-3">
+                            <div className="w-12 h-12 bg-gold rounded-full flex items-center justify-center flex-shrink-0">
+                              <item.icon className="text-dark" size={20} />
+                            </div>
+                            <div className="text-gold text-xs uppercase tracking-wider">{item.year}</div>
+                          </div>
+                          <div className="hidden md:block text-gold text-xs uppercase tracking-wider mb-2">{item.year}</div>
+                          <h3 className="text-ivory text-xl sm:text-2xl font-serif mb-2 sm:mb-3">{item.title}</h3>
+                          <p className="text-gray-400 text-sm sm:text-base">{item.description}</p>
                         </div>
                       </div>
                       {/* Icon Center */}
@@ -155,10 +161,16 @@ const About = () => {
                       </div>
                       {/* Content Right */}
                       <div>
-                        <div className="glass-strong rounded-lg p-6 hover-lift inline-block">
-                          <div className="text-gold text-xs uppercase tracking-wider mb-2">{item.year}</div>
-                          <h3 className="text-ivory text-2xl font-serif mb-3">{item.title}</h3>
-                          <p className="text-gray-400">{item.description}</p>
+                        <div className="glass-strong rounded-lg p-4 sm:p-6 hover-lift inline-block w-full md:w-auto">
+                          <div className="flex md:hidden items-center gap-3 mb-3">
+                            <div className="w-12 h-12 bg-gold rounded-full flex items-center justify-center flex-shrink-0">
+                              <item.icon className="text-dark" size={20} />
+                            </div>
+                            <div className="text-gold text-xs uppercase tracking-wider">{item.year}</div>
+                          </div>
+                          <div className="hidden md:block text-gold text-xs uppercase tracking-wider mb-2">{item.year}</div>
+                          <h3 className="text-ivory text-xl sm:text-2xl font-serif mb-2 sm:mb-3">{item.title}</h3>
+                          <p className="text-gray-400 text-sm sm:text-base">{item.description}</p>
                         </div>
                       </div>
                     </>

@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { SERVICES } from '../constants';
 import { Home, TrendingUp, Building } from 'lucide-react';
 
@@ -12,6 +13,11 @@ const getIcon = (name: string) => {
   }
 };
 
+// Map service titles to URL-friendly IDs
+const getServiceId = (subtitle: string): string => {
+  return subtitle.toLowerCase(); // "Buyers", "Sellers", "Investments" -> "buyers", "sellers", "investments"
+};
+
 const Services  = () => {
   return (
     <section id="services" className="py-24 bg-dark-charcoal">
@@ -22,24 +28,28 @@ const Services  = () => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {SERVICES.map((service, index) => (
-            <div 
-              key={index} 
-              className="group p-10 bg-dark border border-white/5 hover:border-gold/30 transition-all duration-500 hover:-translate-y-2"
-            >
-              <div className="mb-6 p-4 bg-dark-card inline-block rounded-full group-hover:bg-gold/10 transition-colors">
-                {getIcon(service.iconName)}
-              </div>
-              <h3 className="font-serif text-2xl text-ivory mb-1">{service.title}</h3>
-              <h4 className="text-gold text-sm uppercase tracking-widest mb-4 font-bold opacity-80">{service.subtitle}</h4>
-              <p className="text-gray-400 leading-relaxed mb-6">
-                {service.description}
-              </p>
-              <a href="#contact" className="text-sm font-bold uppercase tracking-widest text-ivory group-hover:text-gold transition-colors flex items-center gap-2">
-                Learn More <span className="text-xl leading-none">&rarr;</span>
-              </a>
-            </div>
-          ))}
+          {SERVICES.map((service, index) => {
+            const serviceId = getServiceId(service.subtitle);
+            return (
+              <Link
+                key={index}
+                to={`/service/${serviceId}`}
+                className="group p-8 md:p-10 bg-dark border border-white/5 hover:border-gold/30 transition-all duration-500 hover:-translate-y-2 block"
+              >
+                <div className="mb-6 p-4 bg-dark-card inline-block rounded-full group-hover:bg-gold/10 transition-colors">
+                  {getIcon(service.iconName)}
+                </div>
+                <h3 className="font-serif text-2xl text-ivory mb-1">{service.title}</h3>
+                <h4 className="text-gold text-sm uppercase tracking-widest mb-4 font-bold opacity-80">{service.subtitle}</h4>
+                <p className="text-gray-400 leading-relaxed mb-6">
+                  {service.description}
+                </p>
+                <span className="text-sm font-bold uppercase tracking-widest text-ivory group-hover:text-gold transition-colors flex items-center gap-2">
+                  Learn More <span className="text-xl leading-none">&rarr;</span>
+                </span>
+              </Link>
+            );
+          })}
         </div>
       </div>
     </section>

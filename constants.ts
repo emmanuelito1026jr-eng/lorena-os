@@ -5,7 +5,7 @@ export const REALTOR_NAME = "Lorena Ontiveros-Ortega";
 export const PHONE_NUMBER = "915-487-5581";
 export const EMAIL_ADDRESS = "lorena@casasenelpasotx.com";
 export const ADDRESS = "10420 Montwood Dr., Ste N-163, El Paso, TX 79935";
-export const BROKERAGE = "Realty ONE Group";
+export const BROKERAGE = "Independent Realtor®";
 
 export const NAV_LINKS: NavLink[] = [
   { label: 'Home', href: '/' },

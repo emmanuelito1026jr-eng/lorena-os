@@ -6,6 +6,7 @@ import Properties from './pages/Properties';
 import PropertyDetail from './pages/PropertyDetail';
 import About from './pages/About';
 import NeighborhoodDetail from './pages/NeighborhoodDetail';
+import ServiceDetail from './pages/ServiceDetail';
 import ErrorBoundary from './components/ErrorBoundary';
 
 // ScrollToTop component to handle scroll behavior on navigation
@@ -40,6 +41,7 @@ const App = () => {
           <Route path="/property/:id" element={<PropertyDetail />} />
           <Route path="/about" element={<About />} />
           <Route path="/neighborhood/:id" element={<NeighborhoodDetail />} />
+          <Route path="/service/:serviceId" element={<ServiceDetail />} />
         </Routes>
       </Router>
     </ErrorBoundary>

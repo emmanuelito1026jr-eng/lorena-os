@@ -64,14 +64,10 @@ const Footer  = () => {
 
           {/* Legal / Brokerage */}
           <div>
-            <h3 className="text-gold text-xs uppercase tracking-widest font-bold mb-6">Brokerage</h3>
+            <h3 className="text-gold text-xs uppercase tracking-widest font-bold mb-6">Professional</h3>
             <div className="mb-4">
-              {/* Placeholder for Realty ONE Group Logo */}
-              <div className="bg-white p-2 w-32 mb-2">
-                 <div className="h-8 bg-black flex items-center justify-center text-white font-bold text-xs uppercase">
-                    {BROKERAGE}
-                 </div>
-              </div>
+              <div className="text-ivory font-semibold mb-2">{BROKERAGE}</div>
+              <div className="text-gray-400 text-sm">Licensed Real Estate Professional</div>
             </div>
             <div className="text-xs text-gray-500 space-y-2">
               <p>Equal Housing Opportunity.</p>
