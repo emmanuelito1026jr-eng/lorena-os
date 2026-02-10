@@ -54,7 +54,7 @@ const MortgagePartnership = () => {
           <div className="partnership-card group relative">
             <div className="relative bg-white shadow-premium overflow-hidden border border-gray-200 hover:border-gold transition-premium hover:shadow-gold-glow">
               {/* Image Section */}
-              <div className="relative h-80 sm:h-96 bg-gradient-to-br from-gray-100 to-gray-50 overflow-hidden clip-angle-top-right">
+              <div className="relative h-80 sm:h-96 bg-gradient-to-br from-gray-100 to-gray-50 overflow-hidden">
                 <img
                   src="/images/lorena-professional.jpg"
                   alt={`${REALTOR_NAME}, Professional Realtor`}
@@ -131,7 +131,7 @@ const MortgagePartnership = () => {
           <div className="partnership-card group relative">
             <div className="relative bg-white shadow-premium overflow-hidden border border-gray-200 hover:border-gold transition-premium hover:shadow-gold-glow">
               {/* Image Section */}
-              <div className="relative h-80 sm:h-96 bg-gradient-to-br from-gray-100 to-gray-50 overflow-hidden clip-angle-top-right">
+              <div className="relative h-80 sm:h-96 bg-gradient-to-br from-gray-100 to-gray-50 overflow-hidden">
                 <img
                   src="/images/emmanuel-professional.jpg"
                   alt={`${PARTNER_NAME}, ${PARTNER_TITLE} at ${PARTNER_COMPANY}`}
