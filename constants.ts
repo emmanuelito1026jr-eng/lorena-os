@@ -10,7 +10,7 @@ export const BROKERAGE = "Realty ONE Group";
 export const NAV_LINKS: NavLink[] = [
   { label: 'Home', href: '/' },
   { label: 'Properties', href: '#/properties' },
-  { label: 'About', href: '#about' },
+  { label: 'About', href: '#/about' },
   { label: 'Services', href: '#services' },
   { label: 'Neighborhoods', href: '#neighborhoods' },
 ];

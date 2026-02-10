@@ -1,5 +1,6 @@
 import { ArrowRight, TrendingUp, Users, Home as HomeIcon } from 'lucide-react';
-import { NEIGHBORHOODS } from '../constants';
+import { Link } from 'react-router-dom';
+import { NEIGHBORHOODS, NEIGHBORHOODS_DETAIL } from '../constants';
 
 const NeighborhoodGuide = () => {
   return (
@@ -28,64 +29,69 @@ const NeighborhoodGuide = () => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {NEIGHBORHOODS.map((hood, index) => (
-            <a
-              key={index}
-              href={`#/properties?neighborhood=${hood.name}`}
-              className="group relative h-96 overflow-hidden cursor-pointer rounded-lg animate-fade-in-up hover-lift"
-              style={{ animationDelay: `${index * 100}ms` }}
-            >
-              <img
-                src={hood.image}
-                alt={hood.name}
-                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-              />
+          {NEIGHBORHOODS.map((hood, index) => {
+            const detailNeighborhood = NEIGHBORHOODS_DETAIL.find(n => n.name === hood.name);
+            const linkTo = detailNeighborhood ? `#/neighborhood/${detailNeighborhood.id}` : `#/properties?neighborhood=${hood.name}`;
 
-              {/* Gradient Overlay */}
-              <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent opacity-80 group-hover:opacity-90 transition-opacity"></div>
+            return (
+              <a
+                key={index}
+                href={linkTo}
+                className="group relative h-96 overflow-hidden cursor-pointer rounded-lg animate-fade-in-up hover-lift block"
+                style={{ animationDelay: `${index * 100}ms` }}
+              >
+                <img
+                  src={hood.image}
+                  alt={hood.name}
+                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                />
 
-              {/* Gold Accent Border - Appears on Hover */}
-              <div className="absolute inset-0 border-2 border-gold opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                {/* Gradient Overlay */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent opacity-80 group-hover:opacity-90 transition-opacity"></div>
 
-              {/* Content */}
-              <div className="absolute bottom-0 left-0 p-6 w-full transform transition-transform duration-300 translate-y-2 group-hover:translate-y-0">
-                <div className="border-l-2 border-gold pl-4">
-                  <h3 className="font-serif text-2xl text-ivory mb-2 group-hover:text-gold transition-colors">
-                    {hood.name}
-                  </h3>
-                  <p className="text-gray-300 text-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300 delay-100 line-clamp-2">
-                    {hood.description}
-                  </p>
+                {/* Gold Accent Border - Appears on Hover */}
+                <div className="absolute inset-0 border-2 border-gold opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+
+                {/* Content */}
+                <div className="absolute bottom-0 left-0 p-6 w-full transform transition-transform duration-300 translate-y-2 group-hover:translate-y-0">
+                  <div className="border-l-2 border-gold pl-4">
+                    <h3 className="font-serif text-2xl text-ivory mb-2 group-hover:text-gold transition-colors">
+                      {hood.name}
+                    </h3>
+                    <p className="text-gray-300 text-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300 delay-100 line-clamp-2">
+                      {hood.description}
+                    </p>
+                  </div>
+
+                  {/* Stats Preview */}
+                  <div className="mt-4 grid grid-cols-3 gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 delay-150">
+                    <div className="text-center">
+                      <TrendingUp size={16} className="text-gold mx-auto mb-1" />
+                      <div className="text-xs text-gray-400">Growth</div>
+                    </div>
+                    <div className="text-center">
+                      <Users size={16} className="text-gold mx-auto mb-1" />
+                      <div className="text-xs text-gray-400">Community</div>
+                    </div>
+                    <div className="text-center">
+                      <HomeIcon size={16} className="text-gold mx-auto mb-1" />
+                      <div className="text-xs text-gray-400">Homes</div>
+                    </div>
+                  </div>
+
+                  <div className="mt-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300 delay-200 flex items-center gap-2">
+                    <span className="text-xs font-bold uppercase tracking-widest text-gold">
+                      Explore Area
+                    </span>
+                    <ArrowRight size={14} className="text-gold group-hover:translate-x-1 transition-transform" />
+                  </div>
                 </div>
 
-                {/* Stats Preview */}
-                <div className="mt-4 grid grid-cols-3 gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 delay-150">
-                  <div className="text-center">
-                    <TrendingUp size={16} className="text-gold mx-auto mb-1" />
-                    <div className="text-xs text-gray-400">Growth</div>
-                  </div>
-                  <div className="text-center">
-                    <Users size={16} className="text-gold mx-auto mb-1" />
-                    <div className="text-xs text-gray-400">Community</div>
-                  </div>
-                  <div className="text-center">
-                    <HomeIcon size={16} className="text-gold mx-auto mb-1" />
-                    <div className="text-xs text-gray-400">Homes</div>
-                  </div>
-                </div>
-
-                <div className="mt-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300 delay-200 flex items-center gap-2">
-                  <span className="text-xs font-bold uppercase tracking-widest text-gold">
-                    Explore Area
-                  </span>
-                  <ArrowRight size={14} className="text-gold group-hover:translate-x-1 transition-transform" />
-                </div>
-              </div>
-
-              {/* Shimmer Effect */}
-              <div className="absolute inset-0 shimmer"></div>
-            </a>
-          ))}
+                {/* Shimmer Effect */}
+                <div className="absolute inset-0 shimmer"></div>
+              </a>
+            );
+          })}
         </div>
 
         <div className="mt-12 text-center md:hidden">
