@@ -54,18 +54,18 @@ const MortgagePartnership = () => {
             <div className="relative bg-white rounded-2xl shadow-2xl overflow-hidden border border-gray-100 hover:border-gold/30 transition-all duration-500 hover:shadow-gold/20 hover:-translate-y-2">
               {/* Image Section */}
               <div className="relative h-80 sm:h-96 bg-gradient-to-br from-gray-100 to-gray-50 overflow-hidden">
-                {/* Replace with actual image */}
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="text-center">
-                    <div className="w-32 h-32 bg-gold/20 rounded-full mx-auto mb-4 flex items-center justify-center">
-                      <Users className="text-gold" size={64} />
-                    </div>
-                    <p className="text-gray-400 text-sm">Professional Photo</p>
-                  </div>
-                </div>
+                <img
+                  src="/images/lorena-professional.jpg"
+                  alt={`${REALTOR_NAME}, Professional Realtor`}
+                  className="w-full h-full object-cover"
+                  onError={(e) => {
+                    // Fallback to placeholder if image not found
+                    e.currentTarget.style.display = 'none';
+                  }}
+                />
 
                 {/* Overlay Badge */}
-                <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent p-6">
+                <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent p-6">
                   <h3 className="font-serif text-3xl text-white mb-1">{REALTOR_NAME}</h3>
                   <p className="text-gold text-sm uppercase tracking-widest font-bold">Realtor®</p>
                 </div>
@@ -131,15 +131,15 @@ const MortgagePartnership = () => {
             <div className="relative bg-white rounded-2xl shadow-2xl overflow-hidden border border-gray-100 hover:border-gold/30 transition-all duration-500 hover:shadow-gold/20 hover:-translate-y-2">
               {/* Image Section */}
               <div className="relative h-80 sm:h-96 bg-gradient-to-br from-gray-100 to-gray-50 overflow-hidden">
-                {/* Replace with actual image */}
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="text-center">
-                    <div className="w-32 h-32 bg-blue-500/20 rounded-full mx-auto mb-4 flex items-center justify-center">
-                      <TrendingUp className="text-blue-600" size={64} />
-                    </div>
-                    <p className="text-gray-400 text-sm">Professional Photo</p>
-                  </div>
-                </div>
+                <img
+                  src="/images/emmanuel-professional.jpg"
+                  alt={`${PARTNER_NAME}, ${PARTNER_TITLE} at ${PARTNER_COMPANY}`}
+                  className="w-full h-full object-cover"
+                  onError={(e) => {
+                    // Fallback to placeholder if image not found
+                    e.currentTarget.style.display = 'none';
+                  }}
+                />
 
                 {/* Company Logo Overlay */}
                 <div className="absolute top-6 right-6 bg-white/95 backdrop-blur-sm px-4 py-2 rounded-lg shadow-lg">
@@ -148,7 +148,7 @@ const MortgagePartnership = () => {
                 </div>
 
                 {/* Overlay Badge */}
-                <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent p-6">
+                <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent p-6">
                   <h3 className="font-serif text-3xl text-white mb-1">{PARTNER_NAME}</h3>
                   <p className="text-gold text-sm uppercase tracking-widest font-bold">{PARTNER_TITLE}</p>
                 </div>

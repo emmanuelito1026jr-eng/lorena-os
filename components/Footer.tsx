@@ -11,7 +11,21 @@ const Footer  = () => {
           {/* Brand Info */}
           <div>
             <h2 className="font-serif text-2xl font-bold text-white mb-2">CASAS EN <span className="text-gold">EL PASO</span></h2>
-            <p className="text-xs uppercase tracking-widest text-gray-400 mb-6">{REALTOR_NAME}</p>
+            <p className="text-xs uppercase tracking-widest text-gray-400 mb-4">{REALTOR_NAME}</p>
+
+            {/* The Right Move Logo */}
+            <div className="mb-6">
+              <img
+                src="/images/right-move-logo.png"
+                alt="The Right Move Real Estate Group"
+                className="h-12 w-auto opacity-90"
+                onError={(e) => {
+                  // Hide if logo not found
+                  e.currentTarget.style.display = 'none';
+                }}
+              />
+            </div>
+
             <p className="text-gray-300 text-sm leading-relaxed mb-6">
               Helping families on both sides of the border build wealth through real estate. Bilingual, professional, and dedicated to your future.
             </p>

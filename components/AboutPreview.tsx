@@ -34,17 +34,20 @@ const AboutPreview = () => {
 
             {/* Main Image */}
             <div className="relative z-10 aspect-[4/5] overflow-hidden rounded-sm">
-              {/* PLACEHOLDER: Replace with professional headshot of Lorena Ontiveros-Ortega */}
               <img
-                src="https://placehold.co/800x1000/1A1A1A/C9A84C?text=Lorena+Ontiveros"
+                src="/images/lorena-portrait.png"
                 alt="Lorena Ontiveros-Ortega, professional real estate agent"
-                className={`w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700 ${
+                className={`w-full h-full object-cover transition-all duration-700 ${
                   imageLoaded ? 'scale-100' : 'scale-105'
                 }`}
                 onLoad={() => setImageLoaded(true)}
+                onError={(e) => {
+                  // Fallback to alternative image if portrait not found
+                  e.currentTarget.src = '/images/lorena-professional.jpg';
+                }}
               />
               {/* Gradient Overlay on Hover */}
-              <div className="absolute inset-0 bg-gradient-to-t from-dark via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+              <div className="absolute inset-0 bg-gradient-to-t from-gray-900/30 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
             </div>
 
             {/* Name Badge */}
