@@ -52,26 +52,26 @@ export const NEIGHBORHOODS: Neighborhood[] = [
   {
     name: "Westside",
     description: "Luxury living with mountain views and top-rated schools.",
-    // PLACEHOLDER: Replace with actual photo of Westside neighborhood with mountain views
-    image: "https://placehold.co/600x400/1A1A1A/C9A84C?text=Westside+El+Paso"
+    // Professional stock photo: Modern homes with mountain backdrop
+    image: "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=800&h=600&fit=crop&q=80"
   },
   {
     name: "Upper Valley",
     description: "Lush green landscapes, river proximity, and spacious estates.",
-    // PLACEHOLDER: Replace with actual photo of Upper Valley area near the Rio Grande
-    image: "https://placehold.co/600x400/1A1A1A/C9A84C?text=Upper+Valley"
+    // Professional stock photo: Luxury estate with greenery
+    image: "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800&h=600&fit=crop&q=80"
   },
   {
     name: "Horizon City",
     description: "Rapidly growing community perfect for new families.",
-    // PLACEHOLDER: Replace with actual photo of Horizon City developments
-    image: "https://placehold.co/600x400/1A1A1A/C9A84C?text=Horizon+City"
+    // Professional stock photo: Modern residential development
+    image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800&h=600&fit=crop&q=80"
   },
   {
     name: "Cimarron",
     description: "Modern master-planned community with exclusive amenities.",
-    // PLACEHOLDER: Replace with actual photo of Cimarron community amenities
-    image: "https://placehold.co/600x400/1A1A1A/C9A84C?text=Cimarron"
+    // Professional stock photo: Contemporary community with amenities
+    image: "https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde?w=800&h=600&fit=crop&q=80"
   }
 ];
 
