@@ -1,0 +1,26 @@
+{
+  "name": "Casas En El Paso TX",
+  "short_name": "Casas El Paso",
+  "description": "El Paso's trusted bilingual real estate expert",
+  "icons": [
+    {
+      "src": "/favicon-16x16.png",
+      "sizes": "16x16",
+      "type": "image/png"
+    },
+    {
+      "src": "/favicon-32x32.png",
+      "sizes": "32x32",
+      "type": "image/png"
+    },
+    {
+      "src": "/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png"
+    }
+  ],
+  "theme_color": "#C9A84C",
+  "background_color": "#0A0A0A",
+  "display": "standalone",
+  "start_url": "/"
+}
