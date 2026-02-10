@@ -8,6 +8,7 @@ import About from './pages/About';
 import NeighborhoodDetail from './pages/NeighborhoodDetail';
 import ServiceDetail from './pages/ServiceDetail';
 import ErrorBoundary from './components/ErrorBoundary';
+import { useLenis } from './hooks/useLenis';
 
 // ScrollToTop component to handle scroll behavior on navigation
 const ScrollToTop = () => {
@@ -30,6 +31,9 @@ const ScrollToTop = () => {
 };
 
 const App = () => {
+  // Initialize smooth scrolling (desktop only)
+  useLenis();
+
   return (
     <ErrorBoundary>
       <Router>

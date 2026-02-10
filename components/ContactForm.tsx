@@ -132,9 +132,9 @@ const ContactForm = ({ minimal = false }: ContactFormProps) => {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4" aria-label="Contact form">
+    <form onSubmit={handleSubmit} className="space-y-6" aria-label="Contact form">
       <div>
-        <label htmlFor="name" className="block text-xs uppercase tracking-widest text-gray-400 mb-2">
+        <label htmlFor="name" className="block text-xs uppercase tracking-widest text-black/60 mb-2 font-semibold">
           Full Name
         </label>
         <input
@@ -145,9 +145,9 @@ const ContactForm = ({ minimal = false }: ContactFormProps) => {
           onChange={handleChange}
           aria-invalid={!!errors.name}
           aria-describedby={errors.name ? 'name-error' : undefined}
-          className={`w-full bg-white border ${
-            errors.name ? 'border-red-500' : 'border-gray-300'
-          } text-gray-900 px-4 py-3 focus:outline-none focus:border-gold transition-colors rounded`}
+          className={`w-full bg-white border-2 ${
+            errors.name ? 'border-red-500' : 'border-gray-200'
+          } text-black px-4 py-4 focus:outline-none focus:outline-2 focus:outline-gold focus:border-gold transition-premium`}
           placeholder="Maria Gonzalez"
         />
         {errors.name && (
@@ -157,9 +157,9 @@ const ContactForm = ({ minimal = false }: ContactFormProps) => {
         )}
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div>
-          <label htmlFor="email" className="block text-xs uppercase tracking-widest text-gray-400 mb-2">
+          <label htmlFor="email" className="block text-xs uppercase tracking-widest text-black/60 mb-2 font-semibold">
             Email
           </label>
           <input
@@ -170,9 +170,9 @@ const ContactForm = ({ minimal = false }: ContactFormProps) => {
             onChange={handleChange}
             aria-invalid={!!errors.email}
             aria-describedby={errors.email ? 'email-error' : undefined}
-            className={`w-full bg-white border ${
-              errors.email ? 'border-red-500' : 'border-gray-300'
-            } text-gray-900 px-4 py-3 focus:outline-none focus:border-gold transition-colors rounded`}
+            className={`w-full bg-white border-2 ${
+              errors.email ? 'border-red-500' : 'border-gray-200'
+            } text-black px-4 py-4 focus:outline-none focus:outline-2 focus:outline-gold focus:border-gold transition-premium`}
             placeholder="email@example.com"
           />
           {errors.email && (
@@ -182,7 +182,7 @@ const ContactForm = ({ minimal = false }: ContactFormProps) => {
           )}
         </div>
         <div>
-          <label htmlFor="phone" className="block text-xs uppercase tracking-widest text-gray-400 mb-2">
+          <label htmlFor="phone" className="block text-xs uppercase tracking-widest text-black/60 mb-2 font-semibold">
             Phone
           </label>
           <input
@@ -193,9 +193,9 @@ const ContactForm = ({ minimal = false }: ContactFormProps) => {
             onChange={handleChange}
             aria-invalid={!!errors.phone}
             aria-describedby={errors.phone ? 'phone-error' : undefined}
-            className={`w-full bg-white border ${
-              errors.phone ? 'border-red-500' : 'border-gray-300'
-            } text-gray-900 px-4 py-3 focus:outline-none focus:border-gold transition-colors rounded`}
+            className={`w-full bg-white border-2 ${
+              errors.phone ? 'border-red-500' : 'border-gray-200'
+            } text-black px-4 py-4 focus:outline-none focus:outline-2 focus:outline-gold focus:border-gold transition-premium`}
             placeholder="(915) 555-0123"
           />
           {errors.phone && (
@@ -207,7 +207,7 @@ const ContactForm = ({ minimal = false }: ContactFormProps) => {
       </div>
 
       <div>
-        <label htmlFor="type" className="block text-xs uppercase tracking-widest text-gray-400 mb-2">
+        <label htmlFor="type" className="block text-xs uppercase tracking-widest text-black/60 mb-2 font-semibold">
           I am interested in
         </label>
         <select
@@ -215,7 +215,7 @@ const ContactForm = ({ minimal = false }: ContactFormProps) => {
           id="type"
           value={formData.type}
           onChange={handleChange}
-          className="w-full bg-white border border-gray-300 text-gray-900 px-4 py-3 focus:outline-none focus:border-gold transition-colors appearance-none rounded"
+          className="w-full bg-white border-2 border-gray-200 text-black px-4 py-4 focus:outline-none focus:outline-2 focus:outline-gold focus:border-gold transition-premium appearance-none"
         >
           <option value="Buying">Buying a Home / Comprar</option>
           <option value="Selling">Selling a Home / Vender</option>
@@ -227,29 +227,29 @@ const ContactForm = ({ minimal = false }: ContactFormProps) => {
       <button
         type="submit"
         disabled={isSubmitting}
-        className="w-full bg-gold text-white font-bold uppercase tracking-widest py-4 hover:bg-gray-900 transition-colors duration-300 mt-4 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg"
+        className="w-full bg-gold text-white font-bold uppercase tracking-widest py-4 hover:shadow-gold-glow transition-premium mt-6 disabled:opacity-50 disabled:cursor-not-allowed shadow-premium"
       >
         {isSubmitting ? 'Sending...' : minimal ? 'Get Access Now' : 'Send Message / Enviar'}
       </button>
 
       {/* Status Messages */}
       {submitStatus === 'success' && (
-        <div className="bg-green-900/30 border border-green-500 text-green-300 px-4 py-3 rounded">
-          <p className="text-sm">
+        <div className="bg-green-50 border-2 border-green-500 text-green-900 px-4 py-3">
+          <p className="text-sm font-medium">
             ✓ Message sent successfully! We'll contact you soon.
           </p>
         </div>
       )}
 
       {submitStatus === 'error' && (
-        <div className="bg-red-900/30 border border-red-500 text-red-300 px-4 py-3 rounded">
-          <p className="text-sm">
+        <div className="bg-red-50 border-2 border-red-500 text-red-900 px-4 py-3">
+          <p className="text-sm font-medium">
             ✗ Failed to send message. Please try again or call us directly at (915) 487-5581.
           </p>
         </div>
       )}
 
-      <p className="text-[10px] text-gray-600 text-center mt-2">
+      <p className="text-[10px] text-black/50 text-center mt-2 font-light">
         By submitting this form, you agree to receive communications from Casas En El Paso TX.
       </p>
     </form>

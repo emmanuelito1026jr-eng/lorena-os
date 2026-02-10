@@ -41,19 +41,12 @@ const Testimonials = () => {
   };
 
   return (
-    <section className="py-20 sm:py-24 bg-gradient-to-b from-gray-50 via-white to-gray-50 relative overflow-hidden">
-      {/* Background decorative elements */}
-      <div className="absolute top-0 right-0 opacity-5 pointer-events-none text-gray-300">
-        <Quote size={400} />
-      </div>
-      <div className="absolute -top-20 -left-20 w-96 h-96 bg-gold/10 rounded-full blur-3xl" />
-      <div className="absolute -bottom-20 -right-20 w-96 h-96 bg-gold/10 rounded-full blur-3xl" />
-
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-        <div className="text-center mb-12 sm:mb-16 animate-fade-in-up">
-          <span className="text-gold text-xs uppercase tracking-[0.3em] font-bold">Testimonials</span>
-          <h2 className="mt-4 font-serif text-4xl md:text-5xl text-gray-900">Client Stories</h2>
-          <p className="text-gold italic mt-2 text-lg">Historias de Éxito</p>
+    <section className="py-24 md:py-32 lg:py-40 bg-white relative overflow-hidden">
+      <div className="max-w-7xl mx-auto px-6 sm:px-12 lg:px-16 relative z-10">
+        <div className="text-center mb-12 sm:mb-16">
+          <span className="text-gold text-xs uppercase tracking-[0.3em] font-extrabold">Testimonials</span>
+          <h2 className="mt-4 font-sans text-5xl md:text-6xl text-black font-bold">Client Stories</h2>
+          <p className="text-gold mt-2 text-lg font-semibold">Historias de Éxito</p>
         </div>
 
         {/* Carousel Container */}
@@ -69,10 +62,10 @@ const Testimonials = () => {
                     : 'opacity-0 scale-95 pointer-events-none'
                 }`}
               >
-                <div className="bg-white border border-gray-200 shadow-xl rounded-lg p-8 sm:p-12 mx-auto max-w-4xl hover-lift">
+                <div className="bg-white border border-gray-200 shadow-premium p-8 sm:p-12 mx-auto max-w-4xl hover-lift clip-angle-top-right">
                   {/* Quote Icon */}
                   <div className="flex justify-center mb-6">
-                    <div className="w-16 h-16 bg-gold/10 rounded-full flex items-center justify-center">
+                    <div className="w-16 h-16 bg-gold/10 flex items-center justify-center">
                       <Quote className="text-gold" size={32} />
                     </div>
                   </div>
@@ -85,18 +78,18 @@ const Testimonials = () => {
                   </div>
 
                   {/* Testimonial Text */}
-                  <blockquote className="text-gray-700 italic mb-8 font-light leading-relaxed text-center text-lg sm:text-xl">
+                  <blockquote className="text-black/70 mb-8 font-light leading-relaxed text-center text-lg sm:text-xl">
                     "{testimonial.text}"
                   </blockquote>
 
                   {/* Client Info */}
                   <div className="flex items-center justify-center gap-4 pt-6 border-t border-gray-200">
-                    <div className="w-14 h-14 rounded-full bg-gradient-to-br from-gold to-gold/70 flex items-center justify-center text-white font-serif font-bold text-xl shadow-lg">
+                    <div className="w-14 h-14 bg-gold flex items-center justify-center text-white font-sans font-black text-xl shadow-premium">
                       {testimonial.name.charAt(0)}
                     </div>
                     <div className="text-left">
-                      <h4 className="text-gray-900 font-bold text-base sm:text-lg">{testimonial.name}</h4>
-                      <p className="text-gray-600 text-sm">{testimonial.role}</p>
+                      <h4 className="text-black font-bold text-base sm:text-lg">{testimonial.name}</h4>
+                      <p className="text-black/60 text-sm font-light">{testimonial.role}</p>
                     </div>
                   </div>
                 </div>
@@ -107,18 +100,18 @@ const Testimonials = () => {
           {/* Navigation Arrows */}
           <button
             onClick={prevSlide}
-            className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 sm:-translate-x-12 w-12 h-12 sm:w-14 sm:h-14 bg-white border border-gray-300 hover:bg-gold hover:border-gold transition-all rounded-full flex items-center justify-center group touch-target shadow-lg"
+            className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 sm:-translate-x-12 w-12 h-12 sm:w-14 sm:h-14 bg-white border-2 border-gold hover:bg-gold hover:border-gold transition-premium flex items-center justify-center group touch-target shadow-premium"
             aria-label="Previous testimonial"
           >
-            <ChevronLeft className="text-gold group-hover:text-white transition-colors" size={24} />
+            <ChevronLeft className="text-gold group-hover:text-white transition-premium" size={24} />
           </button>
 
           <button
             onClick={nextSlide}
-            className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 sm:translate-x-12 w-12 h-12 sm:w-14 sm:h-14 bg-white border border-gray-300 hover:bg-gold hover:border-gold transition-all rounded-full flex items-center justify-center group touch-target shadow-lg"
+            className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 sm:translate-x-12 w-12 h-12 sm:w-14 sm:h-14 bg-white border-2 border-gold hover:bg-gold hover:border-gold transition-premium flex items-center justify-center group touch-target shadow-premium"
             aria-label="Next testimonial"
           >
-            <ChevronRight className="text-gold group-hover:text-white transition-colors" size={24} />
+            <ChevronRight className="text-gold group-hover:text-white transition-premium" size={24} />
           </button>
         </div>
 
@@ -127,7 +120,7 @@ const Testimonials = () => {
           {/* Auto-play Toggle */}
           <button
             onClick={toggleAutoPlay}
-            className="w-10 h-10 bg-white border border-gray-300 hover:bg-gold/10 transition-all rounded-full flex items-center justify-center touch-target"
+            className="w-10 h-10 bg-white border-2 border-gold hover:bg-gold/10 transition-premium flex items-center justify-center touch-target"
             aria-label={isAutoPlaying ? 'Pause auto-play' : 'Resume auto-play'}
           >
             {isAutoPlaying ? (
@@ -143,10 +136,10 @@ const Testimonials = () => {
               <button
                 key={index}
                 onClick={() => goToSlide(index)}
-                className={`transition-all duration-300 rounded-full touch-target ${
+                className={`transition-premium touch-target ${
                   index === currentIndex
                     ? 'w-10 sm:w-12 h-2 bg-gold'
-                    : 'w-2 h-2 bg-gray-400 hover:bg-gold/70'
+                    : 'w-2 h-2 bg-black/30 hover:bg-gold/70'
                 }`}
                 aria-label={`Go to testimonial ${index + 1}`}
                 aria-current={index === currentIndex ? 'true' : 'false'}
@@ -155,7 +148,7 @@ const Testimonials = () => {
           </div>
 
           {/* Counter */}
-          <div className="text-gray-600 text-sm font-mono">
+          <div className="text-black/60 text-sm font-mono font-medium">
             {currentIndex + 1} / {TESTIMONIALS.length}
           </div>
         </div>

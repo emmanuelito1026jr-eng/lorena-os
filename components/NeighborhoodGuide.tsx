@@ -1,30 +1,33 @@
+import { useEffect } from 'react';
 import { ArrowRight, TrendingUp, Users, Home as HomeIcon } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { NEIGHBORHOODS, NEIGHBORHOODS_DETAIL } from '../constants';
+import { staggerReveal } from '../utils/animations';
 
 const NeighborhoodGuide = () => {
-  return (
-    <section id="neighborhoods" className="relative py-24 bg-white overflow-hidden">
-      {/* Background Decoration */}
-      <div className="absolute top-0 right-0 w-96 h-96 bg-gold/10 rounded-full blur-3xl"></div>
+  useEffect(() => {
+    staggerReveal('.neighborhood-card', 0.1);
+  }, []);
 
-      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex flex-col md:flex-row justify-between items-end mb-12 animate-fade-in-up">
+  return (
+    <section id="neighborhoods" className="relative py-24 md:py-32 lg:py-40 bg-white overflow-hidden">
+      <div className="relative max-w-7xl mx-auto px-6 sm:px-12 lg:px-16">
+        <div className="flex flex-col md:flex-row justify-between items-end mb-16">
           <div>
-            <span className="text-gold text-xs uppercase tracking-[0.25em] font-bold">Local Expertise</span>
-            <h2 className="mt-3 font-serif text-4xl md:text-5xl text-gray-900">
+            <span className="text-gold text-xs uppercase tracking-[0.25em] font-extrabold">Local Expertise</span>
+            <h2 className="mt-3 font-sans text-5xl md:text-6xl text-black font-bold">
               Explore <span className="gradient-text">El Paso</span>
             </h2>
-            <p className="mt-3 text-gray-600 max-w-2xl">
+            <p className="mt-3 text-black/70 max-w-2xl font-light">
               Discover the perfect neighborhood for your lifestyle
             </p>
           </div>
           <a
             href="#/properties"
-            className="hidden md:flex items-center gap-2 text-sm text-gray-700 hover:text-gold uppercase tracking-widest transition-colors group font-medium"
+            className="hidden md:flex items-center gap-2 text-sm text-black hover:text-gold uppercase tracking-widest transition-premium group font-semibold"
           >
             View All Properties
-            <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
+            <ArrowRight size={14} className="group-hover:translate-x-1 transition-premium" />
           </a>
         </div>
 
@@ -37,53 +40,50 @@ const NeighborhoodGuide = () => {
               <a
                 key={index}
                 href={linkTo}
-                className="group relative h-96 overflow-hidden cursor-pointer rounded-lg animate-fade-in-up hover-lift block shadow-lg hover:shadow-2xl transition-shadow"
-                style={{ animationDelay: `${index * 100}ms` }}
+                className="neighborhood-card group relative h-96 overflow-hidden cursor-pointer hover-lift block shadow-premium hover:shadow-gold-glow transition-premium"
               >
                 <img
                   src={hood.image}
                   alt={hood.name}
-                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 grayscale group-hover:grayscale-0"
+                  className="w-full h-full object-cover transition-premium group-hover:scale-110"
+                  loading="lazy"
                 />
 
                 {/* Gradient Overlay */}
-                <div className="absolute inset-0 bg-gradient-to-t from-gray-900 via-gray-900/30 to-transparent opacity-70 group-hover:opacity-80 transition-opacity"></div>
-
-                {/* Gold Accent Border - Appears on Hover */}
-                <div className="absolute inset-0 border-2 border-gold opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-lg"></div>
+                <div className="absolute inset-0 bg-gradient-to-t from-black via-black/30 to-transparent opacity-70 group-hover:opacity-80 transition-premium"></div>
 
                 {/* Content */}
-                <div className="absolute bottom-0 left-0 p-6 w-full transform transition-transform duration-300 translate-y-2 group-hover:translate-y-0">
+                <div className="absolute bottom-0 left-0 p-6 w-full transform transition-premium translate-y-2 group-hover:translate-y-0">
                   <div className="border-l-2 border-gold pl-4">
-                    <h3 className="font-serif text-2xl text-ivory mb-2 group-hover:text-gold transition-colors">
+                    <h3 className="font-sans text-2xl text-white mb-2 group-hover:text-gold transition-premium font-bold">
                       {hood.name}
                     </h3>
-                    <p className="text-gray-300 text-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300 delay-100 line-clamp-2">
+                    <p className="text-white/80 text-sm opacity-0 group-hover:opacity-100 transition-premium delay-100 line-clamp-2 font-light">
                       {hood.description}
                     </p>
                   </div>
 
                   {/* Stats Preview */}
-                  <div className="mt-4 grid grid-cols-3 gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 delay-150">
+                  <div className="mt-4 grid grid-cols-3 gap-2 opacity-0 group-hover:opacity-100 transition-premium delay-150">
                     <div className="text-center">
                       <TrendingUp size={16} className="text-gold mx-auto mb-1" />
-                      <div className="text-xs text-gray-400">Growth</div>
+                      <div className="text-xs text-white/60 font-light">Growth</div>
                     </div>
                     <div className="text-center">
                       <Users size={16} className="text-gold mx-auto mb-1" />
-                      <div className="text-xs text-gray-400">Community</div>
+                      <div className="text-xs text-white/60 font-light">Community</div>
                     </div>
                     <div className="text-center">
                       <HomeIcon size={16} className="text-gold mx-auto mb-1" />
-                      <div className="text-xs text-gray-400">Homes</div>
+                      <div className="text-xs text-white/60 font-light">Homes</div>
                     </div>
                   </div>
 
-                  <div className="mt-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300 delay-200 flex items-center gap-2">
+                  <div className="mt-4 opacity-0 group-hover:opacity-100 transition-premium delay-200 flex items-center gap-2">
                     <span className="text-xs font-bold uppercase tracking-widest text-gold">
                       Explore Area
                     </span>
-                    <ArrowRight size={14} className="text-gold group-hover:translate-x-1 transition-transform" />
+                    <ArrowRight size={14} className="text-gold group-hover:translate-x-1 transition-premium" />
                   </div>
                 </div>
 
@@ -97,7 +97,7 @@ const NeighborhoodGuide = () => {
         <div className="mt-12 text-center md:hidden">
           <a
             href="#/properties"
-            className="inline-flex items-center gap-2 px-6 py-3 bg-gold text-white font-bold uppercase tracking-widest hover:bg-gray-900 transition-colors shadow-lg"
+            className="inline-flex items-center gap-2 px-6 py-3 bg-gold text-white font-bold uppercase tracking-widest hover:shadow-gold-glow transition-premium shadow-premium"
           >
             View All Properties
             <ArrowRight size={16} />

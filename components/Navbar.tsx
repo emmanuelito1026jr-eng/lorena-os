@@ -2,24 +2,41 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Menu, X, Phone } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import { NAV_LINKS, PHONE_NUMBER, COMPANY_NAME } from '../constants';
+import { gsap } from '../utils/gsap-config';
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [lastScrollY, setLastScrollY] = useState(0);
   const location = useLocation();
   const menuRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
+  const navRef = useRef<HTMLElement>(null);
 
   // Hide navbar on landing page
   if (location.pathname === '/landing') return null;
 
+  // Scroll behavior with GSAP
   useEffect(() => {
     const handleScroll = () => {
-      setScrolled(window.scrollY > 50);
+      const currentScrollY = window.scrollY;
+      setScrolled(currentScrollY > 50);
+
+      // Hide on scroll down, show on scroll up
+      if (navRef.current) {
+        if (currentScrollY > lastScrollY && currentScrollY > 100) {
+          gsap.to(navRef.current, { y: -100, duration: 0.3, ease: 'power2.out' });
+        } else {
+          gsap.to(navRef.current, { y: 0, duration: 0.3, ease: 'power2.out' });
+        }
+      }
+
+      setLastScrollY(currentScrollY);
     };
+
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+  }, [lastScrollY]);
 
   // Focus trap and keyboard handlers for mobile menu
   useEffect(() => {
@@ -64,19 +81,20 @@ const Navbar = () => {
 
   return (
     <nav
-      className={`fixed w-full z-50 transition-all duration-300 ${
-        scrolled ? 'bg-white/95 backdrop-blur-sm border-b border-gray-200 shadow-sm py-4' : 'bg-transparent py-6'
+      ref={navRef}
+      className={`navbar fixed w-full z-50 transition-premium ${
+        scrolled ? 'bg-white border-b border-gray-200 shadow-premium py-4' : 'bg-white/95 py-6'
       }`}
       aria-label="Main navigation"
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-7xl mx-auto px-6 sm:px-12 lg:px-16">
         <div className="flex justify-between items-center">
           {/* Logo */}
           <Link to="/" className="flex flex-col" aria-label="Casas En El Paso TX Home">
-            <span className="font-serif text-2xl font-bold tracking-wider text-gray-900">
+            <span className="font-sans text-2xl font-black tracking-wider text-black">
               CASAS EN <span className="text-gold">EL PASO</span>
             </span>
-            <span className="text-[10px] tracking-[0.2em] uppercase text-gray-600">Lorena Ontiveros-Ortega</span>
+            <span className="text-[10px] tracking-[0.2em] uppercase text-black/60 font-medium">Lorena Ontiveros-Ortega</span>
           </Link>
 
           {/* Desktop Nav */}
@@ -85,14 +103,14 @@ const Navbar = () => {
               <a
                 key={link.label}
                 href={link.href}
-                className="text-sm uppercase tracking-widest text-gray-700 hover:text-gold transition-colors duration-200 font-medium"
+                className="text-sm uppercase tracking-widest text-black hover:text-gold transition-premium font-semibold"
               >
                 {link.label}
               </a>
             ))}
             <a
               href={`tel:${PHONE_NUMBER}`}
-              className="flex items-center gap-2 border border-gold text-gold px-4 py-2 rounded-sm hover:bg-gold hover:text-white transition-all duration-300 uppercase text-xs tracking-widest font-bold"
+              className="flex items-center gap-2 border-2 border-gold text-gold px-4 py-2 hover:bg-gold hover:text-white transition-premium uppercase text-xs tracking-widest font-bold"
               aria-label={`Call ${PHONE_NUMBER}`}
             >
               <Phone size={14} aria-hidden="true" />
@@ -105,7 +123,7 @@ const Navbar = () => {
             <button
               ref={buttonRef}
               onClick={() => setIsOpen(!isOpen)}
-              className="text-gray-900 hover:text-gold"
+              className="text-black hover:text-gold transition-premium"
               aria-expanded={isOpen}
               aria-controls="mobile-menu"
               aria-label={isOpen ? 'Close menu' : 'Open menu'}
@@ -121,7 +139,7 @@ const Navbar = () => {
         <div
           id="mobile-menu"
           ref={menuRef}
-          className="md:hidden bg-white border-t border-gray-200 absolute w-full shadow-lg"
+          className="md:hidden bg-white border-t border-gray-200 absolute w-full shadow-premium"
           role="dialog"
           aria-modal="true"
           aria-label="Mobile menu"
@@ -131,7 +149,7 @@ const Navbar = () => {
               <a
                 key={link.label}
                 href={link.href}
-                className="block px-3 py-2 text-base font-medium text-gray-700 hover:text-gold uppercase tracking-widest"
+                className="block px-3 py-2 text-base font-semibold text-black hover:text-gold transition-premium uppercase tracking-widest"
                 onClick={() => setIsOpen(false)}
               >
                 {link.label}
@@ -139,7 +157,7 @@ const Navbar = () => {
             ))}
             <a
               href={`tel:${PHONE_NUMBER}`}
-              className="mt-4 flex items-center gap-2 bg-gold text-white px-6 py-3 rounded-sm font-bold uppercase tracking-widest"
+              className="mt-4 flex items-center gap-2 bg-gold text-white px-6 py-3 font-bold uppercase tracking-widest hover:shadow-gold-glow transition-premium"
               onClick={() => setIsOpen(false)}
               aria-label="Call now"
             >

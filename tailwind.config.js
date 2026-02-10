@@ -12,21 +12,54 @@ export default {
     extend: {
       colors: {
         gold: {
-          DEFAULT: '#C9A84C',
-          light: '#D4AF37',
-          dark: '#B8973A',
+          DEFAULT: '#c5a95e',  // Realty ONE gold
+          light: '#d4b76f',
+          dark: '#b09850',
         },
-        dark: {
-          DEFAULT: '#0A0A0A',
-          charcoal: '#1A1A1A',
-          card: '#111111',
+        black: {
+          DEFAULT: '#000000',  // Pure black
+          light: '#262626',    // Realty ONE dark
+          medium: '#1a1a1a',
         },
-        ivory: '#FAFAF5',
-        cream: '#F5F0E8',
+        white: {
+          DEFAULT: '#ffffff',  // Pure white for bright design
+          off: '#fafafa',
+        },
       },
       fontFamily: {
-        serif: ['"Playfair Display"', 'serif'],
-        sans: ['"DM Sans"', 'sans-serif'],
+        sans: ['"Exo 2"', 'system-ui', 'sans-serif'],
+      },
+      screens: {
+        'sm': '640px',
+        'md': '768px',
+        'lg': '992px',   // Realty ONE
+        'xl': '1440px',  // Realty ONE
+        '2xl': '1920px', // Realty ONE
+        '3xl': '2900px', // Realty ONE
+      },
+      container: {
+        center: true,
+        padding: {
+          DEFAULT: '1rem',
+          sm: '2rem',
+          lg: '4rem',
+          xl: '5rem',
+        },
+        screens: {
+          'xl': '2300px', // Realty ONE max-width
+        },
+      },
+      spacing: {
+        '18': '4.5rem',
+        '22': '5.5rem',
+        '26': '6.5rem',
+        '30': '7.5rem',
+      },
+      boxShadow: {
+        'premium': '0 4px 24px rgba(0, 0, 0, 0.08)',
+        'premium-lg': '0 8px 40px rgba(0, 0, 0, 0.12)',
+        'gold-glow': '0 8px 32px rgba(197, 169, 94, 0.25)',
+        'gold-glow-lg': '0 16px 48px rgba(197, 169, 94, 0.35)',
       },
     },
   },

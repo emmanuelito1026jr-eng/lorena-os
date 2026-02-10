@@ -14,6 +14,19 @@ export default defineConfig(({ mode }) => {
         alias: {
           '@': path.resolve(__dirname, '.'),
         }
+      },
+      build: {
+        rollupOptions: {
+          output: {
+            manualChunks: {
+              'gsap': ['gsap'],
+              'lenis': ['lenis'],
+              'vendor': ['react', 'react-dom', 'react-router-dom'],
+            }
+          }
+        },
+        chunkSizeWarningLimit: 1000,
+        minify: 'esbuild', // Use esbuild for faster builds
       }
     };
 });

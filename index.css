@@ -2,6 +2,28 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  /* Realty ONE Colors */
+  --color-gold: #c5a95e;
+  --color-black: #000000;
+  --color-black-light: #262626;
+  --color-white: #ffffff;
+
+  /* Spacing (rem-based) */
+  --spacing-xs: 0.5rem;
+  --spacing-sm: 1rem;
+  --spacing-md: 2rem;
+  --spacing-lg: 4rem;
+  --spacing-xl: 6rem;
+
+  /* Transitions - Cubic-bezier easing */
+  --transition-premium: cubic-bezier(0.4, 0, 0.2, 1) 0.3s;
+  --transition-slow: cubic-bezier(0.4, 0, 0.2, 1) 0.6s;
+
+  /* Max width */
+  --max-width: 2300px;
+}
+
 /* Custom Animations */
 @layer utilities {
   .animate-fade-in-up {
@@ -65,24 +87,39 @@
     animation-delay: 0.8s;
   }
 
-  /* Glass Morphism */
-  .glass {
-    background: rgba(26, 26, 26, 0.7);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    border: 1px solid rgba(201, 168, 76, 0.1);
+  /* Premium Transitions */
+  .transition-premium {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
-  .glass-strong {
-    background: rgba(26, 26, 26, 0.9);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border: 1px solid rgba(201, 168, 76, 0.2);
+  .transition-slow {
+    transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
-  /* Gradient Text */
+  .hover-scale-102:hover {
+    transform: scale(1.02);
+  }
+
+  /* Angular Clip-Path Edges */
+  .clip-angle-1 {
+    clip-path: polygon(0 0, 100% 0, 100% 90%, 0 100%);
+  }
+
+  .clip-angle-2 {
+    clip-path: polygon(0 0, 100% 0, 100% 100%, 10% 100%, 0 90%);
+  }
+
+  .clip-angle-3 {
+    clip-path: polygon(10% 0, 100% 0, 100% 100%, 0 100%, 0 10%);
+  }
+
+  .clip-angle-top-right {
+    clip-path: polygon(0 0, 90% 0, 100% 10%, 100% 100%, 0 100%);
+  }
+
+  /* Gradient Text - Updated for new gold */
   .gradient-text {
-    background: linear-gradient(135deg, #C9A84C 0%, #D4AF37 50%, #C9A84C 100%);
+    background: linear-gradient(135deg, #c5a95e 0%, #d4b76f 50%, #c5a95e 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -104,7 +141,7 @@
     background: linear-gradient(
       90deg,
       transparent,
-      rgba(255, 255, 255, 0.1),
+      rgba(197, 169, 94, 0.1),
       transparent
     );
     animation: shimmer 2s infinite;
@@ -117,7 +154,7 @@
 
   .hover-lift:hover {
     transform: translateY(-8px);
-    box-shadow: 0 20px 40px rgba(201, 168, 76, 0.2);
+    box-shadow: 0 20px 40px rgba(197, 169, 94, 0.2);
   }
 
   /* Pulse Gold */
@@ -138,7 +175,7 @@
 
   /* Mobile-friendly tap highlight */
   .tap-highlight-gold {
-    -webkit-tap-highlight-color: rgba(201, 168, 76, 0.3);
+    -webkit-tap-highlight-color: rgba(197, 169, 94, 0.3);
   }
 }
 
@@ -256,8 +293,12 @@ html {
 }
 
 /* Mobile Optimizations */
-@media (max-width: 768px) {
+@media (max-width: 992px) {
   /* Reduce animations on mobile for better performance */
+  * {
+    animation-duration: 0.3s !important;
+  }
+
   .animate-fade-in-up,
   .animate-fade-in,
   .animate-scale-in,
@@ -275,6 +316,21 @@ html {
   .hover-lift:active {
     transform: translateY(-4px);
   }
+
+  /* Optimize touch targets */
+  button, a {
+    min-height: 44px;
+    min-width: 44px;
+  }
+}
+
+/* Respect reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }
 
 /* Prevent text selection on buttons and interactive elements */
@@ -283,4 +339,33 @@ button, a[role="button"], .tap-highlight-gold {
   -moz-user-select: none;
   -ms-user-select: none;
   user-select: none;
+}
+
+/* Accessibility: Focus states */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid #c5a95e;
+  outline-offset: 2px;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  * {
+    border-color: currentColor !important;
+  }
+}
+
+/* Print styles */
+@media print {
+  .no-print {
+    display: none !important;
+  }
+
+  body {
+    background: white !important;
+    color: black !important;
+  }
 }
