@@ -3,9 +3,21 @@ import { NavLink, Service, Neighborhood, Testimonial, Stat, Property, Neighborho
 export const COMPANY_NAME = "Casas En El Paso TX";
 export const REALTOR_NAME = "Lorena Ontiveros-Ortega";
 export const PHONE_NUMBER = "915-487-5581";
-export const EMAIL_ADDRESS = "lorena@casasenelpasotx.com";
+export const OFFICE_NUMBER = "915-615-2653";
+export const EMAIL_ADDRESS = "lorena.realtor@icloud.com";
+export const WEBSITE = "www.lorenaontiveros.com";
 export const ADDRESS = "10420 Montwood Dr., Ste N-163, El Paso, TX 79935";
-export const BROKERAGE = "Independent Realtor®";
+export const BROKERAGE = "The Right Move Real Estate Group";
+
+// Mortgage Partner Information
+export const PARTNER_NAME = "Emmanuel Ortega";
+export const PARTNER_TITLE = "Loan Officer";
+export const PARTNER_COMPANY = "American Pacific Mortgage";
+export const PARTNER_PHONE = "915-329-1316";
+export const PARTNER_EMAIL = "manny.ortega@apmortgage.com";
+export const PARTNER_WEBSITE = "www.MannyHomeLoans.com";
+export const PARTNER_NMLS = "NMLS #833420";
+export const PARTNER_ADDRESS = "221 N Kansas St., Ste. 726, El Paso, TX 79901";
 
 export const NAV_LINKS: NavLink[] = [
   { label: 'Home', href: '/' },
