@@ -121,6 +121,11 @@
     animation: pulseGold 2s ease-in-out infinite;
   }
 
+  /* Floating Animation */
+  .animate-float {
+    animation: float 3s ease-in-out infinite;
+  }
+
   /* Mobile Touch Targets - Minimum 44px for accessibility */
   .touch-target {
     min-width: 44px;
@@ -198,6 +203,15 @@
   }
   50% {
     opacity: 0.6;
+  }
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
   }
 }
 
