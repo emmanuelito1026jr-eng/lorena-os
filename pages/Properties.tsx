@@ -4,7 +4,7 @@ import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import { PROPERTIES } from '../constants';
 import { Property } from '../types';
-import { Bed, Bath, Maximize, MapPin, Heart, Search, SlidersHorizontal } from 'lucide-react';
+import { Bed, Bath, Maximize, MapPin, Heart, Search, SlidersHorizontal, GitCompare, X } from 'lucide-react';
 
 const Properties = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -14,6 +14,8 @@ const Properties = () => {
   const [propertyType, setPropertyType] = useState('all');
   const [showFilters, setShowFilters] = useState(false);
   const [favorites, setFavorites] = useState<Set<string>>(new Set());
+  const [compareList, setCompareList] = useState<Set<string>>(new Set());
+  const [showComparison, setShowComparison] = useState(false);
 
   const neighborhoods = useMemo(() =>
     ['all', ...new Set(PROPERTIES.map(p => p.neighborhood))],
@@ -50,6 +52,26 @@ const Properties = () => {
       return next;
     });
   };
+
+  const toggleCompare = (id: string) => {
+    setCompareList(prev => {
+      const next = new Set(prev);
+      if (next.has(id)) {
+        next.delete(id);
+      } else {
+        if (next.size >= 3) {
+          alert('You can compare up to 3 properties at a time');
+          return prev;
+        }
+        next.add(id);
+      }
+      return next;
+    });
+  };
+
+  const comparedProperties = useMemo(() => {
+    return PROPERTIES.filter(p => compareList.has(p.id));
+  }, [compareList]);
 
   return (
     <div className="bg-dark min-h-screen">
@@ -197,6 +219,8 @@ const Properties = () => {
                   property={property}
                   isFavorite={favorites.has(property.id)}
                   onToggleFavorite={() => toggleFavorite(property.id)}
+                  isComparing={compareList.has(property.id)}
+                  onToggleCompare={() => toggleCompare(property.id)}
                   delay={index * 100}
                 />
               ))}
@@ -204,6 +228,45 @@ const Properties = () => {
           )}
         </div>
       </section>
+
+      {/* Compare Bar */}
+      {compareList.size > 0 && (
+        <div className="fixed bottom-0 left-0 right-0 bg-dark-card border-t-2 border-gold shadow-2xl z-40 animate-slide-in-up">
+          <div className="max-w-7xl mx-auto px-4 py-4 flex flex-wrap items-center justify-between gap-4">
+            <div className="flex items-center gap-4">
+              <GitCompare className="text-gold" size={24} />
+              <div>
+                <p className="text-ivory font-bold">Compare Properties</p>
+                <p className="text-gray-400 text-sm">{compareList.size} selected (max 3)</p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-3">
+              <button
+                onClick={() => setShowComparison(true)}
+                disabled={compareList.size < 2}
+                className="px-6 py-3 bg-gold text-dark font-bold uppercase tracking-widest hover:bg-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed touch-target text-sm sm:text-base"
+              >
+                Compare Now
+              </button>
+              <button
+                onClick={() => setCompareList(new Set())}
+                className="px-4 py-3 border border-gold text-gold hover:bg-gold hover:text-dark transition-colors touch-target"
+              >
+                Clear All
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Comparison Modal */}
+      {showComparison && comparedProperties.length >= 2 && (
+        <ComparisonModal
+          properties={comparedProperties}
+          onClose={() => setShowComparison(false)}
+        />
+      )}
 
       <Footer />
     </div>
@@ -214,10 +277,12 @@ interface PropertyCardProps {
   property: Property;
   isFavorite: boolean;
   onToggleFavorite: () => void;
+  isComparing: boolean;
+  onToggleCompare: () => void;
   delay: number;
 }
 
-const PropertyCard = ({ property, isFavorite, onToggleFavorite, delay }: PropertyCardProps) => {
+const PropertyCard = ({ property, isFavorite, onToggleFavorite, isComparing, onToggleCompare, delay }: PropertyCardProps) => {
   return (
     <Link
       to={`/property/${property.id}`}
@@ -299,8 +364,193 @@ const PropertyCard = ({ property, isFavorite, onToggleFavorite, delay }: Propert
             🔥 New - {property.daysOnMarket} days on market
           </div>
         )}
+
+        {/* Compare Button */}
+        <button
+          onClick={(e) => {
+            e.preventDefault();
+            onToggleCompare();
+          }}
+          className={`mt-4 w-full flex items-center justify-center gap-2 px-4 py-2 border transition-all text-sm font-medium ${
+            isComparing
+              ? 'bg-gold text-dark border-gold'
+              : 'bg-transparent text-gold border-gold hover:bg-gold hover:text-dark'
+          }`}
+        >
+          <GitCompare size={16} />
+          {isComparing ? 'Added to Compare' : 'Add to Compare'}
+        </button>
       </div>
     </Link>
+  );
+};
+
+// Comparison Modal Component
+interface ComparisonModalProps {
+  properties: Property[];
+  onClose: () => void;
+}
+
+const ComparisonModal = ({ properties, onClose }: ComparisonModalProps) => {
+  return (
+    <div className="fixed inset-0 bg-black/90 z-50 overflow-y-auto animate-fade-in">
+      <div className="min-h-screen px-4 py-8">
+        <div className="max-w-7xl mx-auto">
+          {/* Header */}
+          <div className="flex items-center justify-between mb-8 sticky top-0 bg-black/90 py-4 z-10">
+            <div>
+              <h2 className="text-3xl font-serif text-ivory mb-2">Property Comparison</h2>
+              <p className="text-gray-400">Compare up to 3 properties side-by-side</p>
+            </div>
+            <button
+              onClick={onClose}
+              className="p-3 bg-dark-card border border-gold/30 hover:bg-gold hover:border-gold rounded-full transition-all group touch-target"
+            >
+              <X className="text-gold group-hover:text-dark transition-colors" size={24} />
+            </button>
+          </div>
+
+          {/* Comparison Table */}
+          <div className="glass-strong rounded-lg overflow-x-auto">
+            <table className="w-full">
+              <thead>
+                <tr className="border-b border-gold/20">
+                  <th className="text-left p-4 sm:p-6 text-gold text-xs uppercase tracking-wider sticky left-0 bg-dark-card">
+                    Feature
+                  </th>
+                  {properties.map((property) => (
+                    <th key={property.id} className="p-4 sm:p-6 min-w-[250px]">
+                      <Link
+                        to={`/property/${property.id}`}
+                        className="block hover:opacity-80 transition-opacity"
+                      >
+                        <img
+                          src={property.images[0]}
+                          alt={property.title}
+                          className="w-full h-32 object-cover rounded mb-3"
+                        />
+                        <h3 className="text-ivory font-semibold text-sm mb-1 line-clamp-2">
+                          {property.title}
+                        </h3>
+                        <p className="text-gray-400 text-xs line-clamp-1">{property.address}</p>
+                      </Link>
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody className="text-sm">
+                {/* Price */}
+                <tr className="border-b border-white/5">
+                  <td className="p-4 sm:p-6 text-gray-400 font-medium sticky left-0 bg-dark-card">Price</td>
+                  {properties.map((p) => (
+                    <td key={p.id} className="p-4 sm:p-6 text-gold font-serif text-xl">
+                      ${p.price.toLocaleString()}
+                    </td>
+                  ))}
+                </tr>
+
+                {/* Bedrooms */}
+                <tr className="border-b border-white/5">
+                  <td className="p-4 sm:p-6 text-gray-400 font-medium sticky left-0 bg-dark-card">Bedrooms</td>
+                  {properties.map((p) => (
+                    <td key={p.id} className="p-4 sm:p-6 text-ivory">{p.beds}</td>
+                  ))}
+                </tr>
+
+                {/* Bathrooms */}
+                <tr className="border-b border-white/5">
+                  <td className="p-4 sm:p-6 text-gray-400 font-medium sticky left-0 bg-dark-card">Bathrooms</td>
+                  {properties.map((p) => (
+                    <td key={p.id} className="p-4 sm:p-6 text-ivory">{p.baths}</td>
+                  ))}
+                </tr>
+
+                {/* Square Feet */}
+                <tr className="border-b border-white/5">
+                  <td className="p-4 sm:p-6 text-gray-400 font-medium sticky left-0 bg-dark-card">Square Feet</td>
+                  {properties.map((p) => (
+                    <td key={p.id} className="p-4 sm:p-6 text-ivory">{p.sqft.toLocaleString()}</td>
+                  ))}
+                </tr>
+
+                {/* Lot Size */}
+                {properties.some(p => p.lotSize) && (
+                  <tr className="border-b border-white/5">
+                    <td className="p-4 sm:p-6 text-gray-400 font-medium sticky left-0 bg-dark-card">Lot Size</td>
+                    {properties.map((p) => (
+                      <td key={p.id} className="p-4 sm:p-6 text-ivory">
+                        {p.lotSize ? `${p.lotSize} acres` : 'N/A'}
+                      </td>
+                    ))}
+                  </tr>
+                )}
+
+                {/* Year Built */}
+                <tr className="border-b border-white/5">
+                  <td className="p-4 sm:p-6 text-gray-400 font-medium sticky left-0 bg-dark-card">Year Built</td>
+                  {properties.map((p) => (
+                    <td key={p.id} className="p-4 sm:p-6 text-ivory">{p.yearBuilt}</td>
+                  ))}
+                </tr>
+
+                {/* Property Type */}
+                <tr className="border-b border-white/5">
+                  <td className="p-4 sm:p-6 text-gray-400 font-medium sticky left-0 bg-dark-card">Property Type</td>
+                  {properties.map((p) => (
+                    <td key={p.id} className="p-4 sm:p-6 text-ivory">{p.propertyType}</td>
+                  ))}
+                </tr>
+
+                {/* Neighborhood */}
+                <tr className="border-b border-white/5">
+                  <td className="p-4 sm:p-6 text-gray-400 font-medium sticky left-0 bg-dark-card">Neighborhood</td>
+                  {properties.map((p) => (
+                    <td key={p.id} className="p-4 sm:p-6 text-ivory">{p.neighborhood}</td>
+                  ))}
+                </tr>
+
+                {/* Days on Market */}
+                <tr className="border-b border-white/5">
+                  <td className="p-4 sm:p-6 text-gray-400 font-medium sticky left-0 bg-dark-card">Days on Market</td>
+                  {properties.map((p) => (
+                    <td key={p.id} className="p-4 sm:p-6 text-ivory">{p.daysOnMarket}</td>
+                  ))}
+                </tr>
+
+                {/* Status */}
+                <tr>
+                  <td className="p-4 sm:p-6 text-gray-400 font-medium sticky left-0 bg-dark-card">Status</td>
+                  {properties.map((p) => (
+                    <td key={p.id} className="p-4 sm:p-6">
+                      <span className={`inline-block px-3 py-1 text-xs font-bold uppercase ${
+                        p.status === 'For Sale' ? 'bg-gold text-dark' :
+                        p.status === 'Pending' ? 'bg-orange-500 text-white' :
+                        'bg-gray-500 text-white'
+                      }`}>
+                        {p.status}
+                      </span>
+                    </td>
+                  ))}
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          {/* Actions */}
+          <div className="mt-8 flex flex-wrap gap-4 justify-center">
+            {properties.map((property) => (
+              <Link
+                key={property.id}
+                to={`/property/${property.id}`}
+                className="px-6 py-3 bg-gold text-dark font-bold uppercase tracking-widest hover:bg-white transition-colors text-sm"
+              >
+                View {property.neighborhood} Property
+              </Link>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
   );
 };
 
