@@ -20,11 +20,11 @@ const getServiceId = (subtitle: string): string => {
 
 const Services  = () => {
   return (
-    <section id="services" className="py-24 bg-dark-charcoal">
+    <section id="services" className="py-24 bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
-          <span className="text-gold text-xs uppercase tracking-[0.25em]">Expertise</span>
-          <h2 className="mt-3 font-serif text-4xl text-ivory">Comprehensive Real Estate Services</h2>
+          <span className="text-gold text-xs uppercase tracking-[0.25em] font-bold">Expertise</span>
+          <h2 className="mt-3 font-serif text-4xl text-gray-900">Comprehensive Real Estate Services</h2>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -34,17 +34,17 @@ const Services  = () => {
               <Link
                 key={index}
                 to={`/service/${serviceId}`}
-                className="group p-8 md:p-10 bg-dark border border-white/5 hover:border-gold/30 transition-all duration-500 hover:-translate-y-2 block"
+                className="group p-8 md:p-10 bg-white border border-gray-200 hover:border-gold/50 transition-all duration-500 hover:-translate-y-2 block shadow-md hover:shadow-xl rounded-lg"
               >
-                <div className="mb-6 p-4 bg-dark-card inline-block rounded-full group-hover:bg-gold/10 transition-colors">
+                <div className="mb-6 p-4 bg-gray-50 inline-block rounded-full group-hover:bg-gold/10 transition-colors">
                   {getIcon(service.iconName)}
                 </div>
-                <h3 className="font-serif text-2xl text-ivory mb-1">{service.title}</h3>
-                <h4 className="text-gold text-sm uppercase tracking-widest mb-4 font-bold opacity-80">{service.subtitle}</h4>
-                <p className="text-gray-400 leading-relaxed mb-6">
+                <h3 className="font-serif text-2xl text-gray-900 mb-1">{service.title}</h3>
+                <h4 className="text-gold text-sm uppercase tracking-widest mb-4 font-bold">{service.subtitle}</h4>
+                <p className="text-gray-600 leading-relaxed mb-6">
                   {service.description}
                 </p>
-                <span className="text-sm font-bold uppercase tracking-widest text-ivory group-hover:text-gold transition-colors flex items-center gap-2">
+                <span className="text-sm font-bold uppercase tracking-widest text-gray-900 group-hover:text-gold transition-colors flex items-center gap-2">
                   Learn More <span className="text-xl leading-none">&rarr;</span>
                 </span>
               </Link>

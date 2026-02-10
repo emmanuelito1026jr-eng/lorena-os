@@ -65,7 +65,7 @@ const Navbar = () => {
   return (
     <nav
       className={`fixed w-full z-50 transition-all duration-300 ${
-        scrolled ? 'bg-dark/95 backdrop-blur-sm border-b border-gold/20 py-4' : 'bg-transparent py-6'
+        scrolled ? 'bg-white/95 backdrop-blur-sm border-b border-gray-200 shadow-sm py-4' : 'bg-transparent py-6'
       }`}
       aria-label="Main navigation"
     >
@@ -73,10 +73,10 @@ const Navbar = () => {
         <div className="flex justify-between items-center">
           {/* Logo */}
           <Link to="/" className="flex flex-col" aria-label="Casas En El Paso TX Home">
-            <span className="font-serif text-2xl font-bold tracking-wider text-ivory">
+            <span className="font-serif text-2xl font-bold tracking-wider text-gray-900">
               CASAS EN <span className="text-gold">EL PASO</span>
             </span>
-            <span className="text-[10px] tracking-[0.2em] uppercase text-gray-400">Lorena Ontiveros-Ortega</span>
+            <span className="text-[10px] tracking-[0.2em] uppercase text-gray-600">Lorena Ontiveros-Ortega</span>
           </Link>
 
           {/* Desktop Nav */}
@@ -85,14 +85,14 @@ const Navbar = () => {
               <a
                 key={link.label}
                 href={link.href}
-                className="text-sm uppercase tracking-widest hover:text-gold transition-colors duration-200"
+                className="text-sm uppercase tracking-widest text-gray-700 hover:text-gold transition-colors duration-200 font-medium"
               >
                 {link.label}
               </a>
             ))}
             <a
               href={`tel:${PHONE_NUMBER}`}
-              className="flex items-center gap-2 border border-gold text-gold px-4 py-2 rounded-sm hover:bg-gold hover:text-dark transition-all duration-300 uppercase text-xs tracking-widest font-bold"
+              className="flex items-center gap-2 border border-gold text-gold px-4 py-2 rounded-sm hover:bg-gold hover:text-white transition-all duration-300 uppercase text-xs tracking-widest font-bold"
               aria-label={`Call ${PHONE_NUMBER}`}
             >
               <Phone size={14} aria-hidden="true" />
@@ -105,7 +105,7 @@ const Navbar = () => {
             <button
               ref={buttonRef}
               onClick={() => setIsOpen(!isOpen)}
-              className="text-ivory hover:text-gold"
+              className="text-gray-900 hover:text-gold"
               aria-expanded={isOpen}
               aria-controls="mobile-menu"
               aria-label={isOpen ? 'Close menu' : 'Open menu'}
@@ -121,7 +121,7 @@ const Navbar = () => {
         <div
           id="mobile-menu"
           ref={menuRef}
-          className="md:hidden bg-dark-card border-t border-gold/20 absolute w-full"
+          className="md:hidden bg-white border-t border-gray-200 absolute w-full shadow-lg"
           role="dialog"
           aria-modal="true"
           aria-label="Mobile menu"
@@ -131,7 +131,7 @@ const Navbar = () => {
               <a
                 key={link.label}
                 href={link.href}
-                className="block px-3 py-2 text-base font-medium hover:text-gold uppercase tracking-widest"
+                className="block px-3 py-2 text-base font-medium text-gray-700 hover:text-gold uppercase tracking-widest"
                 onClick={() => setIsOpen(false)}
               >
                 {link.label}
@@ -139,7 +139,7 @@ const Navbar = () => {
             ))}
             <a
               href={`tel:${PHONE_NUMBER}`}
-              className="mt-4 flex items-center gap-2 bg-gold text-dark px-6 py-3 rounded-sm font-bold uppercase tracking-widest"
+              className="mt-4 flex items-center gap-2 bg-gold text-white px-6 py-3 rounded-sm font-bold uppercase tracking-widest"
               onClick={() => setIsOpen(false)}
               aria-label="Call now"
             >

@@ -4,24 +4,24 @@ import { NEIGHBORHOODS, NEIGHBORHOODS_DETAIL } from '../constants';
 
 const NeighborhoodGuide = () => {
   return (
-    <section id="neighborhoods" className="relative py-24 bg-dark overflow-hidden">
+    <section id="neighborhoods" className="relative py-24 bg-white overflow-hidden">
       {/* Background Decoration */}
-      <div className="absolute top-0 right-0 w-96 h-96 bg-gold/5 rounded-full blur-3xl"></div>
+      <div className="absolute top-0 right-0 w-96 h-96 bg-gold/10 rounded-full blur-3xl"></div>
 
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col md:flex-row justify-between items-end mb-12 animate-fade-in-up">
           <div>
-            <span className="text-gold text-xs uppercase tracking-[0.25em]">Local Expertise</span>
-            <h2 className="mt-3 font-serif text-4xl md:text-5xl text-ivory">
+            <span className="text-gold text-xs uppercase tracking-[0.25em] font-bold">Local Expertise</span>
+            <h2 className="mt-3 font-serif text-4xl md:text-5xl text-gray-900">
               Explore <span className="gradient-text">El Paso</span>
             </h2>
-            <p className="mt-3 text-gray-400 max-w-2xl">
+            <p className="mt-3 text-gray-600 max-w-2xl">
               Discover the perfect neighborhood for your lifestyle
             </p>
           </div>
           <a
             href="#/properties"
-            className="hidden md:flex items-center gap-2 text-sm text-gray-400 hover:text-gold uppercase tracking-widest transition-colors group"
+            className="hidden md:flex items-center gap-2 text-sm text-gray-700 hover:text-gold uppercase tracking-widest transition-colors group font-medium"
           >
             View All Properties
             <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
@@ -37,20 +37,20 @@ const NeighborhoodGuide = () => {
               <a
                 key={index}
                 href={linkTo}
-                className="group relative h-96 overflow-hidden cursor-pointer rounded-lg animate-fade-in-up hover-lift block"
+                className="group relative h-96 overflow-hidden cursor-pointer rounded-lg animate-fade-in-up hover-lift block shadow-lg hover:shadow-2xl transition-shadow"
                 style={{ animationDelay: `${index * 100}ms` }}
               >
                 <img
                   src={hood.image}
                   alt={hood.name}
-                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 grayscale group-hover:grayscale-0"
                 />
 
                 {/* Gradient Overlay */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent opacity-80 group-hover:opacity-90 transition-opacity"></div>
+                <div className="absolute inset-0 bg-gradient-to-t from-gray-900 via-gray-900/30 to-transparent opacity-70 group-hover:opacity-80 transition-opacity"></div>
 
                 {/* Gold Accent Border - Appears on Hover */}
-                <div className="absolute inset-0 border-2 border-gold opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                <div className="absolute inset-0 border-2 border-gold opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-lg"></div>
 
                 {/* Content */}
                 <div className="absolute bottom-0 left-0 p-6 w-full transform transition-transform duration-300 translate-y-2 group-hover:translate-y-0">
@@ -97,7 +97,7 @@ const NeighborhoodGuide = () => {
         <div className="mt-12 text-center md:hidden">
           <a
             href="#/properties"
-            className="inline-flex items-center gap-2 px-6 py-3 bg-gold text-dark font-bold uppercase tracking-widest hover:bg-white transition-colors"
+            className="inline-flex items-center gap-2 px-6 py-3 bg-gold text-white font-bold uppercase tracking-widest hover:bg-gray-900 transition-colors shadow-lg"
           >
             View All Properties
             <ArrowRight size={16} />

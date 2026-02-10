@@ -7,10 +7,10 @@ const AboutPreview = () => {
   const [imageLoaded, setImageLoaded] = useState(false);
 
   return (
-    <section id="about" className="py-20 md:py-32 bg-dark relative overflow-hidden">
+    <section id="about" className="py-20 md:py-32 bg-gradient-to-b from-white via-gray-50 to-white relative overflow-hidden">
       {/* Background Elements */}
-      <div className="absolute top-1/4 -left-40 w-96 h-96 bg-gold/5 rounded-full blur-3xl" />
-      <div className="absolute bottom-1/4 -right-40 w-96 h-96 bg-gold/10 rounded-full blur-3xl" />
+      <div className="absolute top-1/4 -left-40 w-96 h-96 bg-gold/10 rounded-full blur-3xl" />
+      <div className="absolute bottom-1/4 -right-40 w-96 h-96 bg-gold/15 rounded-full blur-3xl" />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
@@ -18,7 +18,7 @@ const AboutPreview = () => {
           {/* Image Side */}
           <div className="relative group animate-fade-in-up">
             {/* Decorative Border */}
-            <div className="absolute -top-4 -left-4 w-full h-full border-2 border-gold/30 z-0 group-hover:border-gold/50 transition-colors duration-500" />
+            <div className="absolute -top-4 -left-4 w-full h-full border-2 border-gold/40 z-0 group-hover:border-gold transition-colors duration-500" />
 
             {/* Floating Badge Icons */}
             <div className="absolute -top-6 -right-6 z-20 flex gap-2">
@@ -27,7 +27,7 @@ const AboutPreview = () => {
               </div>
             </div>
             <div className="absolute top-1/4 -left-6 z-20">
-              <div className="w-12 h-12 bg-dark-card border-2 border-gold rounded-full flex items-center justify-center shadow-xl animate-float" style={{ animationDelay: '0.5s' }}>
+              <div className="w-12 h-12 bg-white border-2 border-gold rounded-full flex items-center justify-center shadow-xl animate-float" style={{ animationDelay: '0.5s' }}>
                 <Languages className="text-gold" size={24} />
               </div>
             </div>
@@ -57,14 +57,14 @@ const AboutPreview = () => {
           {/* Text Side */}
           <div className="space-y-6 sm:space-y-8 animate-fade-in-up delay-200">
             <div>
-              <span className="text-gold text-xs uppercase tracking-[0.3em] mb-3 block">Meet Your Agent</span>
-              <h3 className="font-serif text-3xl sm:text-4xl md:text-5xl text-ivory mb-4 sm:mb-6 leading-tight">
+              <span className="text-gold text-xs uppercase tracking-[0.3em] mb-3 block font-bold">Meet Your Agent</span>
+              <h3 className="font-serif text-3xl sm:text-4xl md:text-5xl text-gray-900 mb-4 sm:mb-6 leading-tight">
                 Bridging Cultures,<br/>
                 <span className="gradient-text italic">Building Wealth</span>
               </h3>
-              <div className="space-y-4 text-gray-300 text-base sm:text-lg leading-relaxed">
+              <div className="space-y-4 text-gray-700 text-base sm:text-lg leading-relaxed">
                 <p>
-                  I don't just find you a home; <strong className="text-ivory">I make sure you can afford it</strong>. With over <strong className="text-gold">10 years of banking experience</strong> and a BBA in Marketing from UTEP, I bring a financial strategist's mindset to every transaction.
+                  I don't just find you a home; <strong className="text-gray-900">I make sure you can afford it</strong>. With over <strong className="text-gold">10 years of banking experience</strong> and a BBA in Marketing from UTEP, I bring a financial strategist's mindset to every transaction.
                 </p>
                 <p>
                   Growing up in both <strong className="text-gold">El Paso and Cd. Juárez</strong>, I understand the unique pulse of our border community. Whether you prefer English or Spanish, I treat you like family.
@@ -80,21 +80,21 @@ const AboutPreview = () => {
                 { icon: Users, text: '100+ Families Served' },
                 { icon: Award, text: 'UTEP Graduate' }
               ].map((item, index) => (
-                <div key={index} className="flex items-center gap-3 glass p-3 rounded hover-lift">
+                <div key={index} className="flex items-center gap-3 bg-white border border-gray-200 p-3 rounded hover-lift shadow-sm hover:shadow-md transition-shadow">
                   <div className="w-10 h-10 bg-gold/20 rounded-full flex items-center justify-center flex-shrink-0">
                     <item.icon className="text-gold" size={18} />
                   </div>
-                  <span className="text-gray-300 text-sm font-medium">{item.text}</span>
+                  <span className="text-gray-700 text-sm font-medium">{item.text}</span>
                 </div>
               ))}
             </div>
 
             {/* Stats Grid */}
-            <div className="grid grid-cols-2 gap-4 sm:gap-6 pt-6 border-t border-white/10">
+            <div className="grid grid-cols-2 gap-4 sm:gap-6 pt-6 border-t border-gray-200">
               {STATS.map((stat, index) => (
                 <div key={index} className="group">
                   <p className="text-2xl sm:text-3xl font-serif text-gold mb-1 group-hover:scale-110 transition-transform inline-block">{stat.value}</p>
-                  <p className="text-[10px] sm:text-xs uppercase tracking-wider text-gray-500">{stat.label}</p>
+                  <p className="text-[10px] sm:text-xs uppercase tracking-wider text-gray-600">{stat.label}</p>
                 </div>
               ))}
             </div>
@@ -103,7 +103,7 @@ const AboutPreview = () => {
             <div className="pt-4">
               <Link
                 to="/about"
-                className="group inline-flex items-center gap-2 text-ivory hover:text-gold transition-colors relative"
+                className="group inline-flex items-center gap-2 text-gray-900 hover:text-gold transition-colors relative"
               >
                 <span className="font-bold uppercase tracking-widest text-sm border-b-2 border-gold pb-1">
                   Read Full Bio

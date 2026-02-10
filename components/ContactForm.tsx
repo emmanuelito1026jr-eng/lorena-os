@@ -145,9 +145,9 @@ const ContactForm = ({ minimal = false }: ContactFormProps) => {
           onChange={handleChange}
           aria-invalid={!!errors.name}
           aria-describedby={errors.name ? 'name-error' : undefined}
-          className={`w-full bg-dark border ${
-            errors.name ? 'border-red-500' : 'border-white/10'
-          } text-ivory px-4 py-3 focus:outline-none focus:border-gold transition-colors`}
+          className={`w-full bg-white border ${
+            errors.name ? 'border-red-500' : 'border-gray-300'
+          } text-gray-900 px-4 py-3 focus:outline-none focus:border-gold transition-colors rounded`}
           placeholder="Maria Gonzalez"
         />
         {errors.name && (
@@ -170,9 +170,9 @@ const ContactForm = ({ minimal = false }: ContactFormProps) => {
             onChange={handleChange}
             aria-invalid={!!errors.email}
             aria-describedby={errors.email ? 'email-error' : undefined}
-            className={`w-full bg-dark border ${
-              errors.email ? 'border-red-500' : 'border-white/10'
-            } text-ivory px-4 py-3 focus:outline-none focus:border-gold transition-colors`}
+            className={`w-full bg-white border ${
+              errors.email ? 'border-red-500' : 'border-gray-300'
+            } text-gray-900 px-4 py-3 focus:outline-none focus:border-gold transition-colors rounded`}
             placeholder="email@example.com"
           />
           {errors.email && (
@@ -193,9 +193,9 @@ const ContactForm = ({ minimal = false }: ContactFormProps) => {
             onChange={handleChange}
             aria-invalid={!!errors.phone}
             aria-describedby={errors.phone ? 'phone-error' : undefined}
-            className={`w-full bg-dark border ${
-              errors.phone ? 'border-red-500' : 'border-white/10'
-            } text-ivory px-4 py-3 focus:outline-none focus:border-gold transition-colors`}
+            className={`w-full bg-white border ${
+              errors.phone ? 'border-red-500' : 'border-gray-300'
+            } text-gray-900 px-4 py-3 focus:outline-none focus:border-gold transition-colors rounded`}
             placeholder="(915) 555-0123"
           />
           {errors.phone && (
@@ -215,7 +215,7 @@ const ContactForm = ({ minimal = false }: ContactFormProps) => {
           id="type"
           value={formData.type}
           onChange={handleChange}
-          className="w-full bg-dark border border-white/10 text-ivory px-4 py-3 focus:outline-none focus:border-gold transition-colors appearance-none"
+          className="w-full bg-white border border-gray-300 text-gray-900 px-4 py-3 focus:outline-none focus:border-gold transition-colors appearance-none rounded"
         >
           <option value="Buying">Buying a Home / Comprar</option>
           <option value="Selling">Selling a Home / Vender</option>
@@ -227,7 +227,7 @@ const ContactForm = ({ minimal = false }: ContactFormProps) => {
       <button
         type="submit"
         disabled={isSubmitting}
-        className="w-full bg-gold text-dark font-bold uppercase tracking-widest py-4 hover:bg-white transition-colors duration-300 mt-4 disabled:opacity-50 disabled:cursor-not-allowed"
+        className="w-full bg-gold text-white font-bold uppercase tracking-widest py-4 hover:bg-gray-900 transition-colors duration-300 mt-4 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg"
       >
         {isSubmitting ? 'Sending...' : minimal ? 'Get Access Now' : 'Send Message / Enviar'}
       </button>
@@ -249,7 +249,7 @@ const ContactForm = ({ minimal = false }: ContactFormProps) => {
         </div>
       )}
 
-      <p className="text-[10px] text-gray-500 text-center mt-2">
+      <p className="text-[10px] text-gray-600 text-center mt-2">
         By submitting this form, you agree to receive communications from Casas En El Paso TX.
       </p>
     </form>
