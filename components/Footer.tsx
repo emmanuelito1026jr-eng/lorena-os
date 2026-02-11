@@ -10,22 +10,17 @@ const Footer = () => {
 
           {/* Brand Info */}
           <div>
-            <h2 className="font-sans text-2xl font-black text-white mb-2">CASAS EN <span className="text-gold">EL PASO</span></h2>
-            <p className="text-xs uppercase tracking-widest text-white/50 mb-4 font-medium">{REALTOR_NAME}</p>
-
             {/* The Right Move Logo */}
             <div className="mb-6">
               <img
-                src="/images/right-move-logo.png"
+                src="/images/logo/right_move.png"
                 alt="The Right Move Real Estate Group"
-                className="h-12 w-auto opacity-90"
+                className="h-16 w-auto"
                 loading="lazy"
-                onError={(e) => {
-                  // Hide if logo not found
-                  e.currentTarget.style.display = 'none';
-                }}
               />
             </div>
+
+            <p className="text-xs uppercase tracking-widest text-white/60 mb-4 font-lato font-medium">{REALTOR_NAME}</p>
 
             <p className="text-white/70 text-sm leading-relaxed mb-6 font-light">
               Helping families on both sides of the border build wealth through real estate. Bilingual, professional, and dedicated to your future.
@@ -79,26 +74,68 @@ const Footer = () => {
 
           {/* Legal / Brokerage */}
           <div>
-            <h3 className="text-gold text-xs uppercase tracking-widest font-extrabold mb-6">Professional</h3>
+            <h3 className="text-gold text-xs uppercase tracking-widest font-extrabold mb-6 font-lato">Professional</h3>
             <div className="mb-4">
-              <div className="text-white font-bold mb-2">{BROKERAGE}</div>
-              <div className="text-white/70 text-sm font-light">Licensed Real Estate Professional</div>
+              <div className="text-white font-bold mb-2 font-lato">{BROKERAGE}</div>
+              <div className="text-white/70 text-sm font-lato font-light">Licensed Real Estate Professional</div>
             </div>
-            <div className="text-xs text-white/50 space-y-2 font-light">
+
+            {/* Equal Housing Logo */}
+            <div className="mb-4">
+              <img
+                src="/images/logo/equal-housing-opportunity.jpg"
+                alt="Equal Housing Opportunity"
+                className="h-16 w-16"
+                loading="lazy"
+              />
+            </div>
+
+            <div className="text-xs text-white/50 space-y-2 font-lato font-light">
               <p>Equal Housing Opportunity.</p>
               <p>Each office is independently owned and operated.</p>
-              <div className="flex flex-col space-y-1 mt-4">
-                <a href="#" className="underline hover:text-gold transition-premium">TREC Consumer Protection Notice</a>
-                <a href="#" className="underline hover:text-gold transition-premium">TREC Information About Brokerage Services</a>
-              </div>
             </div>
           </div>
 
         </div>
 
-        <div className="border-t border-white/10 pt-8 flex flex-col md:flex-row justify-between items-center text-xs text-white/50 font-light">
-          <p>&copy; 2026 {COMPANY_NAME}. All rights reserved.</p>
-          <p className="mt-2 md:mt-0">Designed for Excellence.</p>
+        {/* MLS Disclaimer */}
+        <div className="border-t border-white/10 pt-8 mb-8">
+          <div className="mb-4">
+            <img
+              src="/images/logo/greater-el-paso-realtors.jpg"
+              alt="Greater El Paso Association of REALTORS®"
+              className="h-12 w-auto mb-4"
+              loading="lazy"
+            />
+          </div>
+          <p className="text-xs text-white/60 font-lato leading-relaxed">
+            Based on information from the Greater El Paso Association of REALTORS® IDX information is provided exclusively for consumers' personal, non-commercial use, and may not be used for any purpose other than to identify prospective properties consumers may be interested in purchasing. Information Is Believed To Be Accurate But Not Guaranteed. Copyright 2026 Greater El Paso Association of Realtors Multiple Listing Service. All Rights Reserved.
+          </p>
+        </div>
+
+        {/* Legal Links */}
+        <div className="border-t border-white/10 pt-6 mb-6">
+          <div className="flex flex-wrap gap-4 text-sm text-white/70 font-lato">
+            <a href="/terms" className="hover:text-gold transition-premium">Terms of Use</a>
+            <span className="text-white/30">|</span>
+            <a href="/privacy" className="hover:text-gold transition-premium">Privacy Notice</a>
+            <span className="text-white/30">|</span>
+            <a href="/dmca" className="hover:text-gold transition-premium">DMCA</a>
+            <span className="text-white/30">|</span>
+            <a href="/documents/trec-iabs.pdf" target="_blank" rel="noopener noreferrer" className="hover:text-gold transition-premium">
+              Texas Real Estate Commission Information About Brokerage Services
+            </a>
+            <span className="text-white/30">|</span>
+            <a href="https://www.trec.texas.gov/sites/default/files/pdf-forms/CN%201-4-1.pdf" target="_blank" rel="noopener noreferrer" className="hover:text-gold transition-premium">
+              Texas Real Estate Commission Consumer Protection Notice
+            </a>
+          </div>
+        </div>
+
+        {/* Copyright */}
+        <div className="border-t border-white/10 pt-6 text-center">
+          <p className="text-xs text-white/50 font-lato">&copy; 2026 The Right Move Real Estate Group. All rights reserved.</p>
+          <p className="text-xs text-white/40 font-lato mt-2">Lorena Ontiveros-Ortega | 10420 Montwood Dr., Ste N-163, El Paso, TX 79935 | 915-487-5581</p>
         </div>
       </div>
     </footer>

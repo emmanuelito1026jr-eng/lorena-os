@@ -83,18 +83,19 @@ const Navbar = () => {
     <nav
       ref={navRef}
       className={`navbar fixed w-full z-50 transition-premium ${
-        scrolled ? 'bg-white border-b border-gray-200 shadow-premium py-4' : 'bg-white/95 py-6'
+        scrolled ? 'bg-dark border-b border-gold/20 shadow-premium py-4' : 'bg-dark py-6'
       }`}
       aria-label="Main navigation"
     >
       <div className="max-w-7xl mx-auto px-6 sm:px-12 lg:px-16">
         <div className="flex justify-between items-center">
           {/* Logo */}
-          <Link to="/" className="flex flex-col" aria-label="Casas En El Paso TX Home">
-            <span className="font-sans text-2xl font-black tracking-wider text-black">
-              CASAS EN <span className="text-gold">EL PASO</span>
-            </span>
-            <span className="text-[10px] tracking-[0.2em] uppercase text-black/60 font-medium">Lorena Ontiveros-Ortega</span>
+          <Link to="/" className="flex items-center" aria-label="The Right Move Real Estate Group Home">
+            <img
+              src="/images/logo/right_move.png"
+              alt="The Right Move Real Estate Group"
+              className="h-14 w-auto"
+            />
           </Link>
 
           {/* Desktop Nav */}
@@ -103,7 +104,7 @@ const Navbar = () => {
               <a
                 key={link.label}
                 href={link.href}
-                className="text-sm uppercase tracking-widest text-black hover:text-gold transition-premium font-semibold"
+                className="text-sm uppercase tracking-widest text-warm-white hover:text-gold transition-premium font-semibold"
               >
                 {link.label}
               </a>
@@ -123,7 +124,7 @@ const Navbar = () => {
             <button
               ref={buttonRef}
               onClick={() => setIsOpen(!isOpen)}
-              className="text-black hover:text-gold transition-premium"
+              className="text-warm-white hover:text-gold transition-premium"
               aria-expanded={isOpen}
               aria-controls="mobile-menu"
               aria-label={isOpen ? 'Close menu' : 'Open menu'}

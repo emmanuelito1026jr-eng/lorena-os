@@ -12,22 +12,24 @@ export default {
     extend: {
       colors: {
         gold: {
-          DEFAULT: '#c5a95e',  // Realty ONE gold
-          light: '#d4b76f',
-          dark: '#b09850',
+          DEFAULT: '#C5A95E',
+          dark: '#B8973A',
+          light: '#E0C67B',
+          50: '#FBF7ED',
         },
-        black: {
-          DEFAULT: '#000000',  // Pure black
-          light: '#262626',    // Realty ONE dark
-          medium: '#1a1a1a',
+        dark: {
+          DEFAULT: '#0A0A0A',
+          100: '#1A1A1A',
+          200: '#111111',
         },
-        white: {
-          DEFAULT: '#ffffff',  // Pure white for bright design
-          off: '#fafafa',
+        warm: {
+          white: '#FAFAF5',
+          ivory: '#F5F0E8',
         },
       },
       fontFamily: {
-        sans: ['"Exo 2"', 'system-ui', 'sans-serif'],
+        playfair: ['"Playfair Display"', 'serif'],
+        lato: ['"Lato"', 'sans-serif'],
       },
       screens: {
         'sm': '640px',
