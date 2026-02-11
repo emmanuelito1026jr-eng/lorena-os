@@ -94,7 +94,7 @@ const Navbar = () => {
             <img
               src="/images/logo/right_move.png"
               alt="The Right Move Real Estate Group"
-              className="h-14 w-auto"
+              className="h-10 md:h-12 w-auto object-contain"
             />
           </Link>
 

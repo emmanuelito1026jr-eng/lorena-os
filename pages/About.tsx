@@ -24,7 +24,7 @@ const About = () => {
                   <img
                     src="/images/lorena-portrait.png"
                     alt="Lorena Ontiveros-Ortega, professional real estate agent"
-                    className="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-700"
+                    className="w-full h-full object-cover transition-all duration-700"
                     loading="lazy"
                   />
                 </div>
