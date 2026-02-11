@@ -83,7 +83,7 @@ const Navbar = () => {
     <nav
       ref={navRef}
       className={`navbar fixed w-full z-50 transition-premium ${
-        scrolled ? 'bg-dark border-b border-gold/20 shadow-premium py-4' : 'bg-dark py-6'
+        scrolled ? 'bg-white border-b border-gray-200 shadow-premium py-4' : 'bg-white py-6'
       }`}
       aria-label="Main navigation"
     >
@@ -104,7 +104,7 @@ const Navbar = () => {
               <a
                 key={link.label}
                 href={link.href}
-                className="text-sm uppercase tracking-widest text-warm-white hover:text-gold transition-premium font-semibold"
+                className="text-sm uppercase tracking-widest text-dark hover:text-gold transition-premium font-lato font-semibold"
               >
                 {link.label}
               </a>
@@ -124,7 +124,7 @@ const Navbar = () => {
             <button
               ref={buttonRef}
               onClick={() => setIsOpen(!isOpen)}
-              className="text-warm-white hover:text-gold transition-premium"
+              className="text-dark hover:text-gold transition-premium"
               aria-expanded={isOpen}
               aria-controls="mobile-menu"
               aria-label={isOpen ? 'Close menu' : 'Open menu'}
