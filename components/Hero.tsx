@@ -1,47 +1,13 @@
-import { useEffect } from 'react';
 import { ArrowRight, ChevronDown } from 'lucide-react';
-import { gsap } from '../utils/gsap-config';
-import { staggerReveal } from '../utils/animations';
 
 const Hero = () => {
-  useEffect(() => {
-    // Hero title animation
-    gsap.from('.hero-title', {
-      y: 80,
-      opacity: 0,
-      duration: 1.2,
-      ease: 'power3.out'
-    });
-
-    // Description animation
-    gsap.from('.hero-description', {
-      y: 40,
-      opacity: 0,
-      duration: 0.8,
-      delay: 0.3,
-      ease: 'power3.out'
-    });
-
-    // CTA buttons animation
-    gsap.from('.hero-cta', {
-      y: 30,
-      opacity: 0,
-      duration: 0.8,
-      delay: 0.5,
-      ease: 'power3.out'
-    });
-
-    // Stats cards staggered reveal
-    staggerReveal('.stat-card', 0.15);
-  }, []);
-
   return (
     <section className="relative h-screen flex items-center justify-center overflow-hidden" aria-label="Hero section">
       {/* Background Image */}
       <div className="absolute inset-0">
         <img
-          src="/images/hero/desert-mountains.jpg"
-          alt="Desert mountains of El Paso, Texas"
+          src="/images/hero/franklin-mountains-aerial.jpg"
+          alt="Franklin Mountains and El Paso, Texas skyline"
           className="w-full h-full object-cover"
         />
         {/* Dark overlay for text readability */}
@@ -50,15 +16,15 @@ const Hero = () => {
 
       {/* Content */}
       <div className="relative z-10 max-w-7xl mx-auto px-6 text-center sm:px-12 lg:px-16 pt-20">
-        <h1 className="hero-title font-playfair text-5xl md:text-7xl font-bold text-white mb-6 leading-tight drop-shadow-lg">
+        <h1 className="animate-fade-in-up font-playfair text-5xl md:text-7xl font-bold text-white mb-6 leading-tight drop-shadow-lg">
           Casas En El Paso, Texas
         </h1>
 
-        <p className="hero-description max-w-2xl mx-auto text-white/90 font-lato text-lg md:text-xl mb-10 font-light leading-relaxed drop-shadow-md">
+        <p className="animate-fade-in-up delay-200 max-w-2xl mx-auto text-white/90 font-lato text-lg md:text-xl mb-10 font-light leading-relaxed drop-shadow-md">
           Find your place in the Sun City — bilingual expertise, border-to-border knowledge, and a personal touch that makes all the difference.
         </p>
 
-        <div className="hero-cta flex flex-col sm:flex-row gap-4 justify-center items-center mb-16">
+        <div className="animate-fade-in-up delay-400 flex flex-col sm:flex-row gap-4 justify-center items-center mb-16">
           <a
             href="#contact"
             className="group relative w-full sm:w-auto px-8 py-4 bg-gold text-dark font-lato font-bold uppercase tracking-widest overflow-hidden hover:shadow-gold-glow transition-premium flex items-center justify-center gap-2 rounded"
@@ -79,13 +45,13 @@ const Hero = () => {
         {/* Stats Row - Horizontal Flex Layout */}
         <div className="flex flex-wrap justify-center gap-6 mt-12">
           {[
-            { number: '100+', label: 'Families Served' },
-            { number: '10+', label: 'Years Experience' },
-            { number: '$50M+', label: 'Sales Volume' }
+            { number: '100+', label: 'Families Served', delay: 'delay-500' },
+            { number: '10+', label: 'Years Experience', delay: 'delay-600' },
+            { number: '$50M+', label: 'Sales Volume', delay: 'delay-700' }
           ].map((stat) => (
             <div
               key={stat.label}
-              className="stat-card bg-white/10 backdrop-blur-md rounded-xl p-8 min-w-[180px] text-center hover:-translate-y-1 transition-transform duration-300"
+              className={`animate-fade-in-up ${stat.delay} bg-white/10 backdrop-blur-md rounded-xl p-8 min-w-[180px] text-center hover:-translate-y-1 transition-transform duration-300`}
             >
               <p className="text-4xl font-playfair font-bold text-gold mb-2">{stat.number}</p>
               <p className="text-sm font-lato text-white/90 uppercase tracking-wide">{stat.label}</p>
