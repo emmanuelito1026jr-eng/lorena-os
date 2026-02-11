@@ -54,11 +54,11 @@ const MortgagePartnership = () => {
           <div className="partnership-card group relative">
             <div className="relative bg-white shadow-premium overflow-hidden border border-gray-200 hover:border-gold transition-premium hover:shadow-gold-glow">
               {/* Image Section */}
-              <div className="relative h-80 sm:h-96 bg-gradient-to-br from-gray-100 to-gray-50 overflow-hidden">
+              <div className="relative aspect-[16/9] bg-gradient-to-br from-gray-100 to-gray-50 overflow-hidden">
                 <img
                   src="/images/lorena-professional.jpg"
                   alt={`${REALTOR_NAME}, Professional Realtor`}
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-contain"
                   loading="lazy"
                   onError={(e) => {
                     // Fallback to placeholder if image not found
@@ -131,11 +131,11 @@ const MortgagePartnership = () => {
           <div className="partnership-card group relative">
             <div className="relative bg-white shadow-premium overflow-hidden border border-gray-200 hover:border-gold transition-premium hover:shadow-gold-glow">
               {/* Image Section */}
-              <div className="relative h-80 sm:h-96 bg-gradient-to-br from-gray-100 to-gray-50 overflow-hidden">
+              <div className="relative aspect-[16/9] bg-gradient-to-br from-gray-100 to-gray-50 overflow-hidden">
                 <img
                   src="/images/emmanuel-professional.jpg"
                   alt={`${PARTNER_NAME}, ${PARTNER_TITLE} at ${PARTNER_COMPANY}`}
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-contain"
                   loading="lazy"
                   onError={(e) => {
                     // Fallback to placeholder if image not found

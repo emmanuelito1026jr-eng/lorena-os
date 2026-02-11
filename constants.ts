@@ -25,6 +25,8 @@ export const NAV_LINKS: NavLink[] = [
   { label: 'About', href: '#/about' },
   { label: 'Services', href: '#services' },
   { label: 'Neighborhoods', href: '#neighborhoods' },
+  { label: 'Mortgage', href: '#/mortgage' },
+  { label: 'Home Estimate', href: '#/estimate' },
 ];
 
 export const SERVICES: Service[] = [

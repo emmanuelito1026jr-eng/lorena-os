@@ -7,6 +7,8 @@ import PropertyDetail from './pages/PropertyDetail';
 import About from './pages/About';
 import NeighborhoodDetail from './pages/NeighborhoodDetail';
 import ServiceDetail from './pages/ServiceDetail';
+import AmericanPacificMortgage from './pages/AmericanPacificMortgage';
+import HomeEstimate from './pages/HomeEstimate';
 import ErrorBoundary from './components/ErrorBoundary';
 import { useLenis } from './hooks/useLenis';
 
@@ -46,6 +48,8 @@ const App = () => {
           <Route path="/about" element={<About />} />
           <Route path="/neighborhood/:id" element={<NeighborhoodDetail />} />
           <Route path="/service/:serviceId" element={<ServiceDetail />} />
+          <Route path="/mortgage" element={<AmericanPacificMortgage />} />
+          <Route path="/estimate" element={<HomeEstimate />} />
         </Routes>
       </Router>
     </ErrorBoundary>
