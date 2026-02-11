@@ -81,10 +81,10 @@ const Properties = () => {
       <section className="relative pt-32 pb-20 px-4 bg-gradient-to-b from-dark-charcoal to-dark">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-12 animate-fade-in-up">
-            <h1 className="font-sans text-5xl md:text-6xl text-white mb-4">
+            <h1 className="font-sans text-5xl md:text-6xl text-black mb-4">
               Find Your <span className="text-gold italic">Dream Home</span>
             </h1>
-            <p className="text-white/60 text-xl max-w-2xl mx-auto">
+            <p className="text-black/60 text-xl max-w-2xl mx-auto">
               Explore {PROPERTIES.length} luxury properties in El Paso's finest neighborhoods
             </p>
           </div>
@@ -98,7 +98,7 @@ const Properties = () => {
                 placeholder="Search by address, neighborhood, or features..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full bg-dark-card border border-gold/30 text-white pl-12 pr-4 py-4 focus:outline-none focus:border-gold transition-all rounded-lg"
+                className="w-full bg-white border border-gray-200 text-black pl-12 pr-4 py-4 focus:outline-none focus:border-gold transition-all rounded-lg"
               />
             </div>
           </div>
@@ -107,7 +107,7 @@ const Properties = () => {
           <div className="flex justify-center animate-fade-in-up delay-200">
             <button
               onClick={() => setShowFilters(!showFilters)}
-              className="flex items-center gap-2 px-6 py-3 bg-dark-card border border-gold/30 text-white hover:border-gold transition-all rounded-lg"
+              className="flex items-center gap-2 px-6 py-3 bg-white border border-gray-200 text-black hover:border-gold transition-all rounded-lg"
             >
               <SlidersHorizontal size={18} />
               {showFilters ? 'Hide Filters' : 'Show Filters'}
@@ -116,15 +116,15 @@ const Properties = () => {
 
           {/* Filters */}
           {showFilters && (
-            <div className="max-w-6xl mx-auto mt-8 bg-dark-card border border-gold/20 rounded-lg p-6 animate-fade-in-up">
+            <div className="max-w-6xl mx-auto mt-8 bg-white border border-gray-200 rounded-lg p-6 animate-fade-in-up">
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 {/* Neighborhood Filter */}
                 <div>
-                  <label className="block text-xs uppercase tracking-widest text-white/60 mb-2">Neighborhood</label>
+                  <label className="block text-xs uppercase tracking-widest text-black/60 mb-2">Neighborhood</label>
                   <select
                     value={selectedNeighborhood}
                     onChange={(e) => setSelectedNeighborhood(e.target.value)}
-                    className="w-full bg-blackborder border-white/10 text-white px-4 py-3 focus:outline-none focus:border-gold transition-colors rounded"
+                    className="w-full bg-blackborder border-white/10 text-black px-4 py-3 focus:outline-none focus:border-gold transition-colors rounded"
                   >
                     {neighborhoods.map(n => (
                       <option key={n} value={n}>{n === 'all' ? 'All Neighborhoods' : n}</option>
@@ -134,11 +134,11 @@ const Properties = () => {
 
                 {/* Property Type */}
                 <div>
-                  <label className="block text-xs uppercase tracking-widest text-white/60 mb-2">Property Type</label>
+                  <label className="block text-xs uppercase tracking-widest text-black/60 mb-2">Property Type</label>
                   <select
                     value={propertyType}
                     onChange={(e) => setPropertyType(e.target.value)}
-                    className="w-full bg-blackborder border-white/10 text-white px-4 py-3 focus:outline-none focus:border-gold transition-colors rounded"
+                    className="w-full bg-blackborder border-white/10 text-black px-4 py-3 focus:outline-none focus:border-gold transition-colors rounded"
                   >
                     <option value="all">All Types</option>
                     <option value="Single Family">Single Family</option>
@@ -150,11 +150,11 @@ const Properties = () => {
 
                 {/* Bedrooms */}
                 <div>
-                  <label className="block text-xs uppercase tracking-widest text-white/60 mb-2">Bedrooms</label>
+                  <label className="block text-xs uppercase tracking-widest text-black/60 mb-2">Bedrooms</label>
                   <select
                     value={bedrooms}
                     onChange={(e) => setBedrooms(e.target.value)}
-                    className="w-full bg-blackborder border-white/10 text-white px-4 py-3 focus:outline-none focus:border-gold transition-colors rounded"
+                    className="w-full bg-blackborder border-white/10 text-black px-4 py-3 focus:outline-none focus:border-gold transition-colors rounded"
                   >
                     <option value="any">Any</option>
                     <option value="1">1+</option>
@@ -167,7 +167,7 @@ const Properties = () => {
 
                 {/* Price Range */}
                 <div>
-                  <label className="block text-xs uppercase tracking-widest text-white/60 mb-2">
+                  <label className="block text-xs uppercase tracking-widest text-black/60 mb-2">
                     Max Price: ${(priceRange[1] / 1000).toFixed(0)}K
                   </label>
                   <input
@@ -190,14 +190,14 @@ const Properties = () => {
       <section className="py-20 px-4">
         <div className="max-w-7xl mx-auto">
           <div className="flex justify-between items-center mb-8">
-            <p className="text-white/60">
+            <p className="text-black/60">
               Showing <span className="text-gold font-bold">{filteredProperties.length}</span> properties
             </p>
           </div>
 
           {filteredProperties.length === 0 ? (
             <div className="text-center py-20">
-              <p className="text-white/60 text-xl">No properties match your criteria</p>
+              <p className="text-black/60 text-xl">No properties match your criteria</p>
               <button
                 onClick={() => {
                   setSearchTerm('');
@@ -231,13 +231,13 @@ const Properties = () => {
 
       {/* Compare Bar */}
       {compareList.size > 0 && (
-        <div className="fixed bottom-0 left-0 right-0 bg-dark-card border-t-2 border-gold shadow-2xl z-40 animate-slide-in-up">
+        <div className="fixed bottom-0 left-0 right-0 bg-white border-t-2 border-gold shadow-2xl z-40 animate-slide-in-up">
           <div className="max-w-7xl mx-auto px-4 py-4 flex flex-wrap items-center justify-between gap-4">
             <div className="flex items-center gap-4">
               <GitCompare className="text-gold" size={24} />
               <div>
-                <p className="text-white font-bold">Compare Properties</p>
-                <p className="text-white/60 text-sm">{compareList.size} selected (max 3)</p>
+                <p className="text-black font-bold">Compare Properties</p>
+                <p className="text-black/60 text-sm">{compareList.size} selected (max 3)</p>
               </div>
             </div>
 
@@ -286,7 +286,7 @@ const PropertyCard = ({ property, isFavorite, onToggleFavorite, isComparing, onT
   return (
     <Link
       to={`/property/${property.id}`}
-      className="group bg-dark-card border border-white/10 hover:border-gold/50 transition-all duration-300 overflow-hidden animate-fade-in-up hover:scale-[1.02]"
+      className="group bg-white border border-white/10 hover:border-gold/50 transition-all duration-300 overflow-hidden animate-fade-in-up hover:scale-[1.02]"
       style={{ animationDelay: `${delay}ms` }}
     >
       {/* Image */}
@@ -301,8 +301,8 @@ const PropertyCard = ({ property, isFavorite, onToggleFavorite, isComparing, onT
         {/* Status Badge */}
         <div className={`absolute top-4 left-4 px-3 py-1 text-xs font-bold uppercase tracking-wider ${
           property.status === 'For Sale' ? 'bg-gold text-dark' :
-          property.status === 'Pending' ? 'bg-orange-500 text-white' :
-          'bg-gray-500 text-white'
+          property.status === 'Pending' ? 'bg-orange-500 text-black' :
+          'bg-gray-500 text-black'
         }`}>
           {property.status}
         </div>
@@ -317,7 +317,7 @@ const PropertyCard = ({ property, isFavorite, onToggleFavorite, isComparing, onT
         >
           <Heart
             size={20}
-            className={isFavorite ? 'fill-gold text-gold' : 'text-white'}
+            className={isFavorite ? 'fill-gold text-gold' : 'text-black'}
           />
         </button>
 
@@ -333,18 +333,18 @@ const PropertyCard = ({ property, isFavorite, onToggleFavorite, isComparing, onT
         </div>
 
         {/* Title */}
-        <h3 className="text-white font-semibold text-lg mb-2 line-clamp-2 group-hover:text-gold transition-colors">
+        <h3 className="text-black font-semibold text-lg mb-2 line-clamp-2 group-hover:text-gold transition-colors">
           {property.title}
         </h3>
 
         {/* Address */}
-        <div className="flex items-center gap-2 text-white/60 text-sm mb-4">
+        <div className="flex items-center gap-2 text-black/60 text-sm mb-4">
           <MapPin size={14} className="text-gold shrink-0" />
           <span className="line-clamp-1">{property.address}</span>
         </div>
 
         {/* Features */}
-        <div className="flex items-center gap-4 text-white/80 text-sm border-t border-white/10 pt-4">
+        <div className="flex items-center gap-4 text-black/80 text-sm border-t border-white/10 pt-4">
           <div className="flex items-center gap-1">
             <Bed size={16} className="text-gold" />
             <span>{property.beds} Beds</span>
@@ -400,12 +400,12 @@ const ComparisonModal = ({ properties, onClose }: ComparisonModalProps) => {
           {/* Header */}
           <div className="flex items-center justify-between mb-8 sticky top-0 bg-black/90 py-4 z-10">
             <div>
-              <h2 className="text-3xl font-sans text-white mb-2">Property Comparison</h2>
-              <p className="text-white/60">Compare up to 3 properties side-by-side</p>
+              <h2 className="text-3xl font-sans text-black mb-2">Property Comparison</h2>
+              <p className="text-black/60">Compare up to 3 properties side-by-side</p>
             </div>
             <button
               onClick={onClose}
-              className="p-3 bg-dark-card border border-gold/30 hover:bg-gold hover:border-gold rounded-full transition-all group touch-target"
+              className="p-3 bg-white border border-gray-200 hover:bg-gold hover:border-gold rounded-full transition-all group touch-target"
             >
               <X className="text-gold group-hover:text-dark transition-colors" size={24} />
             </button>
@@ -415,8 +415,8 @@ const ComparisonModal = ({ properties, onClose }: ComparisonModalProps) => {
           <div className="glass-strong rounded-lg overflow-x-auto">
             <table className="w-full">
               <thead>
-                <tr className="border-b border-gold/20">
-                  <th className="text-left p-4 sm:p-6 text-gold text-xs uppercase tracking-wider sticky left-0 bg-dark-card">
+                <tr className="border-b border-gray-200">
+                  <th className="text-left p-4 sm:p-6 text-gold text-xs uppercase tracking-wider sticky left-0 bg-white">
                     Feature
                   </th>
                   {properties.map((property) => (
@@ -431,10 +431,10 @@ const ComparisonModal = ({ properties, onClose }: ComparisonModalProps) => {
                           className="w-full h-32 object-cover rounded mb-3"
                           loading="lazy"
                         />
-                        <h3 className="text-white font-semibold text-sm mb-1 line-clamp-2">
+                        <h3 className="text-black font-semibold text-sm mb-1 line-clamp-2">
                           {property.title}
                         </h3>
-                        <p className="text-white/60 text-xs line-clamp-1">{property.address}</p>
+                        <p className="text-black/60 text-xs line-clamp-1">{property.address}</p>
                       </Link>
                     </th>
                   ))}
@@ -443,7 +443,7 @@ const ComparisonModal = ({ properties, onClose }: ComparisonModalProps) => {
               <tbody className="text-sm">
                 {/* Price */}
                 <tr className="border-b border-white/5">
-                  <td className="p-4 sm:p-6 text-white/60 font-medium sticky left-0 bg-dark-card">Price</td>
+                  <td className="p-4 sm:p-6 text-black/60 font-medium sticky left-0 bg-white">Price</td>
                   {properties.map((p) => (
                     <td key={p.id} className="p-4 sm:p-6 text-gold font-sans text-xl">
                       ${p.price.toLocaleString()}
@@ -453,34 +453,34 @@ const ComparisonModal = ({ properties, onClose }: ComparisonModalProps) => {
 
                 {/* Bedrooms */}
                 <tr className="border-b border-white/5">
-                  <td className="p-4 sm:p-6 text-white/60 font-medium sticky left-0 bg-dark-card">Bedrooms</td>
+                  <td className="p-4 sm:p-6 text-black/60 font-medium sticky left-0 bg-white">Bedrooms</td>
                   {properties.map((p) => (
-                    <td key={p.id} className="p-4 sm:p-6 text-white">{p.beds}</td>
+                    <td key={p.id} className="p-4 sm:p-6 text-black">{p.beds}</td>
                   ))}
                 </tr>
 
                 {/* Bathrooms */}
                 <tr className="border-b border-white/5">
-                  <td className="p-4 sm:p-6 text-white/60 font-medium sticky left-0 bg-dark-card">Bathrooms</td>
+                  <td className="p-4 sm:p-6 text-black/60 font-medium sticky left-0 bg-white">Bathrooms</td>
                   {properties.map((p) => (
-                    <td key={p.id} className="p-4 sm:p-6 text-white">{p.baths}</td>
+                    <td key={p.id} className="p-4 sm:p-6 text-black">{p.baths}</td>
                   ))}
                 </tr>
 
                 {/* Square Feet */}
                 <tr className="border-b border-white/5">
-                  <td className="p-4 sm:p-6 text-white/60 font-medium sticky left-0 bg-dark-card">Square Feet</td>
+                  <td className="p-4 sm:p-6 text-black/60 font-medium sticky left-0 bg-white">Square Feet</td>
                   {properties.map((p) => (
-                    <td key={p.id} className="p-4 sm:p-6 text-white">{p.sqft.toLocaleString()}</td>
+                    <td key={p.id} className="p-4 sm:p-6 text-black">{p.sqft.toLocaleString()}</td>
                   ))}
                 </tr>
 
                 {/* Lot Size */}
                 {properties.some(p => p.lotSize) && (
                   <tr className="border-b border-white/5">
-                    <td className="p-4 sm:p-6 text-white/60 font-medium sticky left-0 bg-dark-card">Lot Size</td>
+                    <td className="p-4 sm:p-6 text-black/60 font-medium sticky left-0 bg-white">Lot Size</td>
                     {properties.map((p) => (
-                      <td key={p.id} className="p-4 sm:p-6 text-white">
+                      <td key={p.id} className="p-4 sm:p-6 text-black">
                         {p.lotSize ? `${p.lotSize} acres` : 'N/A'}
                       </td>
                     ))}
@@ -489,45 +489,45 @@ const ComparisonModal = ({ properties, onClose }: ComparisonModalProps) => {
 
                 {/* Year Built */}
                 <tr className="border-b border-white/5">
-                  <td className="p-4 sm:p-6 text-white/60 font-medium sticky left-0 bg-dark-card">Year Built</td>
+                  <td className="p-4 sm:p-6 text-black/60 font-medium sticky left-0 bg-white">Year Built</td>
                   {properties.map((p) => (
-                    <td key={p.id} className="p-4 sm:p-6 text-white">{p.yearBuilt}</td>
+                    <td key={p.id} className="p-4 sm:p-6 text-black">{p.yearBuilt}</td>
                   ))}
                 </tr>
 
                 {/* Property Type */}
                 <tr className="border-b border-white/5">
-                  <td className="p-4 sm:p-6 text-white/60 font-medium sticky left-0 bg-dark-card">Property Type</td>
+                  <td className="p-4 sm:p-6 text-black/60 font-medium sticky left-0 bg-white">Property Type</td>
                   {properties.map((p) => (
-                    <td key={p.id} className="p-4 sm:p-6 text-white">{p.propertyType}</td>
+                    <td key={p.id} className="p-4 sm:p-6 text-black">{p.propertyType}</td>
                   ))}
                 </tr>
 
                 {/* Neighborhood */}
                 <tr className="border-b border-white/5">
-                  <td className="p-4 sm:p-6 text-white/60 font-medium sticky left-0 bg-dark-card">Neighborhood</td>
+                  <td className="p-4 sm:p-6 text-black/60 font-medium sticky left-0 bg-white">Neighborhood</td>
                   {properties.map((p) => (
-                    <td key={p.id} className="p-4 sm:p-6 text-white">{p.neighborhood}</td>
+                    <td key={p.id} className="p-4 sm:p-6 text-black">{p.neighborhood}</td>
                   ))}
                 </tr>
 
                 {/* Days on Market */}
                 <tr className="border-b border-white/5">
-                  <td className="p-4 sm:p-6 text-white/60 font-medium sticky left-0 bg-dark-card">Days on Market</td>
+                  <td className="p-4 sm:p-6 text-black/60 font-medium sticky left-0 bg-white">Days on Market</td>
                   {properties.map((p) => (
-                    <td key={p.id} className="p-4 sm:p-6 text-white">{p.daysOnMarket}</td>
+                    <td key={p.id} className="p-4 sm:p-6 text-black">{p.daysOnMarket}</td>
                   ))}
                 </tr>
 
                 {/* Status */}
                 <tr>
-                  <td className="p-4 sm:p-6 text-white/60 font-medium sticky left-0 bg-dark-card">Status</td>
+                  <td className="p-4 sm:p-6 text-black/60 font-medium sticky left-0 bg-white">Status</td>
                   {properties.map((p) => (
                     <td key={p.id} className="p-4 sm:p-6">
                       <span className={`inline-block px-3 py-1 text-xs font-bold uppercase ${
                         p.status === 'For Sale' ? 'bg-gold text-dark' :
-                        p.status === 'Pending' ? 'bg-orange-500 text-white' :
-                        'bg-gray-500 text-white'
+                        p.status === 'Pending' ? 'bg-orange-500 text-black' :
+                        'bg-gray-500 text-black'
                       }`}>
                         {p.status}
                       </span>

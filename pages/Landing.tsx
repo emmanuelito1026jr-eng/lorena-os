@@ -71,12 +71,12 @@ const Landing  = () => {
             </div>
 
             {/* Right Form */}
-            <div className="bg-dark-card border border-gold/30 p-8 rounded-lg shadow-2xl relative">
+            <div className="bg-white border border-gold/30 p-8 rounded-lg shadow-2xl relative">
                 <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-gold text-dark font-bold text-xs uppercase px-4 py-1 tracking-widest whitespace-nowrap">
                     Limited Time Consultation
                 </div>
-                <h3 className="font-sans text-2xl text-center text-white mb-2">Get Exclusive Access</h3>
-                <p className="text-white/60 text-center text-sm mb-6">Complete the form below to start your search.</p>
+                <h3 className="font-sans text-2xl text-center text-black mb-2">Get Exclusive Access</h3>
+                <p className="text-black/60 text-center text-sm mb-6">Complete the form below to start your search.</p>
                 <ContactForm minimal={true} />
             </div>
         </div>

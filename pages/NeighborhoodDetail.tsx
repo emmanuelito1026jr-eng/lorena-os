@@ -57,46 +57,46 @@ const NeighborhoodDetail = () => {
       </section>
 
       {/* Quick Stats */}
-      <section className="py-12 px-4 bg-dark-charcoal">
+      <section className="py-12 px-4 bg-gray-50">
         <div className="max-w-7xl mx-auto">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-            <div className="glass-strong rounded-lg p-6 text-center hover-lift animate-fade-in-up">
+            <div className="bg-white border border-gray-200 rounded-lg shadow-premium p-6 text-center hover-lift animate-fade-in-up">
               <DollarSign className="text-gold mx-auto mb-3" size={32} />
-              <div className="text-3xl font-sans text-white mb-1">
+              <div className="text-3xl font-sans text-black mb-1">
                 ${(neighborhood.medianPrice / 1000).toFixed(0)}K
               </div>
-              <div className="text-xs text-white/60 uppercase tracking-wider">Median Price</div>
+              <div className="text-xs text-black/60 uppercase tracking-wider">Median Price</div>
             </div>
 
-            <div className="glass-strong rounded-lg p-6 text-center hover-lift animate-fade-in-up delay-100">
+            <div className="bg-white border border-gray-200 rounded-lg shadow-premium p-6 text-center hover-lift animate-fade-in-up delay-100">
               <Users className="text-gold mx-auto mb-3" size={32} />
-              <div className="text-3xl font-sans text-white mb-1">
+              <div className="text-3xl font-sans text-black mb-1">
                 {(neighborhood.demographics.population / 1000).toFixed(0)}K
               </div>
-              <div className="text-xs text-white/60 uppercase tracking-wider">Population</div>
+              <div className="text-xs text-black/60 uppercase tracking-wider">Population</div>
             </div>
 
-            <div className="glass-strong rounded-lg p-6 text-center hover-lift animate-fade-in-up delay-200">
+            <div className="bg-white border border-gray-200 rounded-lg shadow-premium p-6 text-center hover-lift animate-fade-in-up delay-200">
               <TrendingUp className="text-gold mx-auto mb-3" size={32} />
-              <div className="text-3xl font-sans text-white mb-1">
+              <div className="text-3xl font-sans text-black mb-1">
                 {neighborhood.demographics.homeownership}%
               </div>
-              <div className="text-xs text-white/60 uppercase tracking-wider">Homeownership</div>
+              <div className="text-xs text-black/60 uppercase tracking-wider">Homeownership</div>
             </div>
 
-            <div className="glass-strong rounded-lg p-6 text-center hover-lift animate-fade-in-up delay-300">
+            <div className="bg-white border border-gray-200 rounded-lg shadow-premium p-6 text-center hover-lift animate-fade-in-up delay-300">
               <Home className="text-gold mx-auto mb-3" size={32} />
-              <div className="text-3xl font-sans text-white mb-1">
+              <div className="text-3xl font-sans text-black mb-1">
                 {neighborhoodProperties.length}
               </div>
-              <div className="text-xs text-white/60 uppercase tracking-wider">Available Homes</div>
+              <div className="text-xs text-black/60 uppercase tracking-wider">Available Homes</div>
             </div>
           </div>
         </div>
       </section>
 
       {/* Main Content */}
-      <section className="py-20 px-4 bg-dark">
+      <section className="py-20 px-4 bg-white">
         <div className="max-w-7xl mx-auto">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
             {/* Left Column - Details */}
@@ -104,22 +104,22 @@ const NeighborhoodDetail = () => {
               {/* Price Range */}
               <div className="animate-fade-in-up">
                 <h2 className="text-3xl font-sans text-gold mb-6">Price Range</h2>
-                <div className="glass-strong rounded-lg p-6">
+                <div className="bg-white border border-gray-200 shadow-premium rounded-lg p-6">
                   <div className="flex justify-between items-center mb-4">
                     <div>
-                      <div className="text-sm text-white/60 uppercase tracking-wider mb-1">Low</div>
-                      <div className="text-2xl font-sans text-white">
+                      <div className="text-sm text-black/60 uppercase tracking-wider mb-1">Low</div>
+                      <div className="text-2xl font-sans text-black">
                         ${(neighborhood.priceRange[0] / 1000).toFixed(0)}K
                       </div>
                     </div>
                     <div className="flex-1 mx-8">
-                      <div className="h-2 bg-blackrounded-full overflow-hidden">
+                      <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
                         <div className="h-full bg-gradient-to-r from-gold to-gold-light"></div>
                       </div>
                     </div>
                     <div>
-                      <div className="text-sm text-white/60 uppercase tracking-wider mb-1">High</div>
-                      <div className="text-2xl font-sans text-white">
+                      <div className="text-sm text-black/60 uppercase tracking-wider mb-1">High</div>
+                      <div className="text-2xl font-sans text-black">
                         ${(neighborhood.priceRange[1] / 1000).toFixed(0)}K
                       </div>
                     </div>
@@ -132,14 +132,14 @@ const NeighborhoodDetail = () => {
                 <h2 className="text-3xl font-sans text-gold mb-6">Top-Rated Schools</h2>
                 <div className="space-y-4">
                   {neighborhood.schools.map((school, index) => (
-                    <div key={index} className="glass-strong rounded-lg p-6 hover-lift">
+                    <div key={index} className="bg-white border border-gray-200 shadow-premium rounded-lg p-6 hover-lift">
                       <div className="flex items-start justify-between gap-4">
                         <div className="flex-1">
                           <div className="flex items-center gap-3 mb-2">
                             <School className="text-gold" size={20} />
-                            <h3 className="text-xl text-white font-semibold">{school.name}</h3>
+                            <h3 className="text-xl text-black font-semibold">{school.name}</h3>
                           </div>
-                          <div className="flex items-center gap-4 text-sm text-white/60">
+                          <div className="flex items-center gap-4 text-sm text-black/60">
                             <span>{school.type}</span>
                             <span>•</span>
                             <span>{school.distance} miles away</span>
@@ -158,12 +158,12 @@ const NeighborhoodDetail = () => {
               {/* Amenities */}
               <div className="animate-fade-in-up delay-200">
                 <h2 className="text-3xl font-sans text-gold mb-6">Amenities & Features</h2>
-                <div className="glass-strong rounded-lg p-6">
+                <div className="bg-white border border-gray-200 shadow-premium rounded-lg p-6">
                   <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                     {neighborhood.amenities.map((amenity, index) => (
                       <div key={index} className="flex items-center gap-2">
                         <div className="w-2 h-2 bg-gold rounded-full"></div>
-                        <span className="text-white/80">{amenity}</span>
+                        <span className="text-black/80">{amenity}</span>
                       </div>
                     ))}
                   </div>
@@ -174,13 +174,13 @@ const NeighborhoodDetail = () => {
               <div className="animate-fade-in-up delay-300">
                 <h2 className="text-3xl font-sans text-gold mb-6">Demographics</h2>
                 <div className="grid grid-cols-2 gap-6">
-                  <div className="glass-strong rounded-lg p-6">
-                    <div className="text-sm text-white/60 uppercase tracking-wider mb-2">Median Age</div>
-                    <div className="text-3xl font-sans text-white">{neighborhood.demographics.medianAge}</div>
+                  <div className="bg-white border border-gray-200 shadow-premium rounded-lg p-6">
+                    <div className="text-sm text-black/60 uppercase tracking-wider mb-2">Median Age</div>
+                    <div className="text-3xl font-sans text-black">{neighborhood.demographics.medianAge}</div>
                   </div>
-                  <div className="glass-strong rounded-lg p-6">
-                    <div className="text-sm text-white/60 uppercase tracking-wider mb-2">Median Income</div>
-                    <div className="text-3xl font-sans text-white">
+                  <div className="bg-white border border-gray-200 shadow-premium rounded-lg p-6">
+                    <div className="text-sm text-black/60 uppercase tracking-wider mb-2">Median Income</div>
+                    <div className="text-3xl font-sans text-black">
                       ${(neighborhood.demographics.medianIncome / 1000).toFixed(0)}K
                     </div>
                   </div>
@@ -201,7 +201,7 @@ const NeighborhoodDetail = () => {
                       <Link
                         key={property.id}
                         to={`/property/${property.id}`}
-                        className="block glass-strong rounded-lg overflow-hidden hover-lift animate-fade-in-up"
+                        className="block bg-white border border-gray-200 shadow-premium rounded-lg overflow-hidden hover-lift animate-fade-in-up"
                         style={{ animationDelay: `${index * 100}ms` }}
                       >
                         <div className="relative h-48">
@@ -215,10 +215,10 @@ const NeighborhoodDetail = () => {
                           </div>
                         </div>
                         <div className="p-4">
-                          <div className="text-white font-semibold mb-2 line-clamp-2">
+                          <div className="text-black font-semibold mb-2 line-clamp-2">
                             {property.title}
                           </div>
-                          <div className="flex items-center gap-4 text-sm text-white/60">
+                          <div className="flex items-center gap-4 text-sm text-black/60">
                             <span>{property.beds} beds</span>
                             <span>•</span>
                             <span>{property.baths} baths</span>
@@ -235,11 +235,11 @@ const NeighborhoodDetail = () => {
                     </Link>
                   </div>
                 ) : (
-                  <div className="glass-strong rounded-lg p-6 text-center">
-                    <p className="text-white/60 mb-4">No properties currently available</p>
+                  <div className="bg-white border border-gray-200 shadow-premium rounded-lg p-6 text-center">
+                    <p className="text-black/60 mb-4">No properties currently available</p>
                     <Link
                       to="/properties"
-                      className="text-gold hover:text-white text-sm uppercase tracking-wider"
+                      className="text-gold hover:text-gold-dark text-sm uppercase tracking-wider"
                     >
                       Browse All Listings →
                     </Link>

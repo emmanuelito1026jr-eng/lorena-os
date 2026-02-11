@@ -183,11 +183,11 @@ const About = () => {
       </section>
 
       {/* Why Choose Lorena */}
-      <section className="py-20 px-4 bg-dark">
+      <section className="py-20 px-4 bg-white">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16 animate-fade-in-up">
             <span className="text-gold text-xs uppercase tracking-[0.3em]">Competitive Advantage</span>
-            <h2 className="mt-4 font-sans text-4xl md:text-5xl text-white">
+            <h2 className="mt-4 font-sans text-4xl md:text-5xl text-black">
               Why Choose <span className="gradient-text">Lorena?</span>
             </h2>
           </div>
@@ -233,14 +233,14 @@ const About = () => {
             ].map((item, index) => (
               <div
                 key={index}
-                className="glass-strong rounded-lg p-6 hover-lift animate-fade-in-up"
+                className="bg-white border border-gray-200 rounded-lg shadow-premium p-6 hover-lift animate-fade-in-up"
                 style={{ animationDelay: `${index * 100}ms` }}
               >
                 <div className="w-16 h-16 bg-gold/20 rounded-full flex items-center justify-center mb-4">
                   <item.icon className="text-gold" size={28} />
                 </div>
-                <h3 className="text-white text-xl font-sans mb-3">{item.title}</h3>
-                <p className="text-white/60">{item.description}</p>
+                <h3 className="text-black text-xl font-sans mb-3">{item.title}</h3>
+                <p className="text-black/70">{item.description}</p>
               </div>
             ))}
           </div>
@@ -248,11 +248,11 @@ const About = () => {
       </section>
 
       {/* Client Testimonials */}
-      <section className="py-20 px-4 bg-black/95">
+      <section className="py-20 px-4 bg-gray-50">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16 animate-fade-in-up">
             <span className="text-gold text-xs uppercase tracking-[0.3em]">Client Success Stories</span>
-            <h2 className="mt-4 font-sans text-4xl md:text-5xl text-white">
+            <h2 className="mt-4 font-sans text-4xl md:text-5xl text-black">
               What Families <span className="gradient-text">Are Saying</span>
             </h2>
           </div>
@@ -261,7 +261,7 @@ const About = () => {
             {TESTIMONIALS.map((testimonial, index) => (
               <div
                 key={index}
-                className="glass-strong rounded-lg p-6 hover-lift animate-fade-in-up"
+                className="bg-white border border-gray-200 rounded-lg shadow-premium p-6 hover-lift animate-fade-in-up"
                 style={{ animationDelay: `${index * 150}ms` }}
               >
                 <div className="flex gap-1 mb-4">
@@ -269,10 +269,10 @@ const About = () => {
                     <Star key={i} size={16} className="text-gold fill-gold" />
                   ))}
                 </div>
-                <p className="text-white/80 italic mb-4">"{testimonial.text}"</p>
-                <div className="border-t border-white/10 pt-4">
-                  <div className="text-white font-semibold">{testimonial.name}</div>
-                  <div className="text-white/60 text-sm">{testimonial.role}</div>
+                <p className="text-black/80 italic mb-4">"{testimonial.text}"</p>
+                <div className="border-t border-gray-200 pt-4">
+                  <div className="text-black font-semibold">{testimonial.name}</div>
+                  <div className="text-black/60 text-sm">{testimonial.role}</div>
                 </div>
               </div>
             ))}
@@ -281,13 +281,13 @@ const About = () => {
       </section>
 
       {/* Contact CTA */}
-      <section className="py-20 px-4 bg-dark">
+      <section className="py-20 px-4 bg-white">
         <div className="max-w-4xl mx-auto">
-          <div className="glass-strong rounded-lg p-12 text-center animate-fade-in-up">
-            <h2 className="font-sans text-4xl md:text-5xl text-white mb-6">
+          <div className="bg-white border border-gray-200 rounded-lg shadow-premium p-12 text-center animate-fade-in-up">
+            <h2 className="font-sans text-4xl md:text-5xl text-black mb-6">
               Ready to Find Your <span className="gradient-text">Dream Home?</span>
             </h2>
-            <p className="text-white/80 text-lg mb-8 max-w-2xl mx-auto">
+            <p className="text-black/80 text-lg mb-8 max-w-2xl mx-auto">
               Let's start a conversation about your real estate goals. Whether you're buying, selling, or investing,
               I'm here to guide you every step of the way.
             </p>

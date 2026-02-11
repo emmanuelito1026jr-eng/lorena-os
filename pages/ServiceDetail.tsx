@@ -310,7 +310,7 @@ const ServiceDetail = () => {
       </section>
 
       {/* Description */}
-      <section className="py-20 px-4 bg-dark-charcoal">
+      <section className="py-20 px-4 bg-gray-50">
         <div className="max-w-4xl mx-auto text-center">
           <p className="text-xl text-white/80 leading-relaxed animate-fade-in-up">
             {service.description}
@@ -319,7 +319,7 @@ const ServiceDetail = () => {
       </section>
 
       {/* Process Steps */}
-      <section className="py-20 px-4 bg-dark">
+      <section className="py-20 px-4 bg-white">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="font-sans text-4xl md:text-5xl text-white mb-4">
@@ -352,7 +352,7 @@ const ServiceDetail = () => {
       </section>
 
       {/* Benefits */}
-      <section className="py-20 px-4 bg-dark-charcoal">
+      <section className="py-20 px-4 bg-gray-50">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="font-sans text-4xl md:text-5xl text-white mb-4">
@@ -376,7 +376,7 @@ const ServiceDetail = () => {
       </section>
 
       {/* FAQs */}
-      <section className="py-20 px-4 bg-dark">
+      <section className="py-20 px-4 bg-white">
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="font-sans text-4xl md:text-5xl text-white mb-4">
@@ -400,7 +400,7 @@ const ServiceDetail = () => {
       </section>
 
       {/* Testimonials */}
-      <section className="py-20 px-4 bg-dark-charcoal">
+      <section className="py-20 px-4 bg-gray-50">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="font-sans text-4xl md:text-5xl text-white mb-4">
@@ -428,7 +428,7 @@ const ServiceDetail = () => {
       </section>
 
       {/* CTA */}
-      <section id="contact" className="py-20 px-4 bg-dark">
+      <section id="contact" className="py-20 px-4 bg-white">
         <div className="max-w-4xl mx-auto">
           <div className="glass-strong rounded-lg p-12">
             <div className="text-center mb-8">
