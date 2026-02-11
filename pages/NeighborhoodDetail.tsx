@@ -12,7 +12,7 @@ const NeighborhoodDetail = () => {
     return (
       <div className="bg-dark min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <h1 className="text-4xl font-serif text-gold mb-4">Neighborhood Not Found</h1>
+          <h1 className="text-4xl font-sans text-gold mb-4">Neighborhood Not Found</h1>
           <Link to="/#neighborhoods" className="text-ivory hover:text-gold">
             ← Back to Neighborhoods
           </Link>
@@ -47,7 +47,7 @@ const NeighborhoodDetail = () => {
             Back to Neighborhoods
           </Link>
 
-          <h1 className="font-serif text-5xl md:text-7xl text-ivory mb-4 animate-fade-in-up delay-100">
+          <h1 className="font-sans text-5xl md:text-7xl text-ivory mb-4 animate-fade-in-up delay-100">
             {neighborhood.name}
           </h1>
           <p className="text-gray-300 text-xl max-w-2xl mx-auto animate-fade-in-up delay-200">
@@ -62,7 +62,7 @@ const NeighborhoodDetail = () => {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
             <div className="glass-strong rounded-lg p-6 text-center hover-lift animate-fade-in-up">
               <DollarSign className="text-gold mx-auto mb-3" size={32} />
-              <div className="text-3xl font-serif text-ivory mb-1">
+              <div className="text-3xl font-sans text-ivory mb-1">
                 ${(neighborhood.medianPrice / 1000).toFixed(0)}K
               </div>
               <div className="text-xs text-gray-400 uppercase tracking-wider">Median Price</div>
@@ -70,7 +70,7 @@ const NeighborhoodDetail = () => {
 
             <div className="glass-strong rounded-lg p-6 text-center hover-lift animate-fade-in-up delay-100">
               <Users className="text-gold mx-auto mb-3" size={32} />
-              <div className="text-3xl font-serif text-ivory mb-1">
+              <div className="text-3xl font-sans text-ivory mb-1">
                 {(neighborhood.demographics.population / 1000).toFixed(0)}K
               </div>
               <div className="text-xs text-gray-400 uppercase tracking-wider">Population</div>
@@ -78,7 +78,7 @@ const NeighborhoodDetail = () => {
 
             <div className="glass-strong rounded-lg p-6 text-center hover-lift animate-fade-in-up delay-200">
               <TrendingUp className="text-gold mx-auto mb-3" size={32} />
-              <div className="text-3xl font-serif text-ivory mb-1">
+              <div className="text-3xl font-sans text-ivory mb-1">
                 {neighborhood.demographics.homeownership}%
               </div>
               <div className="text-xs text-gray-400 uppercase tracking-wider">Homeownership</div>
@@ -86,7 +86,7 @@ const NeighborhoodDetail = () => {
 
             <div className="glass-strong rounded-lg p-6 text-center hover-lift animate-fade-in-up delay-300">
               <Home className="text-gold mx-auto mb-3" size={32} />
-              <div className="text-3xl font-serif text-ivory mb-1">
+              <div className="text-3xl font-sans text-ivory mb-1">
                 {neighborhoodProperties.length}
               </div>
               <div className="text-xs text-gray-400 uppercase tracking-wider">Available Homes</div>
@@ -103,12 +103,12 @@ const NeighborhoodDetail = () => {
             <div className="lg:col-span-2 space-y-12">
               {/* Price Range */}
               <div className="animate-fade-in-up">
-                <h2 className="text-3xl font-serif text-gold mb-6">Price Range</h2>
+                <h2 className="text-3xl font-sans text-gold mb-6">Price Range</h2>
                 <div className="glass-strong rounded-lg p-6">
                   <div className="flex justify-between items-center mb-4">
                     <div>
                       <div className="text-sm text-gray-400 uppercase tracking-wider mb-1">Low</div>
-                      <div className="text-2xl font-serif text-ivory">
+                      <div className="text-2xl font-sans text-ivory">
                         ${(neighborhood.priceRange[0] / 1000).toFixed(0)}K
                       </div>
                     </div>
@@ -119,7 +119,7 @@ const NeighborhoodDetail = () => {
                     </div>
                     <div>
                       <div className="text-sm text-gray-400 uppercase tracking-wider mb-1">High</div>
-                      <div className="text-2xl font-serif text-ivory">
+                      <div className="text-2xl font-sans text-ivory">
                         ${(neighborhood.priceRange[1] / 1000).toFixed(0)}K
                       </div>
                     </div>
@@ -129,7 +129,7 @@ const NeighborhoodDetail = () => {
 
               {/* Schools */}
               <div className="animate-fade-in-up delay-100">
-                <h2 className="text-3xl font-serif text-gold mb-6">Top-Rated Schools</h2>
+                <h2 className="text-3xl font-sans text-gold mb-6">Top-Rated Schools</h2>
                 <div className="space-y-4">
                   {neighborhood.schools.map((school, index) => (
                     <div key={index} className="glass-strong rounded-lg p-6 hover-lift">
@@ -157,7 +157,7 @@ const NeighborhoodDetail = () => {
 
               {/* Amenities */}
               <div className="animate-fade-in-up delay-200">
-                <h2 className="text-3xl font-serif text-gold mb-6">Amenities & Features</h2>
+                <h2 className="text-3xl font-sans text-gold mb-6">Amenities & Features</h2>
                 <div className="glass-strong rounded-lg p-6">
                   <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                     {neighborhood.amenities.map((amenity, index) => (
@@ -172,15 +172,15 @@ const NeighborhoodDetail = () => {
 
               {/* Demographics */}
               <div className="animate-fade-in-up delay-300">
-                <h2 className="text-3xl font-serif text-gold mb-6">Demographics</h2>
+                <h2 className="text-3xl font-sans text-gold mb-6">Demographics</h2>
                 <div className="grid grid-cols-2 gap-6">
                   <div className="glass-strong rounded-lg p-6">
                     <div className="text-sm text-gray-400 uppercase tracking-wider mb-2">Median Age</div>
-                    <div className="text-3xl font-serif text-ivory">{neighborhood.demographics.medianAge}</div>
+                    <div className="text-3xl font-sans text-ivory">{neighborhood.demographics.medianAge}</div>
                   </div>
                   <div className="glass-strong rounded-lg p-6">
                     <div className="text-sm text-gray-400 uppercase tracking-wider mb-2">Median Income</div>
-                    <div className="text-3xl font-serif text-ivory">
+                    <div className="text-3xl font-sans text-ivory">
                       ${(neighborhood.demographics.medianIncome / 1000).toFixed(0)}K
                     </div>
                   </div>
@@ -191,7 +191,7 @@ const NeighborhoodDetail = () => {
             {/* Right Column - Available Properties */}
             <div className="lg:col-span-1">
               <div className="sticky top-24">
-                <h3 className="text-2xl font-serif text-gold mb-6 animate-fade-in-up">
+                <h3 className="text-2xl font-sans text-gold mb-6 animate-fade-in-up">
                   Available in {neighborhood.name}
                 </h3>
 

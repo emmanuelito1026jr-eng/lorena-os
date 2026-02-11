@@ -21,7 +21,7 @@ const PropertyDetail = () => {
     return (
       <div className="bg-dark min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <h1 className="text-4xl font-serif text-gold mb-4">Property Not Found</h1>
+          <h1 className="text-4xl font-sans text-gold mb-4">Property Not Found</h1>
           <Link to="/properties" className="text-ivory hover:text-gold">
             ← Back to Properties
           </Link>
@@ -131,7 +131,7 @@ const PropertyDetail = () => {
                 </Link>
 
                 <div className="flex items-start justify-between gap-4 mb-4">
-                  <h1 className="font-serif text-4xl md:text-5xl text-ivory">
+                  <h1 className="font-sans text-4xl md:text-5xl text-ivory">
                     {property.title}
                   </h1>
                 </div>
@@ -141,7 +141,7 @@ const PropertyDetail = () => {
                   <span className="text-lg">{property.address}, {property.neighborhood}</span>
                 </div>
 
-                <div className="text-5xl font-serif text-gold mb-6">
+                <div className="text-5xl font-sans text-gold mb-6">
                   ${property.price.toLocaleString()}
                 </div>
 
@@ -182,7 +182,7 @@ const PropertyDetail = () => {
 
               {/* Description */}
               <div className="animate-fade-in-up delay-100">
-                <h2 className="text-2xl font-serif text-gold mb-4">Property Description</h2>
+                <h2 className="text-2xl font-sans text-gold mb-4">Property Description</h2>
                 <p className="text-gray-300 leading-relaxed text-lg">
                   {property.description}
                 </p>
@@ -190,7 +190,7 @@ const PropertyDetail = () => {
 
               {/* Features */}
               <div className="animate-fade-in-up delay-200">
-                <h2 className="text-2xl font-serif text-gold mb-4">Property Features</h2>
+                <h2 className="text-2xl font-sans text-gold mb-4">Property Features</h2>
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                   {property.features.map((feature, index) => (
                     <div
@@ -206,7 +206,7 @@ const PropertyDetail = () => {
 
               {/* Property Details */}
               <div className="animate-fade-in-up delay-300">
-                <h2 className="text-2xl font-serif text-gold mb-4">Property Details</h2>
+                <h2 className="text-2xl font-sans text-gold mb-4">Property Details</h2>
                 <div className="bg-dark-card border border-white/10 rounded-lg p-6">
                   <div className="grid grid-cols-2 gap-6">
                     <div className="border-b border-white/10 pb-4">
@@ -253,7 +253,7 @@ const PropertyDetail = () => {
             <div className="lg:col-span-1">
               <div className="sticky top-24 animate-fade-in-up delay-500">
                 <div className="bg-dark-card border border-gold/30 p-8 rounded-lg shadow-2xl">
-                  <h3 className="font-serif text-2xl text-center text-ivory mb-2">
+                  <h3 className="font-sans text-2xl text-center text-ivory mb-2">
                     Schedule a Showing
                   </h3>
                   <p className="text-gray-400 text-center text-sm mb-6">
@@ -330,10 +330,10 @@ const MortgageCalculator = ({ price }: { price: number }) => {
 
   return (
     <div className="bg-dark-card border border-gold/20 rounded-lg p-6 space-y-6">
-      <h3 className="text-xl font-serif text-gold text-center">Estimated Monthly Payment</h3>
+      <h3 className="text-xl font-sans text-gold text-center">Estimated Monthly Payment</h3>
 
       <div className="text-center">
-        <div className="text-4xl font-serif text-ivory">${monthlyPayment.toLocaleString(undefined, { maximumFractionDigits: 0 })}</div>
+        <div className="text-4xl font-sans text-ivory">${monthlyPayment.toLocaleString(undefined, { maximumFractionDigits: 0 })}</div>
         <div className="text-sm text-gray-400 mt-1">per month</div>
       </div>
 

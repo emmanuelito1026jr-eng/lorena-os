@@ -263,7 +263,7 @@ const ServiceDetail = () => {
     return (
       <div className="bg-dark min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <h1 className="text-4xl font-serif text-gold mb-4">Service Not Found</h1>
+          <h1 className="text-4xl font-sans text-gold mb-4">Service Not Found</h1>
           <Link to="/#services" className="text-ivory hover:text-gold">
             ← Back to Services
           </Link>
@@ -294,7 +294,7 @@ const ServiceDetail = () => {
             {service.subtitle}
           </div>
 
-          <h1 className="font-serif text-5xl md:text-7xl text-ivory mb-6 animate-fade-in-up delay-100">
+          <h1 className="font-sans text-5xl md:text-7xl text-ivory mb-6 animate-fade-in-up delay-100">
             {service.title}
           </h1>
 
@@ -322,7 +322,7 @@ const ServiceDetail = () => {
       <section className="py-20 px-4 bg-dark">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
-            <h2 className="font-serif text-4xl md:text-5xl text-ivory mb-4">
+            <h2 className="font-sans text-4xl md:text-5xl text-ivory mb-4">
               The <span className="gradient-text">Process</span>
             </h2>
             <p className="text-gray-400 text-lg">Step-by-step guidance from start to finish</p>
@@ -335,11 +335,11 @@ const ServiceDetail = () => {
                 className="glass-strong rounded-lg p-6 hover-lift animate-fade-in-up"
                 style={{ animationDelay: `${index * 100}ms` }}
               >
-                <div className="text-6xl font-serif text-gold/20 mb-4">{step.number}</div>
+                <div className="text-6xl font-sans text-gold/20 mb-4">{step.number}</div>
                 <div className="w-16 h-16 bg-gold/20 rounded-full flex items-center justify-center mb-4">
                   <step.icon className="text-gold" size={28} />
                 </div>
-                <h3 className="text-xl font-serif text-ivory mb-3">{step.title}</h3>
+                <h3 className="text-xl font-sans text-ivory mb-3">{step.title}</h3>
                 <p className="text-gray-400 mb-4">{step.description}</p>
                 <div className="flex items-center gap-2 text-sm text-gold">
                   <Clock size={14} />
@@ -355,7 +355,7 @@ const ServiceDetail = () => {
       <section className="py-20 px-4 bg-dark-charcoal">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
-            <h2 className="font-serif text-4xl md:text-5xl text-ivory mb-4">
+            <h2 className="font-sans text-4xl md:text-5xl text-ivory mb-4">
               What's <span className="gradient-text">Included</span>
             </h2>
           </div>
@@ -379,7 +379,7 @@ const ServiceDetail = () => {
       <section className="py-20 px-4 bg-dark">
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-16">
-            <h2 className="font-serif text-4xl md:text-5xl text-ivory mb-4">
+            <h2 className="font-sans text-4xl md:text-5xl text-ivory mb-4">
               Common <span className="gradient-text">Questions</span>
             </h2>
           </div>
@@ -403,7 +403,7 @@ const ServiceDetail = () => {
       <section className="py-20 px-4 bg-dark-charcoal">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
-            <h2 className="font-serif text-4xl md:text-5xl text-ivory mb-4">
+            <h2 className="font-sans text-4xl md:text-5xl text-ivory mb-4">
               Client <span className="gradient-text">Success Stories</span>
             </h2>
           </div>
@@ -432,7 +432,7 @@ const ServiceDetail = () => {
         <div className="max-w-4xl mx-auto">
           <div className="glass-strong rounded-lg p-12">
             <div className="text-center mb-8">
-              <h2 className="font-serif text-4xl md:text-5xl text-ivory mb-4">
+              <h2 className="font-sans text-4xl md:text-5xl text-ivory mb-4">
                 Ready to <span className="gradient-text">Get Started?</span>
               </h2>
               <p className="text-gray-300 text-lg">

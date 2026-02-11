@@ -28,7 +28,7 @@ class ErrorBoundary extends Component<Props, State> {
       return (
         <div className="min-h-screen bg-dark flex items-center justify-center px-4">
           <div className="max-w-2xl w-full bg-dark-card border border-white/10 p-8 text-center">
-            <h1 className="text-4xl font-serif text-gold mb-4">Oops! Something went wrong</h1>
+            <h1 className="text-4xl font-sans text-gold mb-4">Oops! Something went wrong</h1>
             <p className="text-gray-300 mb-6">
               We're sorry for the inconvenience. Please try refreshing the page.
             </p>

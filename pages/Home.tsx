@@ -32,7 +32,7 @@ const Home  = () => {
             <div className="absolute top-0 right-0 w-32 h-32 bg-gold/5 rounded-bl-full pointer-events-none"></div>
             <div className="text-center mb-10">
               <span className="text-gold text-xs uppercase tracking-[0.25em]">Let's Connect</span>
-              <h2 className="mt-2 font-serif text-3xl md:text-4xl text-gray-900">Start Your Journey</h2>
+              <h2 className="mt-2 font-sans text-3xl md:text-4xl text-gray-900">Start Your Journey</h2>
             </div>
             <ContactForm />
           </div>

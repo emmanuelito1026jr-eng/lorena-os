@@ -81,7 +81,7 @@ const Properties = () => {
       <section className="relative pt-32 pb-20 px-4 bg-gradient-to-b from-dark-charcoal to-dark">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-12 animate-fade-in-up">
-            <h1 className="font-serif text-5xl md:text-6xl text-ivory mb-4">
+            <h1 className="font-sans text-5xl md:text-6xl text-ivory mb-4">
               Find Your <span className="text-gold italic">Dream Home</span>
             </h1>
             <p className="text-gray-400 text-xl max-w-2xl mx-auto">
@@ -327,7 +327,7 @@ const PropertyCard = ({ property, isFavorite, onToggleFavorite, isComparing, onT
       {/* Content */}
       <div className="p-6">
         {/* Price */}
-        <div className="text-2xl font-serif text-gold mb-2">
+        <div className="text-2xl font-sans text-gold mb-2">
           ${property.price.toLocaleString()}
         </div>
 
@@ -399,7 +399,7 @@ const ComparisonModal = ({ properties, onClose }: ComparisonModalProps) => {
           {/* Header */}
           <div className="flex items-center justify-between mb-8 sticky top-0 bg-black/90 py-4 z-10">
             <div>
-              <h2 className="text-3xl font-serif text-ivory mb-2">Property Comparison</h2>
+              <h2 className="text-3xl font-sans text-ivory mb-2">Property Comparison</h2>
               <p className="text-gray-400">Compare up to 3 properties side-by-side</p>
             </div>
             <button
@@ -443,7 +443,7 @@ const ComparisonModal = ({ properties, onClose }: ComparisonModalProps) => {
                 <tr className="border-b border-white/5">
                   <td className="p-4 sm:p-6 text-gray-400 font-medium sticky left-0 bg-dark-card">Price</td>
                   {properties.map((p) => (
-                    <td key={p.id} className="p-4 sm:p-6 text-gold font-serif text-xl">
+                    <td key={p.id} className="p-4 sm:p-6 text-gold font-sans text-xl">
                       ${p.price.toLocaleString()}
                     </td>
                   ))}
