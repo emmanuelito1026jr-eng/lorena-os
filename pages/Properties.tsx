@@ -2,9 +2,9 @@ import { useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
-import { PROPERTIES } from '../constants';
-import { Property } from '../types';
-import { Bed, Bath, Maximize, MapPin, Heart, Search, SlidersHorizontal, GitCompare, X } from 'lucide-react';
+import { mockListings } from '../lib/mockListings';
+import type { Property } from '../lib/mockListings';
+import { Bed, Bath, Maximize, MapPin, Heart, Search, SlidersHorizontal, GitCompare, X, Grid3x3, Map as MapIcon } from 'lucide-react';
 
 const Properties = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -16,16 +16,17 @@ const Properties = () => {
   const [favorites, setFavorites] = useState<Set<string>>(new Set());
   const [compareList, setCompareList] = useState<Set<string>>(new Set());
   const [showComparison, setShowComparison] = useState(false);
+  const [viewMode, setViewMode] = useState<'grid' | 'map'>('grid');
 
   const neighborhoods = useMemo(() =>
-    ['all', ...new Set(PROPERTIES.map(p => p.neighborhood))],
+    ['all', ...new Set(mockListings.map(p => p.neighborhood))],
     []
   );
 
   const filteredProperties = useMemo(() => {
-    return PROPERTIES.filter(property => {
-      const matchesSearch = property.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                           property.address.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    return mockListings.filter(property => {
+      const matchesSearch = property.address.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                           property.city.toLowerCase().includes(searchTerm.toLowerCase()) ||
                            property.neighborhood.toLowerCase().includes(searchTerm.toLowerCase());
 
       const matchesNeighborhood = selectedNeighborhood === 'all' ||
@@ -70,7 +71,7 @@ const Properties = () => {
   };
 
   const comparedProperties = useMemo(() => {
-    return PROPERTIES.filter(p => compareList.has(p.id));
+    return mockListings.filter(p => compareList.has(p.id));
   }, [compareList]);
 
   return (
@@ -85,7 +86,7 @@ const Properties = () => {
               Find Your <span className="text-gold italic">Dream Home</span>
             </h1>
             <p className="text-black/60 text-xl max-w-2xl mx-auto">
-              Explore {PROPERTIES.length} luxury properties in El Paso's finest neighborhoods
+              Explore {mockListings.length} luxury properties in El Paso's finest neighborhoods
             </p>
           </div>
 
@@ -186,17 +187,43 @@ const Properties = () => {
         </div>
       </section>
 
-      {/* Property Grid */}
-      <section className="py-20 px-4">
+      {/* Property Grid/Map */}
+      <section className="py-20 px-4 bg-warm-white">
         <div className="max-w-7xl mx-auto">
-          <div className="flex justify-between items-center mb-8">
+          <div className="flex justify-between items-center mb-8 flex-wrap gap-4">
             <p className="text-black/60">
               Showing <span className="text-gold font-bold">{filteredProperties.length}</span> properties
             </p>
+
+            {/* Grid/Map Toggle */}
+            <div className="flex gap-2 bg-white border border-gray-200 rounded-lg p-1">
+              <button
+                onClick={() => setViewMode('grid')}
+                className={`flex items-center gap-2 px-4 py-2 rounded transition-all ${
+                  viewMode === 'grid'
+                    ? 'bg-gold text-dark font-semibold'
+                    : 'text-black/60 hover:text-black'
+                }`}
+              >
+                <Grid3x3 size={18} />
+                <span className="hidden sm:inline">Grid</span>
+              </button>
+              <button
+                onClick={() => setViewMode('map')}
+                className={`flex items-center gap-2 px-4 py-2 rounded transition-all ${
+                  viewMode === 'map'
+                    ? 'bg-gold text-dark font-semibold'
+                    : 'text-black/60 hover:text-black'
+                }`}
+              >
+                <MapIcon size={18} />
+                <span className="hidden sm:inline">Map</span>
+              </button>
+            </div>
           </div>
 
           {filteredProperties.length === 0 ? (
-            <div className="text-center py-20">
+            <div className="text-center py-20 bg-white rounded-lg border border-gray-200">
               <p className="text-black/60 text-xl">No properties match your criteria</p>
               <button
                 onClick={() => {
@@ -206,12 +233,12 @@ const Properties = () => {
                   setBedrooms('any');
                   setPropertyType('all');
                 }}
-                className="mt-4 px-6 py-3 bg-gold text-dark font-bold hover:bg-white transition-colors"
+                className="mt-4 px-6 py-3 bg-gold text-dark font-bold uppercase tracking-widest hover:shadow-gold-glow transition-all rounded"
               >
                 Reset Filters
               </button>
             </div>
-          ) : (
+          ) : viewMode === 'grid' ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {filteredProperties.map((property, index) => (
                 <PropertyCard
@@ -224,6 +251,23 @@ const Properties = () => {
                   delay={index * 100}
                 />
               ))}
+            </div>
+          ) : (
+            <div className="flex gap-4 h-[600px]">
+              <div className="flex-1 bg-gray-100 rounded-lg flex items-center justify-center relative overflow-hidden border border-gray-200">
+                {/* TODO: Replace with Google Maps / Mapbox when MLS API is integrated */}
+                <div className="text-center text-gray-500 p-8">
+                  <MapPin className="w-16 h-16 mx-auto mb-4 text-gold" />
+                  <p className="font-playfair text-2xl font-semibold text-black mb-2">Interactive Map Coming Soon</p>
+                  <p className="text-sm text-black/60">MLS integration in progress</p>
+                  <p className="text-xs text-black/40 mt-4">El Paso, TX (31.7619, -106.4850)</p>
+                </div>
+              </div>
+              <div className="w-80 overflow-y-auto space-y-3 hidden lg:block">
+                {filteredProperties.map(p => (
+                  <CompactPropertyCard key={p.id} property={p} />
+                ))}
+              </div>
             </div>
           )}
         </div>
@@ -267,6 +311,26 @@ const Properties = () => {
           onClose={() => setShowComparison(false)}
         />
       )}
+
+      {/* MLS Disclaimer - REQUIRED */}
+      <section className="py-12 px-4 bg-white border-t border-gray-200">
+        <div className="max-w-7xl mx-auto">
+          <div className="flex justify-center mb-6">
+            <img
+              src="/images/logo/greater-el-paso-realtors.jpg"
+              alt="Greater El Paso Association of REALTORS®"
+              className="h-16 w-auto"
+            />
+          </div>
+          <p className="text-xs text-black/60 font-lato leading-relaxed text-center max-w-4xl mx-auto">
+            Based on information from the Greater El Paso Association of REALTORS® MLS.
+            Information is provided exclusively for consumers' personal, non-commercial use
+            and may not be used for any purpose other than to identify prospective properties
+            consumers may be interested in purchasing. All information deemed reliable but not guaranteed.
+            Copyright 2026 Greater El Paso Association of Realtors Multiple Listing Service. All Rights Reserved.
+          </p>
+        </div>
+      </section>
 
       <Footer />
     </div>
@@ -555,5 +619,44 @@ const ComparisonModal = ({ properties, onClose }: ComparisonModalProps) => {
     </div>
   );
 };
+
+// Compact Property Card for Map View Sidebar
+function CompactPropertyCard({ property }: { property: Property }) {
+  return (
+    <Link
+      to={`/property/${property.id}`}
+      className="block bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-md transition-all group"
+    >
+      <div className="relative h-32 overflow-hidden">
+        <img
+          src={property.image}
+          alt={property.address}
+          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+        />
+        {property.status === "Pending" && (
+          <span className="absolute top-2 left-2 bg-yellow-500 text-white text-xs font-semibold px-2 py-1 rounded">
+            Pending
+          </span>
+        )}
+      </div>
+      <div className="p-3">
+        <p className="text-xl font-bold text-black font-playfair">
+          ${property.price.toLocaleString()}
+        </p>
+        <div className="flex items-center gap-2 text-xs text-black/60 mt-1 font-lato">
+          <span>{property.beds} bd</span>
+          <span>•</span>
+          <span>{property.baths} ba</span>
+          <span>•</span>
+          <span>{property.sqft.toLocaleString()} sf</span>
+        </div>
+        <p className="text-xs text-black/70 mt-2 font-lato">{property.address}</p>
+        <p className="text-xs text-black/50 font-lato">
+          {property.city}, {property.state}
+        </p>
+      </div>
+    </Link>
+  );
+}
 
 export default Properties;

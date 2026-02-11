@@ -177,6 +177,24 @@
   .tap-highlight-gold {
     -webkit-tap-highlight-color: rgba(197, 169, 94, 0.3);
   }
+
+  /* Standardized Button Patterns (Compass-style) */
+  .btn-primary {
+    @apply bg-gold text-dark hover:bg-[#b8973a] rounded-full px-6 py-3 font-lato font-bold uppercase tracking-widest transition-all;
+  }
+
+  .btn-secondary {
+    @apply border-2 border-gold text-gold hover:bg-gold hover:text-dark rounded-full px-6 py-3 font-lato font-bold uppercase tracking-widest transition-all;
+  }
+
+  .btn-ghost {
+    @apply text-gold hover:underline font-lato font-medium transition-all;
+  }
+
+  /* Page fade-in animation */
+  .page-transition {
+    animation: fadeIn 0.4s ease-out;
+  }
 }
 
 @keyframes fadeInUp {
