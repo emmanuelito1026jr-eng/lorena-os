@@ -146,12 +146,12 @@ const ContactForm = ({ minimal = false }: ContactFormProps) => {
           aria-invalid={!!errors.name}
           aria-describedby={errors.name ? 'name-error' : undefined}
           className={`w-full bg-white border-2 ${
-            errors.name ? 'border-red-500' : 'border-gray-200'
+            errors.name ? 'border-gold' : 'border-gray-200'
           } text-black px-4 py-4 focus:outline-none focus:outline-2 focus:outline-gold focus:border-gold transition-premium`}
           placeholder="Maria Gonzalez"
         />
         {errors.name && (
-          <p id="name-error" className="text-red-500 text-xs mt-1">
+          <p id="name-error" className="text-gold text-xs mt-1">
             {errors.name}
           </p>
         )}
@@ -171,12 +171,12 @@ const ContactForm = ({ minimal = false }: ContactFormProps) => {
             aria-invalid={!!errors.email}
             aria-describedby={errors.email ? 'email-error' : undefined}
             className={`w-full bg-white border-2 ${
-              errors.email ? 'border-red-500' : 'border-gray-200'
+              errors.email ? 'border-gold' : 'border-gray-200'
             } text-black px-4 py-4 focus:outline-none focus:outline-2 focus:outline-gold focus:border-gold transition-premium`}
             placeholder="email@example.com"
           />
           {errors.email && (
-            <p id="email-error" className="text-red-500 text-xs mt-1">
+            <p id="email-error" className="text-gold text-xs mt-1">
               {errors.email}
             </p>
           )}
@@ -194,12 +194,12 @@ const ContactForm = ({ minimal = false }: ContactFormProps) => {
             aria-invalid={!!errors.phone}
             aria-describedby={errors.phone ? 'phone-error' : undefined}
             className={`w-full bg-white border-2 ${
-              errors.phone ? 'border-red-500' : 'border-gray-200'
+              errors.phone ? 'border-gold' : 'border-gray-200'
             } text-black px-4 py-4 focus:outline-none focus:outline-2 focus:outline-gold focus:border-gold transition-premium`}
             placeholder="(915) 555-0123"
           />
           {errors.phone && (
-            <p id="phone-error" className="text-red-500 text-xs mt-1">
+            <p id="phone-error" className="text-gold text-xs mt-1">
               {errors.phone}
             </p>
           )}
@@ -234,7 +234,7 @@ const ContactForm = ({ minimal = false }: ContactFormProps) => {
 
       {/* Status Messages */}
       {submitStatus === 'success' && (
-        <div className="bg-green-50 border-2 border-green-500 text-green-900 px-4 py-3">
+        <div className="bg-gold/10 border-2 border-gold text-black px-4 py-3">
           <p className="text-sm font-medium">
             ✓ Message sent successfully! We'll contact you soon.
           </p>
@@ -242,7 +242,7 @@ const ContactForm = ({ minimal = false }: ContactFormProps) => {
       )}
 
       {submitStatus === 'error' && (
-        <div className="bg-red-50 border-2 border-red-500 text-red-900 px-4 py-3">
+        <div className="bg-gold/10 border-2 border-gold text-black px-4 py-3">
           <p className="text-sm font-medium">
             ✗ Failed to send message. Please try again or call us directly at (915) 487-5581.
           </p>
