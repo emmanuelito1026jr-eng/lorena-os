@@ -145,8 +145,8 @@ const MortgagePartnership = () => {
 
                 {/* Company Logo Overlay */}
                 <div className="absolute top-6 right-6 bg-white/95 backdrop-blur-sm px-4 py-2 rounded-lg shadow-lg">
-                  <p className="text-xs font-bold text-blue-600">AMERICAN PACIFIC</p>
-                  <p className="text-xs text-gray-600">MORTGAGE</p>
+                  <p className="text-xs font-bold text-black">AMERICAN PACIFIC</p>
+                  <p className="text-xs text-black/60">MORTGAGE</p>
                 </div>
 
                 {/* Overlay Badge */}
