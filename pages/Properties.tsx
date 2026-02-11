@@ -295,6 +295,7 @@ const PropertyCard = ({ property, isFavorite, onToggleFavorite, isComparing, onT
           src={property.images[0]}
           alt={property.title}
           className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+          loading="lazy"
         />
 
         {/* Status Badge */}
@@ -428,6 +429,7 @@ const ComparisonModal = ({ properties, onClose }: ComparisonModalProps) => {
                           src={property.images[0]}
                           alt={property.title}
                           className="w-full h-32 object-cover rounded mb-3"
+                          loading="lazy"
                         />
                         <h3 className="text-white font-semibold text-sm mb-1 line-clamp-2">
                           {property.title}
