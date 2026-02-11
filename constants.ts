@@ -20,13 +20,11 @@ export const PARTNER_NMLS = "NMLS #833420";
 export const PARTNER_ADDRESS = "221 N Kansas St., Ste. 726, El Paso, TX 79901";
 
 export const NAV_LINKS: NavLink[] = [
-  { label: 'Home', href: '/' },
-  { label: 'Properties', href: '#/properties' },
-  { label: 'About', href: '#/about' },
-  { label: 'Services', href: '#services' },
+  { label: 'Search Homes', href: '#/properties' },
   { label: 'Neighborhoods', href: '#neighborhoods' },
-  { label: 'Mortgage', href: '#/mortgage' },
+  { label: 'About', href: '#/about' },
   { label: 'Home Estimate', href: '#/estimate' },
+  { label: 'Mortgage', href: '#/mortgage' },
 ];
 
 export const SERVICES: Service[] = [
