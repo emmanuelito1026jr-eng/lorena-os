@@ -49,7 +49,7 @@ const Hero = () => {
       {/* Background Image */}
       <div className="absolute inset-0">
         <img
-          src="/images/hero/el-paso-skyline.jpg"
+          src="/images/hero/el-paso-skyline-real.jpg"
           alt="El Paso, Texas skyline"
           className="w-full h-full object-cover"
         />
@@ -92,16 +92,16 @@ const Hero = () => {
         </div>
 
         {/* Stats Row */}
-        <div className="mt-20 grid grid-cols-2 md:grid-cols-4 gap-6 max-w-4xl mx-auto items-stretch">
+        <div className="mt-20 grid grid-cols-2 md:grid-cols-4 gap-6 max-w-4xl mx-auto">
           {[
             { value: '100+', label: 'Families Served' },
             { value: '10+', label: 'Years Experience' },
             { value: '5.0', label: 'Client Rating' },
             { value: '100%', label: 'Bilingual' }
           ].map((stat, index) => (
-            <div key={index} className="stat-card bg-dark/80 backdrop-blur-sm border border-gold/30 p-8 md:p-12 hover-lift shadow-premium hover:shadow-gold-glow transition-premium min-h-[180px] flex flex-col items-center justify-center">
-              <div className="text-3xl md:text-4xl font-playfair font-black text-gold mb-1 text-center">{stat.value}</div>
-              <div className="text-xs md:text-sm text-warm-white/80 uppercase tracking-wider font-lato font-medium text-center">{stat.label}</div>
+            <div key={index} className="stat-card bg-dark/80 backdrop-blur-sm border border-gold/30 p-6 hover-lift shadow-premium hover:shadow-gold-glow transition-premium h-[160px] flex flex-col items-center justify-center">
+              <div className="text-3xl md:text-4xl font-playfair font-black text-gold mb-2 text-center leading-none">{stat.value}</div>
+              <div className="text-xs text-warm-white/80 uppercase tracking-wider font-lato font-medium text-center leading-tight">{stat.label}</div>
             </div>
           ))}
         </div>
