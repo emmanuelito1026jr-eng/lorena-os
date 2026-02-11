@@ -6,10 +6,10 @@ import { Link } from 'react-router-dom';
 
 const Landing  = () => {
   return (
-    <div className="bg-dark min-h-screen flex flex-col">
+    <div className="bg-blackmin-h-screen flex flex-col">
       {/* Minimal Header */}
       <div className="absolute top-0 w-full p-6 z-20 flex justify-between items-center max-w-7xl mx-auto left-0 right-0">
-        <Link to="/" className="font-sans text-xl font-bold text-ivory">
+        <Link to="/" className="font-sans text-xl font-bold text-white">
            CASAS EN <span className="text-gold">EL PASO</span>
         </Link>
         <div className="text-white text-sm font-bold hidden sm:block">
@@ -31,10 +31,10 @@ const Landing  = () => {
                 <div className="inline-block bg-gold/20 text-gold px-3 py-1 text-xs font-bold uppercase tracking-widest rounded-sm border border-gold/20">
                     Bilingual Real Estate Services
                 </div>
-                <h1 className="font-sans text-4xl md:text-5xl lg:text-6xl text-ivory leading-tight font-bold">
+                <h1 className="font-sans text-4xl md:text-5xl lg:text-6xl text-white leading-tight font-bold">
                     Find Your Perfect El Paso Home <span className="text-gold italic">— Before Everyone Else.</span>
                 </h1>
-                <p className="text-xl text-gray-300 leading-relaxed max-w-lg">
+                <p className="text-xl text-white/80 leading-relaxed max-w-lg">
                     Get exclusive access to new listings, price drops, and off-market homes delivered straight to your inbox.
                 </p>
                 
@@ -65,7 +65,7 @@ const Landing  = () => {
                         <div className="flex text-gold">
                             {[1,2,3,4,5].map(i => <Star key={i} size={14} fill="currentColor" />)}
                         </div>
-                        <p className="text-xs text-gray-400 mt-1">Trusted by 100+ El Paso Families</p>
+                        <p className="text-xs text-white/60 mt-1">Trusted by 100+ El Paso Families</p>
                     </div>
                 </div>
             </div>
@@ -75,8 +75,8 @@ const Landing  = () => {
                 <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-gold text-dark font-bold text-xs uppercase px-4 py-1 tracking-widest whitespace-nowrap">
                     Limited Time Consultation
                 </div>
-                <h3 className="font-sans text-2xl text-center text-ivory mb-2">Get Exclusive Access</h3>
-                <p className="text-gray-400 text-center text-sm mb-6">Complete the form below to start your search.</p>
+                <h3 className="font-sans text-2xl text-center text-white mb-2">Get Exclusive Access</h3>
+                <p className="text-white/60 text-center text-sm mb-6">Complete the form below to start your search.</p>
                 <ContactForm minimal={true} />
             </div>
         </div>

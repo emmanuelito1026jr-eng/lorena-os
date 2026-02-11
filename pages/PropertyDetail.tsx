@@ -19,10 +19,10 @@ const PropertyDetail = () => {
 
   if (!property) {
     return (
-      <div className="bg-dark min-h-screen flex items-center justify-center">
+      <div className="bg-blackmin-h-screen flex items-center justify-center">
         <div className="text-center">
           <h1 className="text-4xl font-sans text-gold mb-4">Property Not Found</h1>
-          <Link to="/properties" className="text-ivory hover:text-gold">
+          <Link to="/properties" className="text-white hover:text-gold">
             ← Back to Properties
           </Link>
         </div>
@@ -39,7 +39,7 @@ const PropertyDetail = () => {
   };
 
   return (
-    <div className="bg-dark min-h-screen">
+    <div className="bg-blackmin-h-screen">
       <Navbar />
 
       {/* Image Gallery */}
@@ -60,30 +60,30 @@ const PropertyDetail = () => {
                 className="absolute left-4 top-1/2 -translate-y-1/2 p-3 bg-dark/80 hover:bg-gold transition-colors rounded-full"
                 aria-label="Previous image"
               >
-                <ChevronLeft size={24} className="text-ivory" />
+                <ChevronLeft size={24} className="text-white" />
               </button>
               <button
                 onClick={nextImage}
                 className="absolute right-4 top-1/2 -translate-y-1/2 p-3 bg-dark/80 hover:bg-gold transition-colors rounded-full"
                 aria-label="Next image"
               >
-                <ChevronRight size={24} className="text-ivory" />
+                <ChevronRight size={24} className="text-white" />
               </button>
             </>
           )}
 
           {/* Image Counter */}
-          <div className="absolute bottom-4 left-1/2 -translate-x-1/2 px-4 py-2 bg-dark/80 text-ivory text-sm rounded-full">
+          <div className="absolute bottom-4 left-1/2 -translate-x-1/2 px-4 py-2 bg-dark/80 text-white text-sm rounded-full">
             {currentImageIndex + 1} / {property.images.length}
           </div>
 
           {/* Action Buttons */}
           <div className="absolute top-4 right-4 flex gap-2">
             <button className="p-3 bg-dark/80 hover:bg-gold transition-colors rounded-full">
-              <Heart size={20} className="text-ivory" />
+              <Heart size={20} className="text-white" />
             </button>
             <button className="p-3 bg-dark/80 hover:bg-gold transition-colors rounded-full">
-              <Share2 size={20} className="text-ivory" />
+              <Share2 size={20} className="text-white" />
             </button>
           </div>
 
@@ -131,12 +131,12 @@ const PropertyDetail = () => {
                 </Link>
 
                 <div className="flex items-start justify-between gap-4 mb-4">
-                  <h1 className="font-sans text-4xl md:text-5xl text-ivory">
+                  <h1 className="font-sans text-4xl md:text-5xl text-white">
                     {property.title}
                   </h1>
                 </div>
 
-                <div className="flex items-center gap-2 text-gray-400 mb-6">
+                <div className="flex items-center gap-2 text-white/60 mb-6">
                   <MapPin size={18} className="text-gold" />
                   <span className="text-lg">{property.address}, {property.neighborhood}</span>
                 </div>
@@ -150,30 +150,30 @@ const PropertyDetail = () => {
                   <div className="flex items-center gap-2">
                     <Bed size={24} className="text-gold" />
                     <div>
-                      <div className="text-2xl text-ivory font-bold">{property.beds}</div>
-                      <div className="text-xs text-gray-400 uppercase tracking-wider">Bedrooms</div>
+                      <div className="text-2xl text-white font-bold">{property.beds}</div>
+                      <div className="text-xs text-white/60 uppercase tracking-wider">Bedrooms</div>
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
                     <Bath size={24} className="text-gold" />
                     <div>
-                      <div className="text-2xl text-ivory font-bold">{property.baths}</div>
-                      <div className="text-xs text-gray-400 uppercase tracking-wider">Bathrooms</div>
+                      <div className="text-2xl text-white font-bold">{property.baths}</div>
+                      <div className="text-xs text-white/60 uppercase tracking-wider">Bathrooms</div>
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
                     <Maximize size={24} className="text-gold" />
                     <div>
-                      <div className="text-2xl text-ivory font-bold">{property.sqft.toLocaleString()}</div>
-                      <div className="text-xs text-gray-400 uppercase tracking-wider">Square Feet</div>
+                      <div className="text-2xl text-white font-bold">{property.sqft.toLocaleString()}</div>
+                      <div className="text-xs text-white/60 uppercase tracking-wider">Square Feet</div>
                     </div>
                   </div>
                   {property.lotSize && (
                     <div className="flex items-center gap-2">
                       <Building size={24} className="text-gold" />
                       <div>
-                        <div className="text-2xl text-ivory font-bold">{property.lotSize}</div>
-                        <div className="text-xs text-gray-400 uppercase tracking-wider">Acres</div>
+                        <div className="text-2xl text-white font-bold">{property.lotSize}</div>
+                        <div className="text-xs text-white/60 uppercase tracking-wider">Acres</div>
                       </div>
                     </div>
                   )}
@@ -183,7 +183,7 @@ const PropertyDetail = () => {
               {/* Description */}
               <div className="animate-fade-in-up delay-100">
                 <h2 className="text-2xl font-sans text-gold mb-4">Property Description</h2>
-                <p className="text-gray-300 leading-relaxed text-lg">
+                <p className="text-white/80 leading-relaxed text-lg">
                   {property.description}
                 </p>
               </div>
@@ -195,7 +195,7 @@ const PropertyDetail = () => {
                   {property.features.map((feature, index) => (
                     <div
                       key={index}
-                      className="flex items-center gap-2 text-gray-300 bg-dark-card border border-white/10 px-4 py-3 rounded"
+                      className="flex items-center gap-2 text-white/80 bg-dark-card border border-white/10 px-4 py-3 rounded"
                     >
                       <div className="w-2 h-2 bg-gold rounded-full" />
                       <span>{feature}</span>
@@ -210,21 +210,21 @@ const PropertyDetail = () => {
                 <div className="bg-dark-card border border-white/10 rounded-lg p-6">
                   <div className="grid grid-cols-2 gap-6">
                     <div className="border-b border-white/10 pb-4">
-                      <div className="text-xs text-gray-400 uppercase tracking-wider mb-1">Property Type</div>
-                      <div className="text-ivory">{property.propertyType}</div>
+                      <div className="text-xs text-white/60 uppercase tracking-wider mb-1">Property Type</div>
+                      <div className="text-white">{property.propertyType}</div>
                     </div>
                     <div className="border-b border-white/10 pb-4">
-                      <div className="text-xs text-gray-400 uppercase tracking-wider mb-1">Year Built</div>
-                      <div className="text-ivory">{property.yearBuilt}</div>
+                      <div className="text-xs text-white/60 uppercase tracking-wider mb-1">Year Built</div>
+                      <div className="text-white">{property.yearBuilt}</div>
                     </div>
                     <div className="border-b border-white/10 pb-4">
-                      <div className="text-xs text-gray-400 uppercase tracking-wider mb-1">Days on Market</div>
-                      <div className="text-ivory">{property.daysOnMarket} days</div>
+                      <div className="text-xs text-white/60 uppercase tracking-wider mb-1">Days on Market</div>
+                      <div className="text-white">{property.daysOnMarket} days</div>
                     </div>
                     {property.mlsNumber && (
                       <div className="border-b border-white/10 pb-4">
-                        <div className="text-xs text-gray-400 uppercase tracking-wider mb-1">MLS Number</div>
-                        <div className="text-ivory">{property.mlsNumber}</div>
+                        <div className="text-xs text-white/60 uppercase tracking-wider mb-1">MLS Number</div>
+                        <div className="text-white">{property.mlsNumber}</div>
                       </div>
                     )}
                   </div>
@@ -253,10 +253,10 @@ const PropertyDetail = () => {
             <div className="lg:col-span-1">
               <div className="sticky top-24 animate-fade-in-up delay-500">
                 <div className="bg-dark-card border border-gold/30 p-8 rounded-lg shadow-2xl">
-                  <h3 className="font-sans text-2xl text-center text-ivory mb-2">
+                  <h3 className="font-sans text-2xl text-center text-white mb-2">
                     Schedule a Showing
                   </h3>
-                  <p className="text-gray-400 text-center text-sm mb-6">
+                  <p className="text-white/60 text-center text-sm mb-6">
                     Contact Lorena about this property
                   </p>
                   <ContactForm minimal={true} />
@@ -333,13 +333,13 @@ const MortgageCalculator = ({ price }: { price: number }) => {
       <h3 className="text-xl font-sans text-gold text-center">Estimated Monthly Payment</h3>
 
       <div className="text-center">
-        <div className="text-4xl font-sans text-ivory">${monthlyPayment.toLocaleString(undefined, { maximumFractionDigits: 0 })}</div>
-        <div className="text-sm text-gray-400 mt-1">per month</div>
+        <div className="text-4xl font-sans text-white">${monthlyPayment.toLocaleString(undefined, { maximumFractionDigits: 0 })}</div>
+        <div className="text-sm text-white/60 mt-1">per month</div>
       </div>
 
       <div className="space-y-4">
         <div>
-          <label className="block text-xs uppercase tracking-widest text-gray-400 mb-2">
+          <label className="block text-xs uppercase tracking-widest text-white/60 mb-2">
             Down Payment: {downPayment}%
           </label>
           <input
@@ -351,13 +351,13 @@ const MortgageCalculator = ({ price }: { price: number }) => {
             onChange={(e) => setDownPayment(parseInt(e.target.value))}
             className="w-full accent-gold"
           />
-          <div className="text-sm text-gray-400 mt-1">
+          <div className="text-sm text-white/60 mt-1">
             ${(price * (downPayment / 100)).toLocaleString()}
           </div>
         </div>
 
         <div>
-          <label className="block text-xs uppercase tracking-widest text-gray-400 mb-2">
+          <label className="block text-xs uppercase tracking-widest text-white/60 mb-2">
             Interest Rate: {interestRate}%
           </label>
           <input
@@ -372,13 +372,13 @@ const MortgageCalculator = ({ price }: { price: number }) => {
         </div>
 
         <div>
-          <label className="block text-xs uppercase tracking-widest text-gray-400 mb-2">
+          <label className="block text-xs uppercase tracking-widest text-white/60 mb-2">
             Loan Term: {loanTerm} years
           </label>
           <select
             value={loanTerm}
             onChange={(e) => setLoanTerm(parseInt(e.target.value))}
-            className="w-full bg-dark border border-white/10 text-ivory px-4 py-3 focus:outline-none focus:border-gold transition-colors rounded"
+            className="w-full bg-blackborder border-white/10 text-white px-4 py-3 focus:outline-none focus:border-gold transition-colors rounded"
           >
             <option value="15">15 years</option>
             <option value="20">20 years</option>

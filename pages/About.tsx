@@ -6,7 +6,7 @@ import { STATS, TESTIMONIALS } from '../constants';
 
 const About = () => {
   return (
-    <div className="bg-dark min-h-screen">
+    <div className="bg-blackmin-h-screen">
       <Navbar />
 
       {/* Hero Section */}
@@ -31,7 +31,7 @@ const About = () => {
                 {/* Floating Stats */}
                 <div className="absolute -bottom-6 -right-6 glass-strong p-6 rounded-lg">
                   <div className="text-4xl font-sans text-gold mb-1">10+</div>
-                  <div className="text-xs text-gray-400 uppercase tracking-wider">Years Banking</div>
+                  <div className="text-xs text-white/60 uppercase tracking-wider">Years Banking</div>
                 </div>
               </div>
             </div>
@@ -39,12 +39,12 @@ const About = () => {
             {/* Right: Content */}
             <div className="animate-fade-in-up delay-200">
               <span className="text-gold text-xs uppercase tracking-[0.3em]">About Lorena</span>
-              <h1 className="mt-4 font-sans text-5xl md:text-6xl text-ivory mb-6">
+              <h1 className="mt-4 font-sans text-5xl md:text-6xl text-white mb-6">
                 Bridging Cultures, <br />
                 <span className="gradient-text italic">Building Wealth</span>
               </h1>
 
-              <div className="space-y-4 text-gray-300 text-lg leading-relaxed">
+              <div className="space-y-4 text-white/80 text-lg leading-relaxed">
                 <p>
                   I'm <strong className="text-gold">Lorena Ontiveros-Ortega</strong>, and I don't just find you a home —
                   I make sure you can afford it. With over <strong>10 years of banking experience</strong> and a
@@ -69,7 +69,7 @@ const About = () => {
                 {STATS.map((stat, index) => (
                   <div key={index} className="glass rounded-lg p-3 sm:p-4 hover-lift">
                     <div className="text-xl sm:text-2xl font-sans text-gold mb-1">{stat.value}</div>
-                    <div className="text-[10px] sm:text-xs text-gray-400 uppercase tracking-wider">{stat.label}</div>
+                    <div className="text-[10px] sm:text-xs text-white/60 uppercase tracking-wider">{stat.label}</div>
                   </div>
                 ))}
               </div>
@@ -79,11 +79,11 @@ const About = () => {
       </section>
 
       {/* Career Timeline */}
-      <section className="py-20 px-4 bg-dark-charcoal">
+      <section className="py-20 px-4 bg-black/95">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16 animate-fade-in-up">
             <span className="text-gold text-xs uppercase tracking-[0.3em]">My Journey</span>
-            <h2 className="mt-4 font-sans text-4xl md:text-5xl text-ivory">
+            <h2 className="mt-4 font-sans text-4xl md:text-5xl text-white">
               From Banking to <span className="gradient-text">Real Estate</span>
             </h2>
           </div>
@@ -140,8 +140,8 @@ const About = () => {
                             <div className="text-gold text-xs uppercase tracking-wider">{item.year}</div>
                           </div>
                           <div className="hidden md:block text-gold text-xs uppercase tracking-wider mb-2">{item.year}</div>
-                          <h3 className="text-ivory text-xl sm:text-2xl font-sans mb-2 sm:mb-3">{item.title}</h3>
-                          <p className="text-gray-400 text-sm sm:text-base">{item.description}</p>
+                          <h3 className="text-white text-xl sm:text-2xl font-sans mb-2 sm:mb-3">{item.title}</h3>
+                          <p className="text-white/60 text-sm sm:text-base">{item.description}</p>
                         </div>
                       </div>
                       {/* Icon Center */}
@@ -169,8 +169,8 @@ const About = () => {
                             <div className="text-gold text-xs uppercase tracking-wider">{item.year}</div>
                           </div>
                           <div className="hidden md:block text-gold text-xs uppercase tracking-wider mb-2">{item.year}</div>
-                          <h3 className="text-ivory text-xl sm:text-2xl font-sans mb-2 sm:mb-3">{item.title}</h3>
-                          <p className="text-gray-400 text-sm sm:text-base">{item.description}</p>
+                          <h3 className="text-white text-xl sm:text-2xl font-sans mb-2 sm:mb-3">{item.title}</h3>
+                          <p className="text-white/60 text-sm sm:text-base">{item.description}</p>
                         </div>
                       </div>
                     </>
@@ -187,7 +187,7 @@ const About = () => {
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16 animate-fade-in-up">
             <span className="text-gold text-xs uppercase tracking-[0.3em]">Competitive Advantage</span>
-            <h2 className="mt-4 font-sans text-4xl md:text-5xl text-ivory">
+            <h2 className="mt-4 font-sans text-4xl md:text-5xl text-white">
               Why Choose <span className="gradient-text">Lorena?</span>
             </h2>
           </div>
@@ -239,8 +239,8 @@ const About = () => {
                 <div className="w-16 h-16 bg-gold/20 rounded-full flex items-center justify-center mb-4">
                   <item.icon className="text-gold" size={28} />
                 </div>
-                <h3 className="text-ivory text-xl font-sans mb-3">{item.title}</h3>
-                <p className="text-gray-400">{item.description}</p>
+                <h3 className="text-white text-xl font-sans mb-3">{item.title}</h3>
+                <p className="text-white/60">{item.description}</p>
               </div>
             ))}
           </div>
@@ -248,11 +248,11 @@ const About = () => {
       </section>
 
       {/* Client Testimonials */}
-      <section className="py-20 px-4 bg-dark-charcoal">
+      <section className="py-20 px-4 bg-black/95">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16 animate-fade-in-up">
             <span className="text-gold text-xs uppercase tracking-[0.3em]">Client Success Stories</span>
-            <h2 className="mt-4 font-sans text-4xl md:text-5xl text-ivory">
+            <h2 className="mt-4 font-sans text-4xl md:text-5xl text-white">
               What Families <span className="gradient-text">Are Saying</span>
             </h2>
           </div>
@@ -269,10 +269,10 @@ const About = () => {
                     <Star key={i} size={16} className="text-gold fill-gold" />
                   ))}
                 </div>
-                <p className="text-gray-300 italic mb-4">"{testimonial.text}"</p>
+                <p className="text-white/80 italic mb-4">"{testimonial.text}"</p>
                 <div className="border-t border-white/10 pt-4">
-                  <div className="text-ivory font-semibold">{testimonial.name}</div>
-                  <div className="text-gray-400 text-sm">{testimonial.role}</div>
+                  <div className="text-white font-semibold">{testimonial.name}</div>
+                  <div className="text-white/60 text-sm">{testimonial.role}</div>
                 </div>
               </div>
             ))}
@@ -284,10 +284,10 @@ const About = () => {
       <section className="py-20 px-4 bg-dark">
         <div className="max-w-4xl mx-auto">
           <div className="glass-strong rounded-lg p-12 text-center animate-fade-in-up">
-            <h2 className="font-sans text-4xl md:text-5xl text-ivory mb-6">
+            <h2 className="font-sans text-4xl md:text-5xl text-white mb-6">
               Ready to Find Your <span className="gradient-text">Dream Home?</span>
             </h2>
-            <p className="text-gray-300 text-lg mb-8 max-w-2xl mx-auto">
+            <p className="text-white/80 text-lg mb-8 max-w-2xl mx-auto">
               Let's start a conversation about your real estate goals. Whether you're buying, selling, or investing,
               I'm here to guide you every step of the way.
             </p>

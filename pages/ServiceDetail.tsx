@@ -261,10 +261,10 @@ const ServiceDetail = () => {
 
   if (!service) {
     return (
-      <div className="bg-dark min-h-screen flex items-center justify-center">
+      <div className="bg-blackmin-h-screen flex items-center justify-center">
         <div className="text-center">
           <h1 className="text-4xl font-sans text-gold mb-4">Service Not Found</h1>
-          <Link to="/#services" className="text-ivory hover:text-gold">
+          <Link to="/#services" className="text-white hover:text-gold">
             ← Back to Services
           </Link>
         </div>
@@ -273,7 +273,7 @@ const ServiceDetail = () => {
   }
 
   return (
-    <div className="bg-dark min-h-screen">
+    <div className="bg-blackmin-h-screen">
       <Navbar />
 
       {/* Hero */}
@@ -294,11 +294,11 @@ const ServiceDetail = () => {
             {service.subtitle}
           </div>
 
-          <h1 className="font-sans text-5xl md:text-7xl text-ivory mb-6 animate-fade-in-up delay-100">
+          <h1 className="font-sans text-5xl md:text-7xl text-white mb-6 animate-fade-in-up delay-100">
             {service.title}
           </h1>
 
-          <p className="text-xl md:text-2xl text-gray-300 mb-8 animate-fade-in-up delay-200">
+          <p className="text-xl md:text-2xl text-white/80 mb-8 animate-fade-in-up delay-200">
             {service.tagline}
           </p>
 
@@ -312,7 +312,7 @@ const ServiceDetail = () => {
       {/* Description */}
       <section className="py-20 px-4 bg-dark-charcoal">
         <div className="max-w-4xl mx-auto text-center">
-          <p className="text-xl text-gray-300 leading-relaxed animate-fade-in-up">
+          <p className="text-xl text-white/80 leading-relaxed animate-fade-in-up">
             {service.description}
           </p>
         </div>
@@ -322,10 +322,10 @@ const ServiceDetail = () => {
       <section className="py-20 px-4 bg-dark">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
-            <h2 className="font-sans text-4xl md:text-5xl text-ivory mb-4">
+            <h2 className="font-sans text-4xl md:text-5xl text-white mb-4">
               The <span className="gradient-text">Process</span>
             </h2>
-            <p className="text-gray-400 text-lg">Step-by-step guidance from start to finish</p>
+            <p className="text-white/60 text-lg">Step-by-step guidance from start to finish</p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
@@ -339,8 +339,8 @@ const ServiceDetail = () => {
                 <div className="w-16 h-16 bg-gold/20 rounded-full flex items-center justify-center mb-4">
                   <step.icon className="text-gold" size={28} />
                 </div>
-                <h3 className="text-xl font-sans text-ivory mb-3">{step.title}</h3>
-                <p className="text-gray-400 mb-4">{step.description}</p>
+                <h3 className="text-xl font-sans text-white mb-3">{step.title}</h3>
+                <p className="text-white/60 mb-4">{step.description}</p>
                 <div className="flex items-center gap-2 text-sm text-gold">
                   <Clock size={14} />
                   <span>{step.duration}</span>
@@ -355,7 +355,7 @@ const ServiceDetail = () => {
       <section className="py-20 px-4 bg-dark-charcoal">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
-            <h2 className="font-sans text-4xl md:text-5xl text-ivory mb-4">
+            <h2 className="font-sans text-4xl md:text-5xl text-white mb-4">
               What's <span className="gradient-text">Included</span>
             </h2>
           </div>
@@ -368,7 +368,7 @@ const ServiceDetail = () => {
                 style={{ animationDelay: `${index * 50}ms` }}
               >
                 <CheckCircle className="text-gold shrink-0 mt-1" size={20} />
-                <span className="text-gray-300">{benefit}</span>
+                <span className="text-white/80">{benefit}</span>
               </div>
             ))}
           </div>
@@ -379,7 +379,7 @@ const ServiceDetail = () => {
       <section className="py-20 px-4 bg-dark">
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-16">
-            <h2 className="font-sans text-4xl md:text-5xl text-ivory mb-4">
+            <h2 className="font-sans text-4xl md:text-5xl text-white mb-4">
               Common <span className="gradient-text">Questions</span>
             </h2>
           </div>
@@ -392,7 +392,7 @@ const ServiceDetail = () => {
                 style={{ animationDelay: `${index * 100}ms` }}
               >
                 <h3 className="text-xl text-gold font-semibold mb-3">{faq.q}</h3>
-                <p className="text-gray-300 leading-relaxed">{faq.a}</p>
+                <p className="text-white/80 leading-relaxed">{faq.a}</p>
               </div>
             ))}
           </div>
@@ -403,7 +403,7 @@ const ServiceDetail = () => {
       <section className="py-20 px-4 bg-dark-charcoal">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
-            <h2 className="font-sans text-4xl md:text-5xl text-ivory mb-4">
+            <h2 className="font-sans text-4xl md:text-5xl text-white mb-4">
               Client <span className="gradient-text">Success Stories</span>
             </h2>
           </div>
@@ -416,10 +416,10 @@ const ServiceDetail = () => {
                 style={{ animationDelay: `${index * 150}ms` }}
               >
                 <div className="text-5xl text-gold/20 mb-4">"</div>
-                <p className="text-gray-300 text-lg italic mb-6">{testimonial.text}</p>
+                <p className="text-white/80 text-lg italic mb-6">{testimonial.text}</p>
                 <div className="border-t border-white/10 pt-4">
-                  <div className="text-ivory font-semibold">{testimonial.name}</div>
-                  <div className="text-gray-400 text-sm">{testimonial.role}</div>
+                  <div className="text-white font-semibold">{testimonial.name}</div>
+                  <div className="text-white/60 text-sm">{testimonial.role}</div>
                 </div>
               </div>
             ))}
@@ -432,10 +432,10 @@ const ServiceDetail = () => {
         <div className="max-w-4xl mx-auto">
           <div className="glass-strong rounded-lg p-12">
             <div className="text-center mb-8">
-              <h2 className="font-sans text-4xl md:text-5xl text-ivory mb-4">
+              <h2 className="font-sans text-4xl md:text-5xl text-white mb-4">
                 Ready to <span className="gradient-text">Get Started?</span>
               </h2>
-              <p className="text-gray-300 text-lg">
+              <p className="text-white/80 text-lg">
                 Let's discuss your {service.title.toLowerCase()} needs and create a personalized plan.
               </p>
             </div>
