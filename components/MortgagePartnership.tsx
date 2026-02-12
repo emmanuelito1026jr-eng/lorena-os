@@ -74,7 +74,7 @@ const MortgagePartnership = () => {
               </div>
 
               {/* Content Section */}
-              <div className="p-12">
+              <div className="p-6 sm:p-8 md:p-12">
                 <div className="mb-6 pb-6 border-b border-gray-200">
                   <div className="flex items-center gap-3 mb-2">
                     <Award className="text-gold" size={20} />
@@ -157,7 +157,7 @@ const MortgagePartnership = () => {
               </div>
 
               {/* Content Section */}
-              <div className="p-12">
+              <div className="p-6 sm:p-8 md:p-12">
                 <div className="mb-6 pb-6 border-b border-gray-200">
                   <div className="flex items-center gap-3 mb-2">
                     <Shield className="text-gold" size={20} />

@@ -40,7 +40,7 @@ const NeighborhoodGuide = () => {
               <a
                 key={index}
                 href={linkTo}
-                className="neighborhood-card group relative h-96 overflow-hidden cursor-pointer hover-lift block shadow-premium hover:shadow-gold-glow transition-premium"
+                className="neighborhood-card group relative h-64 md:h-80 lg:h-96 overflow-hidden cursor-pointer hover-lift block shadow-premium hover:shadow-gold-glow transition-premium"
               >
                 <img
                   src={hood.image}
@@ -58,13 +58,13 @@ const NeighborhoodGuide = () => {
                     <h3 className="font-sans text-2xl text-white mb-2 group-hover:text-gold transition-premium font-bold">
                       {hood.name}
                     </h3>
-                    <p className="text-white/80 text-sm opacity-0 group-hover:opacity-100 transition-premium delay-100 line-clamp-2 font-light">
+                    <p className="text-white/80 text-sm opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-premium delay-100 line-clamp-2 font-light">
                       {hood.description}
                     </p>
                   </div>
 
                   {/* Stats Preview */}
-                  <div className="mt-4 grid grid-cols-3 gap-2 opacity-0 group-hover:opacity-100 transition-premium delay-150">
+                  <div className="mt-4 grid grid-cols-3 gap-2 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-premium delay-150">
                     <div className="text-center">
                       <TrendingUp size={16} className="text-gold mx-auto mb-1" />
                       <div className="text-xs text-white/60 font-light">Growth</div>
@@ -79,7 +79,7 @@ const NeighborhoodGuide = () => {
                     </div>
                   </div>
 
-                  <div className="mt-4 opacity-0 group-hover:opacity-100 transition-premium delay-200 flex items-center gap-2">
+                  <div className="mt-4 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-premium delay-200 flex items-center gap-2">
                     <span className="text-xs font-bold uppercase tracking-widest text-gold">
                       Explore Area
                     </span>

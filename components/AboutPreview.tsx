@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { STATS } from '../constants';
-import { ArrowRight, Award, TrendingUp, Users, Languages } from 'lucide-react';
+import { ArrowRight, Award, TrendingUp, Users, Languages, Phone } from 'lucide-react';
 import { staggerReveal } from '../utils/animations';
 
 const AboutPreview = () => {
@@ -19,12 +19,12 @@ const AboutPreview = () => {
           {/* Image Side */}
           <div className="relative group">
             {/* Floating Badge Icons */}
-            <div className="absolute -top-6 -right-6 z-20 flex gap-2">
+            <div className="absolute -top-6 -right-6 z-20 hidden md:flex gap-2">
               <div className="w-12 h-12 bg-gold flex items-center justify-center shadow-premium animate-float">
                 <Award className="text-white" size={24} />
               </div>
             </div>
-            <div className="absolute top-1/4 -left-6 z-20">
+            <div className="absolute top-1/4 -left-6 z-20 hidden md:flex">
               <div className="w-12 h-12 bg-white border-2 border-gold flex items-center justify-center shadow-premium animate-float" style={{ animationDelay: '0.5s' }}>
                 <Languages className="text-gold" size={24} />
               </div>
@@ -46,11 +46,20 @@ const AboutPreview = () => {
                 }}
               />
               {/* Gradient Overlay on Hover */}
-              <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-premium" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-60 group-hover:opacity-80 transition-premium" />
+
+              {/* Contact Me Button - overlaid on photo */}
+              <a
+                href="#contact"
+                className="absolute bottom-6 left-1/2 -translate-x-1/2 z-10 flex items-center gap-2 bg-gold text-white px-6 py-3 font-bold uppercase tracking-widest text-sm hover:bg-white hover:text-gold transition-premium shadow-lg opacity-90 group-hover:opacity-100"
+              >
+                <Phone size={16} />
+                Contact Me
+              </a>
             </div>
 
             {/* Name Badge */}
-            <div className="absolute -bottom-6 -right-6 bg-gold text-white px-6 sm:px-8 py-3 sm:py-4 z-20 shadow-gold-glow group-hover:shadow-gold-glow-lg transition-premium">
+            <div className="absolute -bottom-4 right-0 sm:-bottom-6 sm:-right-6 bg-gold text-white px-6 sm:px-8 py-3 sm:py-4 z-20 shadow-gold-glow group-hover:shadow-gold-glow-lg transition-premium">
               <span className="font-sans font-black text-lg sm:text-xl block">Lorena Ontiveros</span>
               <span className="text-[10px] sm:text-xs uppercase tracking-widest block font-extrabold">Realtor® & Financial Expert</span>
             </div>

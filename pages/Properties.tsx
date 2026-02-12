@@ -188,7 +188,7 @@ const Properties = () => {
       </section>
 
       {/* Property Grid/Map */}
-      <section className="py-20 px-4 bg-warm-white">
+      <section className={`py-20 px-4 bg-warm-white ${compareList.size > 0 ? 'pb-32' : ''}`}>
         <div className="max-w-7xl mx-auto">
           <div className="flex justify-between items-center mb-8 flex-wrap gap-4">
             <p className="text-black/60">

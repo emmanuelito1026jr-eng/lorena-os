@@ -25,17 +25,17 @@ const Footer = () => {
             <p className="text-white/70 text-sm leading-relaxed mb-6 font-light">
               Helping families on both sides of the border build wealth through real estate. Bilingual, professional, and dedicated to your future.
             </p>
-            <div className="flex space-x-4">
-              <a href="#" className="text-gold hover:text-white transition-premium" aria-label="Follow us on Instagram">
+            <div className="flex space-x-2">
+              <a href="#" className="text-gold hover:text-white transition-premium p-2" aria-label="Follow us on Instagram">
                 <Instagram size={20} aria-hidden="true" />
               </a>
-              <a href="#" className="text-gold hover:text-white transition-premium" aria-label="Follow us on Facebook">
+              <a href="#" className="text-gold hover:text-white transition-premium p-2" aria-label="Follow us on Facebook">
                 <Facebook size={20} aria-hidden="true" />
               </a>
-              <a href="#" className="text-gold hover:text-white transition-premium" aria-label="Connect on LinkedIn">
+              <a href="#" className="text-gold hover:text-white transition-premium p-2" aria-label="Connect on LinkedIn">
                 <Linkedin size={20} aria-hidden="true" />
               </a>
-              <a href="#" className="text-gold hover:text-white transition-premium" aria-label="Watch our videos">
+              <a href="#" className="text-gold hover:text-white transition-premium p-2" aria-label="Watch our videos">
                 <Video size={20} aria-hidden="true" />
               </a>
             </div>
@@ -115,19 +115,19 @@ const Footer = () => {
 
         {/* Legal Links */}
         <div className="border-t border-white/10 pt-6 mb-6">
-          <div className="flex flex-wrap gap-4 text-sm text-white/70 font-lato">
-            <a href="/terms" className="hover:text-gold transition-premium">Terms of Use</a>
-            <span className="text-white/30">|</span>
-            <a href="/privacy" className="hover:text-gold transition-premium">Privacy Notice</a>
-            <span className="text-white/30">|</span>
-            <a href="/dmca" className="hover:text-gold transition-premium">DMCA</a>
-            <span className="text-white/30">|</span>
-            <a href="/documents/trec-iabs.pdf" target="_blank" rel="noopener noreferrer" className="hover:text-gold transition-premium">
-              Texas Real Estate Commission Information About Brokerage Services
+          <div className="flex flex-wrap gap-x-4 gap-y-2 text-sm text-white/70 font-lato">
+            <a href="/terms" className="hover:text-gold transition-premium py-1">Terms of Use</a>
+            <span className="text-white/30 hidden sm:inline">|</span>
+            <a href="/privacy" className="hover:text-gold transition-premium py-1">Privacy Notice</a>
+            <span className="text-white/30 hidden sm:inline">|</span>
+            <a href="/dmca" className="hover:text-gold transition-premium py-1">DMCA</a>
+            <span className="text-white/30 hidden sm:inline">|</span>
+            <a href="/documents/trec-iabs.pdf" target="_blank" rel="noopener noreferrer" className="hover:text-gold transition-premium py-1">
+              TREC Information About Brokerage Services
             </a>
-            <span className="text-white/30">|</span>
-            <a href="https://www.trec.texas.gov/sites/default/files/pdf-forms/CN%201-4-1.pdf" target="_blank" rel="noopener noreferrer" className="hover:text-gold transition-premium">
-              Texas Real Estate Commission Consumer Protection Notice
+            <span className="text-white/30 hidden sm:inline">|</span>
+            <a href="https://www.trec.texas.gov/sites/default/files/pdf-forms/CN%201-4-1.pdf" target="_blank" rel="noopener noreferrer" className="hover:text-gold transition-premium py-1">
+              TREC Consumer Protection Notice
             </a>
           </div>
         </div>

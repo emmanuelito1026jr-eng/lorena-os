@@ -124,7 +124,7 @@ const Navbar = () => {
             <button
               ref={buttonRef}
               onClick={() => setIsOpen(!isOpen)}
-              className="text-dark hover:text-gold transition-premium"
+              className="text-dark hover:text-gold transition-premium p-2"
               aria-expanded={isOpen}
               aria-controls="mobile-menu"
               aria-label={isOpen ? 'Close menu' : 'Open menu'}

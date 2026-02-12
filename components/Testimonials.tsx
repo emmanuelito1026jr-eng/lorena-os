@@ -52,7 +52,7 @@ const Testimonials = () => {
         {/* Carousel Container */}
         <div className="relative max-w-5xl mx-auto">
           {/* Main Testimonial Display */}
-          <div className="relative min-h-[400px] sm:min-h-[350px] flex items-center justify-center">
+          <div className="relative min-h-[350px] sm:min-h-[300px] flex items-center justify-center">
             {TESTIMONIALS.map((testimonial, index) => (
               <div
                 key={index}
@@ -100,7 +100,7 @@ const Testimonials = () => {
           {/* Navigation Arrows */}
           <button
             onClick={prevSlide}
-            className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 sm:-translate-x-12 w-12 h-12 sm:w-14 sm:h-14 bg-white border-2 border-gold hover:bg-gold hover:border-gold transition-premium flex items-center justify-center group touch-target shadow-premium"
+            className="absolute left-2 sm:left-0 top-1/2 -translate-y-1/2 sm:-translate-x-12 w-10 h-10 sm:w-14 sm:h-14 bg-white border-2 border-gold hover:bg-gold hover:border-gold transition-premium flex items-center justify-center group touch-target shadow-premium z-20"
             aria-label="Previous testimonial"
           >
             <ChevronLeft className="text-gold group-hover:text-white transition-premium" size={24} />
@@ -108,7 +108,7 @@ const Testimonials = () => {
 
           <button
             onClick={nextSlide}
-            className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 sm:translate-x-12 w-12 h-12 sm:w-14 sm:h-14 bg-white border-2 border-gold hover:bg-gold hover:border-gold transition-premium flex items-center justify-center group touch-target shadow-premium"
+            className="absolute right-2 sm:right-0 top-1/2 -translate-y-1/2 sm:translate-x-12 w-10 h-10 sm:w-14 sm:h-14 bg-white border-2 border-gold hover:bg-gold hover:border-gold transition-premium flex items-center justify-center group touch-target shadow-premium z-20"
             aria-label="Next testimonial"
           >
             <ChevronRight className="text-gold group-hover:text-white transition-premium" size={24} />
@@ -138,8 +138,8 @@ const Testimonials = () => {
                 onClick={() => goToSlide(index)}
                 className={`transition-premium touch-target ${
                   index === currentIndex
-                    ? 'w-10 sm:w-12 h-2 bg-gold'
-                    : 'w-2 h-2 bg-black/30 hover:bg-gold/70'
+                    ? 'w-10 sm:w-12 h-3 bg-gold'
+                    : 'w-3 h-3 bg-black/30 hover:bg-gold/70 rounded-full'
                 }`}
                 aria-label={`Go to testimonial ${index + 1}`}
                 aria-current={index === currentIndex ? 'true' : 'false'}

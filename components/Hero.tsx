@@ -40,7 +40,7 @@ const Hero = () => {
 
       {/* Content */}
       <div className="relative z-10 max-w-7xl mx-auto px-6 text-center sm:px-12 lg:px-16 pt-20">
-        <h1 className="animate-fade-in-up font-playfair text-5xl md:text-7xl font-bold text-white mb-6 leading-tight drop-shadow-lg">
+        <h1 className="animate-fade-in-up font-playfair text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-white mb-6 leading-tight drop-shadow-lg">
           Casas En El Paso, Texas
         </h1>
 
@@ -75,7 +75,7 @@ const Hero = () => {
           ].map((stat) => (
             <div
               key={stat.label}
-              className={`animate-fade-in-up ${stat.delay} bg-white/10 backdrop-blur-md rounded-xl p-8 min-w-[180px] text-center hover:-translate-y-1 transition-transform duration-300`}
+              className={`animate-fade-in-up ${stat.delay} bg-white/10 backdrop-blur-md rounded-xl p-6 sm:p-8 min-w-[140px] sm:min-w-[180px] text-center hover:-translate-y-1 transition-transform duration-300`}
             >
               <p className="text-4xl font-playfair font-bold text-gold mb-2">{stat.number}</p>
               <p className="text-sm font-lato text-white/90 uppercase tracking-wide">{stat.label}</p>
