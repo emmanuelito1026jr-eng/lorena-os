@@ -6,6 +6,7 @@ import Services from '../components/Services';
 import MortgagePartnership from '../components/MortgagePartnership';
 import NeighborhoodGuide from '../components/NeighborhoodGuide';
 import Testimonials from '../components/Testimonials';
+import RateMyAgentReviews from '../components/RateMyAgentReviews';
 import CTABanner from '../components/CTABanner';
 import Footer from '../components/Footer';
 import ContactForm from '../components/ContactForm';
@@ -24,7 +25,8 @@ const Home  = () => {
         <MortgagePartnership />
         <NeighborhoodGuide />
         <Testimonials />
-      
+        <RateMyAgentReviews />
+
       {/* Homepage Contact Section */}
       <section id="contact" className="py-24 bg-gray-50">
         <div className="max-w-4xl mx-auto px-4 sm:px-6">
