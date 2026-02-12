@@ -1,18 +1,42 @@
+import { useState, useEffect, useCallback } from 'react';
 import { ArrowRight, ChevronDown } from 'lucide-react';
 
+const heroImages = [
+  { src: '/images/hero/el-paso-cityscape.jpg', alt: 'Downtown El Paso skyline with the Franklin Mountains' },
+  { src: '/images/hero/el-paso-scenic-drive.jpg', alt: 'Aerial view of the Franklin Mountains and El Paso neighborhoods' },
+  { src: '/images/hero/franklin-mountain-sunset.jpg', alt: 'Franklin Mountains silhouette at sunset in El Paso' },
+];
+
 const Hero = () => {
+  const [currentIndex, setCurrentIndex] = useState(0);
+
+  const nextSlide = useCallback(() => {
+    setCurrentIndex((prev) => (prev + 1) % heroImages.length);
+  }, []);
+
+  useEffect(() => {
+    const interval = setInterval(nextSlide, 6000);
+    return () => clearInterval(interval);
+  }, [nextSlide]);
+
   return (
     <section className="relative h-screen flex items-center justify-center overflow-hidden" aria-label="Hero section">
-      {/* Background Image */}
-      <div className="absolute inset-0">
-        <img
-          src="/images/hero/franklin-mountains-aerial.jpg"
-          alt="Franklin Mountains and El Paso, Texas skyline"
-          className="w-full h-full object-cover"
-        />
-        {/* Dark overlay for text readability */}
-        <div className="absolute inset-0 bg-black/60"></div>
-      </div>
+      {/* Background Images - Carousel */}
+      {heroImages.map((image, index) => (
+        <div
+          key={image.src}
+          className="absolute inset-0 transition-opacity duration-1000 ease-in-out"
+          style={{ opacity: index === currentIndex ? 1 : 0 }}
+        >
+          <img
+            src={image.src}
+            alt={image.alt}
+            className="w-full h-full object-cover"
+          />
+        </div>
+      ))}
+      {/* Dark overlay for text readability */}
+      <div className="absolute inset-0 bg-black/50"></div>
 
       {/* Content */}
       <div className="relative z-10 max-w-7xl mx-auto px-6 text-center sm:px-12 lg:px-16 pt-20">

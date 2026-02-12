@@ -19,6 +19,7 @@ export interface Property {
   daysOnMarket: number;
   latitude: number;
   longitude: number;
+  mlsNumber: string;
 }
 
 export const mockListings: Property[] = [
@@ -39,7 +40,8 @@ export const mockListings: Property[] = [
     status: "Active",
     daysOnMarket: 12,
     latitude: 31.8418,
-    longitude: -106.5628
+    longitude: -106.5628,
+    mlsNumber: "EP2026-4521"
   },
   {
     id: "2",
@@ -58,7 +60,8 @@ export const mockListings: Property[] = [
     status: "Active",
     daysOnMarket: 5,
     latitude: 31.9200,
-    longitude: -106.5800
+    longitude: -106.5800,
+    mlsNumber: "EP2026-7832"
   },
   {
     id: "3",
@@ -77,7 +80,8 @@ export const mockListings: Property[] = [
     status: "Active",
     daysOnMarket: 21,
     latitude: 31.6925,
-    longitude: -106.2100
+    longitude: -106.2100,
+    mlsNumber: "EP2026-1204"
   },
   {
     id: "4",
@@ -96,7 +100,8 @@ export const mockListings: Property[] = [
     status: "Active",
     daysOnMarket: 30,
     latitude: 31.7700,
-    longitude: -106.3300
+    longitude: -106.3300,
+    mlsNumber: "EP2026-9450"
   },
   {
     id: "5",
@@ -115,7 +120,8 @@ export const mockListings: Property[] = [
     status: "Pending",
     daysOnMarket: 8,
     latitude: 31.7750,
-    longitude: -106.5000
+    longitude: -106.5000,
+    mlsNumber: "EP2026-0612"
   },
   {
     id: "6",
@@ -134,7 +140,8 @@ export const mockListings: Property[] = [
     status: "Active",
     daysOnMarket: 14,
     latitude: 31.8500,
-    longitude: -106.2800
+    longitude: -106.2800,
+    mlsNumber: "EP2026-3301"
   },
   {
     id: "7",
@@ -153,7 +160,8 @@ export const mockListings: Property[] = [
     status: "Active",
     daysOnMarket: 18,
     latitude: 31.9100,
-    longitude: -106.6000
+    longitude: -106.6000,
+    mlsNumber: "EP2026-0820"
   },
   {
     id: "8",
@@ -172,7 +180,8 @@ export const mockListings: Property[] = [
     status: "Active",
     daysOnMarket: 25,
     latitude: 31.7650,
-    longitude: -106.3100
+    longitude: -106.3100,
+    mlsNumber: "EP2026-1120"
   },
   {
     id: "9",
@@ -191,7 +200,8 @@ export const mockListings: Property[] = [
     status: "Active",
     daysOnMarket: 7,
     latitude: 31.8300,
-    longitude: -106.6200
+    longitude: -106.6200,
+    mlsNumber: "EP2026-5600"
   },
   {
     id: "10",
@@ -210,7 +220,8 @@ export const mockListings: Property[] = [
     status: "Active",
     daysOnMarket: 33,
     latitude: 31.6500,
-    longitude: -106.3000
+    longitude: -106.3000,
+    mlsNumber: "EP2026-0401"
   },
   {
     id: "11",
@@ -229,7 +240,8 @@ export const mockListings: Property[] = [
     status: "Active",
     daysOnMarket: 16,
     latitude: 31.7900,
-    longitude: -106.5100
+    longitude: -106.5100,
+    mlsNumber: "EP2026-2200"
   },
   {
     id: "12",
@@ -248,6 +260,7 @@ export const mockListings: Property[] = [
     status: "Active",
     daysOnMarket: 9,
     latitude: 31.8600,
-    longitude: -106.4200
+    longitude: -106.4200,
+    mlsNumber: "EP2026-8851"
   }
 ];

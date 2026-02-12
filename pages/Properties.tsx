@@ -356,19 +356,24 @@ const PropertyCard = ({ property, isFavorite, onToggleFavorite, isComparing, onT
       {/* Image */}
       <div className="relative h-64 overflow-hidden">
         <img
-          src={property.images[0]}
-          alt={property.title}
+          src={property.image}
+          alt={`${property.address}, ${property.city}`}
           className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
           loading="lazy"
         />
 
         {/* Status Badge */}
-        <div className={`absolute top-4 left-4 px-3 py-1 text-xs font-bold uppercase tracking-wider ${
-          property.status === 'For Sale' ? 'bg-gold text-dark' :
-          property.status === 'Pending' ? 'bg-orange-500 text-black' :
-          'bg-gray-500 text-black'
+        <div className={`absolute top-4 left-4 px-3 py-1 text-xs font-bold uppercase tracking-wider rounded ${
+          property.status === 'Active' ? 'bg-gold text-dark' :
+          property.status === 'Pending' ? 'bg-orange-500 text-white' :
+          'bg-gray-500 text-white'
         }`}>
-          {property.status}
+          {property.status === 'Active' ? 'For Sale' : property.status}
+        </div>
+
+        {/* MLS Badge */}
+        <div className="absolute bottom-4 left-4 px-2 py-1 bg-black/70 text-white text-[10px] font-mono rounded">
+          MLS# {property.mlsNumber}
         </div>
 
         {/* Favorite Button */}
@@ -381,34 +386,30 @@ const PropertyCard = ({ property, isFavorite, onToggleFavorite, isComparing, onT
         >
           <Heart
             size={20}
-            className={isFavorite ? 'fill-gold text-gold' : 'text-black'}
+            className={isFavorite ? 'fill-gold text-gold' : 'text-white'}
           />
         </button>
 
         {/* Overlay Gradient */}
-        <div className="absolute inset-0 bg-gradient-to-t from-dark via-transparent to-transparent opacity-60" />
+        <div className="absolute inset-0 bg-gradient-to-t from-dark via-transparent to-transparent opacity-60 pointer-events-none" />
       </div>
 
       {/* Content */}
       <div className="p-6">
         {/* Price */}
-        <div className="text-2xl font-sans text-gold mb-2">
+        <div className="text-2xl font-sans font-bold text-gold mb-1">
           ${property.price.toLocaleString()}
         </div>
 
-        {/* Title */}
-        <h3 className="text-black font-semibold text-lg mb-2 line-clamp-2 group-hover:text-gold transition-colors">
-          {property.title}
-        </h3>
-
         {/* Address */}
-        <div className="flex items-center gap-2 text-black/60 text-sm mb-4">
+        <div className="flex items-center gap-2 text-gray-800 text-sm font-medium mb-1">
           <MapPin size={14} className="text-gold shrink-0" />
           <span className="line-clamp-1">{property.address}</span>
         </div>
+        <p className="text-gray-500 text-xs mb-4 pl-[22px]">{property.city}, {property.state} {property.zip}</p>
 
         {/* Features */}
-        <div className="flex items-center gap-4 text-black/80 text-sm border-t border-white/10 pt-4">
+        <div className="flex items-center gap-4 text-gray-700 text-sm border-t border-gray-100 pt-4">
           <div className="flex items-center gap-1">
             <Bed size={16} className="text-gold" />
             <span>{property.beds} Beds</span>
@@ -423,10 +424,16 @@ const PropertyCard = ({ property, isFavorite, onToggleFavorite, isComparing, onT
           </div>
         </div>
 
+        {/* Property Type & Year */}
+        <div className="flex items-center justify-between mt-3 text-xs text-gray-500">
+          <span>{property.propertyType}</span>
+          <span>Built {property.yearBuilt}</span>
+        </div>
+
         {/* Days on Market */}
-        {property.daysOnMarket < 30 && (
-          <div className="mt-4 text-xs text-gold">
-            🔥 New - {property.daysOnMarket} days on market
+        {property.daysOnMarket <= 14 && (
+          <div className="mt-3 text-xs font-semibold text-gold">
+            New Listing - {property.daysOnMarket} days on market
           </div>
         )}
 
@@ -436,7 +443,7 @@ const PropertyCard = ({ property, isFavorite, onToggleFavorite, isComparing, onT
             e.preventDefault();
             onToggleCompare();
           }}
-          className={`mt-4 w-full flex items-center justify-center gap-2 px-4 py-2 border transition-all text-sm font-medium ${
+          className={`mt-4 w-full flex items-center justify-center gap-2 px-4 py-2 border transition-all text-sm font-medium rounded ${
             isComparing
               ? 'bg-gold text-dark border-gold'
               : 'bg-transparent text-gold border-gold hover:bg-gold hover:text-dark'
@@ -490,15 +497,16 @@ const ComparisonModal = ({ properties, onClose }: ComparisonModalProps) => {
                         className="block hover:opacity-80 transition-opacity"
                       >
                         <img
-                          src={property.images[0]}
-                          alt={property.title}
+                          src={property.image}
+                          alt={`${property.address}, ${property.city}`}
                           className="w-full h-32 object-cover rounded mb-3"
                           loading="lazy"
                         />
                         <h3 className="text-black font-semibold text-sm mb-1 line-clamp-2">
-                          {property.title}
+                          {property.address}
                         </h3>
-                        <p className="text-black/60 text-xs line-clamp-1">{property.address}</p>
+                        <p className="text-black/60 text-xs line-clamp-1">{property.city}, {property.state} {property.zip}</p>
+                        <p className="text-black/40 text-[10px] font-mono mt-1">MLS# {property.mlsNumber}</p>
                       </Link>
                     </th>
                   ))}
@@ -539,18 +547,6 @@ const ComparisonModal = ({ properties, onClose }: ComparisonModalProps) => {
                   ))}
                 </tr>
 
-                {/* Lot Size */}
-                {properties.some(p => p.lotSize) && (
-                  <tr className="border-b border-white/5">
-                    <td className="p-4 sm:p-6 text-black/60 font-medium sticky left-0 bg-white">Lot Size</td>
-                    {properties.map((p) => (
-                      <td key={p.id} className="p-4 sm:p-6 text-black">
-                        {p.lotSize ? `${p.lotSize} acres` : 'N/A'}
-                      </td>
-                    ))}
-                  </tr>
-                )}
-
                 {/* Year Built */}
                 <tr className="border-b border-white/5">
                   <td className="p-4 sm:p-6 text-black/60 font-medium sticky left-0 bg-white">Year Built</td>
@@ -588,12 +584,12 @@ const ComparisonModal = ({ properties, onClose }: ComparisonModalProps) => {
                   <td className="p-4 sm:p-6 text-black/60 font-medium sticky left-0 bg-white">Status</td>
                   {properties.map((p) => (
                     <td key={p.id} className="p-4 sm:p-6">
-                      <span className={`inline-block px-3 py-1 text-xs font-bold uppercase ${
-                        p.status === 'For Sale' ? 'bg-gold text-dark' :
-                        p.status === 'Pending' ? 'bg-orange-500 text-black' :
-                        'bg-gray-500 text-black'
+                      <span className={`inline-block px-3 py-1 text-xs font-bold uppercase rounded ${
+                        p.status === 'Active' ? 'bg-gold text-dark' :
+                        p.status === 'Pending' ? 'bg-orange-500 text-white' :
+                        'bg-gray-500 text-white'
                       }`}>
-                        {p.status}
+                        {p.status === 'Active' ? 'For Sale' : p.status}
                       </span>
                     </td>
                   ))}
