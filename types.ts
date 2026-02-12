@@ -8,6 +8,7 @@ export interface Service {
   readonly subtitle: string;
   readonly description: string;
   readonly iconName: 'Home' | 'TrendingUp' | 'Building';
+  readonly image: string;
 }
 
 export interface Neighborhood {

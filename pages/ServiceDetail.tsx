@@ -10,7 +10,7 @@ const SERVICES_DATA = {
     title: 'Buyer Services',
     subtitle: 'Compradores',
     tagline: 'Find Your Perfect Home with Expert Financial Guidance',
-    hero: 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=1920&h=800&fit=crop&q=80',
+    hero: 'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=1920&h=800&fit=crop&q=80',
     description: 'With 10+ years of banking experience, I bring unique financial expertise to your home buying journey. I don\'t just help you find a home—I ensure you can afford it and build wealth through smart real estate decisions.',
 
     processSteps: [
@@ -93,7 +93,7 @@ const SERVICES_DATA = {
     title: 'Seller Services',
     subtitle: 'Vendedores',
     tagline: 'Maximize Your Home\'s Value with Strategic Marketing',
-    hero: 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=1920&h=800&fit=crop&q=80',
+    hero: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=1920&h=800&fit=crop&q=80',
     description: 'Selling your home is one of the biggest financial decisions you\'ll make. With my marketing expertise and market knowledge, I position your property to sell quickly and for top dollar—often above asking price.',
 
     processSteps: [
@@ -176,7 +176,7 @@ const SERVICES_DATA = {
     title: 'Investment Services',
     subtitle: 'Inversiones',
     tagline: 'Build Wealth Through Strategic Real Estate Investing',
-    hero: 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=1920&h=800&fit=crop&q=80',
+    hero: 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=1920&h=800&fit=crop&q=80',
     description: 'El Paso\'s border location creates unique investment opportunities. I help you identify high-ROI properties, analyze cash flow potential, and build a real estate portfolio that generates passive income and long-term wealth.',
 
     processSteps: [

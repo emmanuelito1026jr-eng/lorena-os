@@ -1,30 +1,23 @@
 import { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { SERVICES } from '../constants';
-import { Home, TrendingUp, Building } from 'lucide-react';
+import { Home, TrendingUp, Building, ArrowRight } from 'lucide-react';
 import { staggerReveal } from '../utils/animations';
 
 // Icon mapping helper
 const getIcon = (name: string) => {
   switch (name) {
-    case 'Home': return <Home className="w-8 h-8 text-gold" />;
-    case 'TrendingUp': return <TrendingUp className="w-8 h-8 text-gold" />;
-    case 'Building': return <Building className="w-8 h-8 text-gold" />;
-    default: return <Home className="w-8 h-8 text-gold" />;
+    case 'Home': return <Home className="w-6 h-6" />;
+    case 'TrendingUp': return <TrendingUp className="w-6 h-6" />;
+    case 'Building': return <Building className="w-6 h-6" />;
+    default: return <Home className="w-6 h-6" />;
   }
 };
 
 // Map service titles to URL-friendly IDs
 const getServiceId = (subtitle: string): string => {
-  return subtitle.toLowerCase(); // "Buyers", "Sellers", "Investments" -> "buyers", "sellers", "investments"
+  return subtitle.toLowerCase();
 };
-
-// Angular clip-path patterns
-const clipPaths = [
-  'clip-angle-1',
-  'clip-angle-2',
-  'clip-angle-3'
-];
 
 const Services = () => {
   useEffect(() => {
@@ -42,25 +35,38 @@ const Services = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {SERVICES.map((service, index) => {
             const serviceId = getServiceId(service.subtitle);
-            const clipPathClass = clipPaths[index % clipPaths.length];
 
             return (
               <Link
                 key={index}
                 to={`/service/${serviceId}`}
-                className={`service-card group p-8 md:p-12 bg-white border border-gray-200 hover:border-gold transition-premium hover:shadow-gold-glow block shadow-premium ${clipPathClass}`}
+                className="service-card group bg-white border border-gray-200 hover:border-gold transition-premium hover:shadow-gold-glow block shadow-premium overflow-hidden"
               >
-                <div className="mb-6 p-4 bg-gold/5 inline-block group-hover:bg-gold/10 transition-premium">
-                  {getIcon(service.iconName)}
+                {/* Image Section */}
+                <div className="relative h-56 overflow-hidden">
+                  <img
+                    src={service.image}
+                    alt={service.subtitle}
+                    className="w-full h-full object-cover transition-premium group-hover:scale-110"
+                    loading="lazy"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
+                  <div className="absolute bottom-4 left-4 w-12 h-12 bg-gold flex items-center justify-center text-white shadow-lg">
+                    {getIcon(service.iconName)}
+                  </div>
                 </div>
-                <h3 className="font-sans text-2xl text-black font-bold mb-1">{service.title}</h3>
-                <h4 className="text-gold text-sm uppercase tracking-widest mb-4 font-extrabold">{service.subtitle}</h4>
-                <p className="text-black/70 leading-relaxed mb-6 font-light">
-                  {service.description}
-                </p>
-                <span className="text-sm font-bold uppercase tracking-widest text-black group-hover:text-gold transition-premium flex items-center gap-2">
-                  Learn More <span className="text-xl leading-none">&rarr;</span>
-                </span>
+
+                {/* Content Section */}
+                <div className="p-8">
+                  <h3 className="font-sans text-2xl text-black font-bold mb-1">{service.title}</h3>
+                  <h4 className="text-gold text-sm uppercase tracking-widest mb-4 font-extrabold">{service.subtitle}</h4>
+                  <p className="text-black/70 leading-relaxed mb-6 font-light">
+                    {service.description}
+                  </p>
+                  <span className="text-sm font-bold uppercase tracking-widest text-black group-hover:text-gold transition-premium flex items-center gap-2">
+                    Learn More <ArrowRight size={14} className="group-hover:translate-x-1 transition-premium" />
+                  </span>
+                </div>
               </Link>
             );
           })}

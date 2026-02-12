@@ -32,19 +32,22 @@ export const SERVICES: Service[] = [
     title: "Compradores",
     subtitle: "Buyers",
     description: "From mortgage readiness to closing day, I guide you through every step with the financial expertise most realtors don't have.",
-    iconName: "Home"
+    iconName: "Home",
+    image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800&h=500&fit=crop&q=80"
   },
   {
     title: "Vendedores",
     subtitle: "Sellers",
     description: "Strategic pricing, professional marketing, and skilled negotiation to maximize your home's value in any market.",
-    iconName: "TrendingUp"
+    iconName: "TrendingUp",
+    image: "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=800&h=500&fit=crop&q=80"
   },
   {
     title: "Inversiones",
     subtitle: "Investments",
     description: "Leverage the El Paso-Juárez bilateral market for smart investment opportunities on both sides of the border.",
-    iconName: "Building"
+    iconName: "Building",
+    image: "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800&h=500&fit=crop&q=80"
   }
 ];
 
@@ -52,25 +55,21 @@ export const NEIGHBORHOODS: Neighborhood[] = [
   {
     name: "Westside",
     description: "Luxury living with mountain views and top-rated schools.",
-    // Professional stock photo: Modern homes with mountain backdrop
-    image: "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=800&h=600&fit=crop&q=80"
+    image: "https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=800&h=600&fit=crop&q=80"
   },
   {
     name: "Upper Valley",
     description: "Lush green landscapes, river proximity, and spacious estates.",
-    // Professional stock photo: Luxury estate with greenery
-    image: "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800&h=600&fit=crop&q=80"
+    image: "https://images.unsplash.com/photo-1580587771525-78b9dba3b914?w=800&h=600&fit=crop&q=80"
   },
   {
     name: "Horizon City",
     description: "Rapidly growing community perfect for new families.",
-    // Professional stock photo: Modern residential development
-    image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800&h=600&fit=crop&q=80"
+    image: "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=800&h=600&fit=crop&q=80"
   },
   {
     name: "Cimarron",
     description: "Modern master-planned community with exclusive amenities.",
-    // Professional stock photo: Contemporary community with amenities
     image: "https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde?w=800&h=600&fit=crop&q=80"
   }
 ];
@@ -245,7 +244,7 @@ export const NEIGHBORHOODS_DETAIL: NeighborhoodDetail[] = [
     id: 'westside',
     name: 'Westside',
     description: 'Luxury living with mountain views and top-rated schools.',
-    image: 'https://images.unsplash.com/photo-1605276374104-dee2a0ed3cd6?w=600&h=400&fit=crop&q=80',
+    image: 'https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=600&h=400&fit=crop&q=80',
     medianPrice: 450000,
     priceRange: [250000, 1200000],
     coordinates: [31.8456, -106.6055],
@@ -265,7 +264,7 @@ export const NEIGHBORHOODS_DETAIL: NeighborhoodDetail[] = [
     id: 'upper-valley',
     name: 'Upper Valley',
     description: 'Lush green landscapes, river proximity, and spacious estates.',
-    image: 'https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=600&h=400&fit=crop&q=80',
+    image: 'https://images.unsplash.com/photo-1580587771525-78b9dba3b914?w=600&h=400&fit=crop&q=80',
     medianPrice: 380000,
     priceRange: [200000, 850000],
     coordinates: [31.8762, -106.5821],
@@ -284,7 +283,7 @@ export const NEIGHBORHOODS_DETAIL: NeighborhoodDetail[] = [
     id: 'horizon-city',
     name: 'Horizon City',
     description: 'Rapidly growing community perfect for new families.',
-    image: 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=600&h=400&fit=crop&q=80',
+    image: 'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=600&h=400&fit=crop&q=80',
     medianPrice: 295000,
     priceRange: [180000, 500000],
     coordinates: [31.6943, -106.2050],
@@ -303,7 +302,7 @@ export const NEIGHBORHOODS_DETAIL: NeighborhoodDetail[] = [
     id: 'cimarron',
     name: 'Cimarron',
     description: 'Modern master-planned community with exclusive amenities.',
-    image: 'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=600&h=400&fit=crop&q=80',
+    image: 'https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde?w=600&h=400&fit=crop&q=80',
     medianPrice: 520000,
     priceRange: [350000, 1500000],
     coordinates: [31.9123, -106.6234],
