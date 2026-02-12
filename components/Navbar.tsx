@@ -7,7 +7,8 @@ import { gsap } from '../utils/gsap-config';
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const [lastScrollY, setLastScrollY] = useState(0);
+  const lastScrollYRef = useRef(0);
+  const ticking = useRef(false);
   const location = useLocation();
   const menuRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
@@ -16,27 +17,33 @@ const Navbar = () => {
   // Hide navbar on landing page
   if (location.pathname === '/landing') return null;
 
-  // Scroll behavior with GSAP
+  // Scroll behavior with GSAP (throttled via requestAnimationFrame)
   useEffect(() => {
     const handleScroll = () => {
-      const currentScrollY = window.scrollY;
-      setScrolled(currentScrollY > 50);
+      if (ticking.current) return;
+      ticking.current = true;
 
-      // Hide on scroll down, show on scroll up
-      if (navRef.current) {
-        if (currentScrollY > lastScrollY && currentScrollY > 100) {
-          gsap.to(navRef.current, { y: -100, duration: 0.3, ease: 'power2.out' });
-        } else {
-          gsap.to(navRef.current, { y: 0, duration: 0.3, ease: 'power2.out' });
+      requestAnimationFrame(() => {
+        const currentScrollY = window.scrollY;
+        setScrolled(currentScrollY > 50);
+
+        // Hide on scroll down, show on scroll up
+        if (navRef.current) {
+          if (currentScrollY > lastScrollYRef.current && currentScrollY > 100) {
+            gsap.to(navRef.current, { y: -100, duration: 0.3, ease: 'power2.out' });
+          } else {
+            gsap.to(navRef.current, { y: 0, duration: 0.3, ease: 'power2.out' });
+          }
         }
-      }
 
-      setLastScrollY(currentScrollY);
+        lastScrollYRef.current = currentScrollY;
+        ticking.current = false;
+      });
     };
 
-    window.addEventListener('scroll', handleScroll);
+    window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
-  }, [lastScrollY]);
+  }, []);
 
   // Focus trap and keyboard handlers for mobile menu
   useEffect(() => {

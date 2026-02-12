@@ -69,7 +69,7 @@ const AboutPreview = () => {
           <div className="space-y-6 sm:space-y-8">
             <div>
               <span className="text-gold text-xs uppercase tracking-[0.3em] mb-3 block font-extrabold">Meet Your Agent</span>
-              <h3 className="font-sans text-4xl sm:text-5xl md:text-6xl text-black mb-4 sm:mb-6 leading-tight font-bold">
+              <h3 className="font-sans text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl text-black mb-4 sm:mb-6 leading-tight font-bold">
                 Bridging Cultures,<br/>
                 <span className="gradient-text">Building Wealth</span>
               </h3>

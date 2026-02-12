@@ -1,6 +1,9 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { COMPANY_NAME, REALTOR_NAME, ADDRESS, PHONE_NUMBER, EMAIL_ADDRESS, BROKERAGE } from '../constants';
 import { Instagram, Linkedin, Facebook, Video, MapPin, Phone, Mail } from 'lucide-react';
+import { formatMLSDisclaimer } from '../lib/mls/compliance';
+import { formatLastRefresh } from '../lib/mls/dataRefresh';
 
 const Footer = () => {
   return (
@@ -109,18 +112,21 @@ const Footer = () => {
             />
           </div>
           <p className="text-xs text-white/60 font-lato leading-relaxed">
-            Based on information from the Greater El Paso Association of REALTORS® IDX information is provided exclusively for consumers' personal, non-commercial use, and may not be used for any purpose other than to identify prospective properties consumers may be interested in purchasing. Information Is Believed To Be Accurate But Not Guaranteed. Copyright 2026 Greater El Paso Association of Realtors Multiple Listing Service. All Rights Reserved.
+            {formatMLSDisclaimer('full')}
+          </p>
+          <p className="text-xs text-white/40 font-lato mt-2">
+            {formatLastRefresh()}
           </p>
         </div>
 
         {/* Legal Links */}
         <div className="border-t border-white/10 pt-6 mb-6">
           <div className="flex flex-wrap gap-x-4 gap-y-2 text-sm text-white/70 font-lato">
-            <a href="/terms" className="hover:text-gold transition-premium py-1">Terms of Use</a>
+            <Link to="/terms" className="hover:text-gold transition-premium py-1">Terms of Use</Link>
             <span className="text-white/30 hidden sm:inline">|</span>
-            <a href="/privacy" className="hover:text-gold transition-premium py-1">Privacy Notice</a>
+            <Link to="/privacy" className="hover:text-gold transition-premium py-1">Privacy Notice</Link>
             <span className="text-white/30 hidden sm:inline">|</span>
-            <a href="/dmca" className="hover:text-gold transition-premium py-1">DMCA</a>
+            <Link to="/dmca" className="hover:text-gold transition-premium py-1">DMCA</Link>
             <span className="text-white/30 hidden sm:inline">|</span>
             <a href="/documents/trec-iabs.pdf" target="_blank" rel="noopener noreferrer" className="hover:text-gold transition-premium py-1">
               TREC Information About Brokerage Services

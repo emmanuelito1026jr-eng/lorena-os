@@ -29,7 +29,7 @@ const Services = () => {
       <div className="max-w-7xl mx-auto px-6 sm:px-12 lg:px-16">
         <div className="text-center mb-16">
           <span className="text-gold text-xs uppercase tracking-[0.25em] font-extrabold">Expertise</span>
-          <h2 className="mt-3 font-sans text-5xl md:text-6xl text-black font-bold">Comprehensive Real Estate Services</h2>
+          <h2 className="mt-3 font-sans text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-black font-bold">Comprehensive Real Estate Services</h2>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -43,7 +43,7 @@ const Services = () => {
                 className="service-card group bg-white border border-gray-200 hover:border-gold transition-premium hover:shadow-gold-glow block shadow-premium overflow-hidden"
               >
                 {/* Image Section */}
-                <div className="relative h-56 overflow-hidden">
+                <div className="relative h-40 sm:h-48 md:h-56 overflow-hidden">
                   <img
                     src={service.image}
                     alt={service.subtitle}
@@ -57,7 +57,7 @@ const Services = () => {
                 </div>
 
                 {/* Content Section */}
-                <div className="p-8">
+                <div className="p-4 sm:p-6 md:p-8">
                   <h3 className="font-sans text-2xl text-black font-bold mb-1">{service.title}</h3>
                   <h4 className="text-gold text-sm uppercase tracking-widest mb-4 font-extrabold">{service.subtitle}</h4>
                   <p className="text-black/70 leading-relaxed mb-6 font-light">

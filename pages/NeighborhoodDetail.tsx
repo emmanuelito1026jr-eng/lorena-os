@@ -1,7 +1,8 @@
 import { useParams, Link } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
-import { NEIGHBORHOODS_DETAIL, PROPERTIES } from '../constants';
+import { NEIGHBORHOODS_DETAIL } from '../constants';
+import { getListings } from '../lib/mls/mockData';
 import { MapPin, TrendingUp, Users, DollarSign, School, Home, Award, ChevronLeft } from 'lucide-react';
 
 const NeighborhoodDetail = () => {
@@ -10,7 +11,7 @@ const NeighborhoodDetail = () => {
 
   if (!neighborhood) {
     return (
-      <div className="bg-blackmin-h-screen flex items-center justify-center">
+      <div className="bg-white min-h-screen flex items-center justify-center">
         <div className="text-center">
           <h1 className="text-4xl font-sans text-gold mb-4">Neighborhood Not Found</h1>
           <Link to="/#neighborhoods" className="text-white hover:text-gold">
@@ -21,19 +22,20 @@ const NeighborhoodDetail = () => {
     );
   }
 
-  const neighborhoodProperties = PROPERTIES.filter(p => p.neighborhood === neighborhood.name);
+  const neighborhoodProperties = getListings({ neighborhoods: [neighborhood.name] });
 
   return (
-    <div className="bg-blackmin-h-screen">
+    <div className="bg-white min-h-screen">
       <Navbar />
 
       {/* Hero Section */}
-      <section className="relative pt-32 pb-20 px-4 h-[60vh] flex items-center justify-center overflow-hidden">
+      <section className="relative pt-20 sm:pt-24 md:pt-32 pb-12 sm:pb-16 md:pb-20 px-4 h-[45vh] sm:h-[55vh] md:h-[60vh] flex items-center justify-center overflow-hidden">
         <div className="absolute inset-0">
           <img
             src={neighborhood.image}
             alt={neighborhood.name}
             className="w-full h-full object-cover"
+            loading="lazy"
           />
           <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-black/60 to-dark"></div>
         </div>
@@ -47,7 +49,7 @@ const NeighborhoodDetail = () => {
             Back to Neighborhoods
           </Link>
 
-          <h1 className="font-sans text-5xl md:text-7xl text-white mb-4 animate-fade-in-up delay-100">
+          <h1 className="font-sans text-3xl sm:text-4xl md:text-5xl lg:text-7xl text-white mb-4 animate-fade-in-up delay-100">
             {neighborhood.name}
           </h1>
           <p className="text-white/80 text-xl max-w-2xl mx-auto animate-fade-in-up delay-200">
@@ -59,8 +61,8 @@ const NeighborhoodDetail = () => {
       {/* Quick Stats */}
       <section className="py-12 px-4 bg-gray-50">
         <div className="max-w-7xl mx-auto">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-            <div className="bg-white border border-gray-200 rounded-lg shadow-premium p-6 text-center hover-lift animate-fade-in-up">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
+            <div className="bg-white border border-gray-200 rounded-lg shadow-premium p-4 sm:p-5 md:p-6 text-center hover-lift animate-fade-in-up">
               <DollarSign className="text-gold mx-auto mb-3" size={32} />
               <div className="text-3xl font-sans text-black mb-1">
                 ${(neighborhood.medianPrice / 1000).toFixed(0)}K
@@ -68,7 +70,7 @@ const NeighborhoodDetail = () => {
               <div className="text-xs text-black/60 uppercase tracking-wider">Median Price</div>
             </div>
 
-            <div className="bg-white border border-gray-200 rounded-lg shadow-premium p-6 text-center hover-lift animate-fade-in-up delay-100">
+            <div className="bg-white border border-gray-200 rounded-lg shadow-premium p-4 sm:p-5 md:p-6 text-center hover-lift animate-fade-in-up delay-100">
               <Users className="text-gold mx-auto mb-3" size={32} />
               <div className="text-3xl font-sans text-black mb-1">
                 {(neighborhood.demographics.population / 1000).toFixed(0)}K
@@ -76,7 +78,7 @@ const NeighborhoodDetail = () => {
               <div className="text-xs text-black/60 uppercase tracking-wider">Population</div>
             </div>
 
-            <div className="bg-white border border-gray-200 rounded-lg shadow-premium p-6 text-center hover-lift animate-fade-in-up delay-200">
+            <div className="bg-white border border-gray-200 rounded-lg shadow-premium p-4 sm:p-5 md:p-6 text-center hover-lift animate-fade-in-up delay-200">
               <TrendingUp className="text-gold mx-auto mb-3" size={32} />
               <div className="text-3xl font-sans text-black mb-1">
                 {neighborhood.demographics.homeownership}%
@@ -84,7 +86,7 @@ const NeighborhoodDetail = () => {
               <div className="text-xs text-black/60 uppercase tracking-wider">Homeownership</div>
             </div>
 
-            <div className="bg-white border border-gray-200 rounded-lg shadow-premium p-6 text-center hover-lift animate-fade-in-up delay-300">
+            <div className="bg-white border border-gray-200 rounded-lg shadow-premium p-4 sm:p-5 md:p-6 text-center hover-lift animate-fade-in-up delay-300">
               <Home className="text-gold mx-auto mb-3" size={32} />
               <div className="text-3xl font-sans text-black mb-1">
                 {neighborhoodProperties.length}
@@ -98,7 +100,7 @@ const NeighborhoodDetail = () => {
       {/* Main Content */}
       <section className="py-20 px-4 bg-white">
         <div className="max-w-7xl mx-auto">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8 lg:gap-12">
             {/* Left Column - Details */}
             <div className="lg:col-span-2 space-y-12">
               {/* Price Range */}
@@ -207,8 +209,9 @@ const NeighborhoodDetail = () => {
                         <div className="relative h-48">
                           <img
                             src={property.images[0]}
-                            alt={property.title}
+                            alt={property.address}
                             className="w-full h-full object-cover"
+                            loading="lazy"
                           />
                           <div className="absolute top-2 right-2 bg-gold text-dark px-2 py-1 text-xs font-bold">
                             ${(property.price / 1000).toFixed(0)}K
@@ -216,7 +219,7 @@ const NeighborhoodDetail = () => {
                         </div>
                         <div className="p-4">
                           <div className="text-black font-semibold mb-2 line-clamp-2">
-                            {property.title}
+                            {property.address}
                           </div>
                           <div className="flex items-center gap-4 text-sm text-black/60">
                             <span>{property.beds} beds</span>

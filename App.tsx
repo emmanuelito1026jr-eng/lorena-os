@@ -1,16 +1,21 @@
-import React from 'react';
+import React, { Suspense } from 'react';
 import { HashRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
-import Home from './pages/Home';
-import Landing from './pages/Landing';
-import Properties from './pages/Properties';
-import PropertyDetail from './pages/PropertyDetail';
-import About from './pages/About';
-import NeighborhoodDetail from './pages/NeighborhoodDetail';
-import ServiceDetail from './pages/ServiceDetail';
-import AmericanPacificMortgage from './pages/AmericanPacificMortgage';
-import HomeEstimate from './pages/HomeEstimate';
 import ErrorBoundary from './components/ErrorBoundary';
 import { useLenis } from './hooks/useLenis';
+
+// Lazy-loaded routes for code splitting
+const Home = React.lazy(() => import('./pages/Home'));
+const Landing = React.lazy(() => import('./pages/Landing'));
+const Properties = React.lazy(() => import('./pages/Properties'));
+const PropertyDetail = React.lazy(() => import('./pages/PropertyDetail'));
+const About = React.lazy(() => import('./pages/About'));
+const NeighborhoodDetail = React.lazy(() => import('./pages/NeighborhoodDetail'));
+const ServiceDetail = React.lazy(() => import('./pages/ServiceDetail'));
+const AmericanPacificMortgage = React.lazy(() => import('./pages/AmericanPacificMortgage'));
+const HomeEstimate = React.lazy(() => import('./pages/HomeEstimate'));
+const Terms = React.lazy(() => import('./pages/Terms'));
+const Privacy = React.lazy(() => import('./pages/Privacy'));
+const DMCA = React.lazy(() => import('./pages/DMCA'));
 
 // ScrollToTop component to handle scroll behavior on navigation
 const ScrollToTop = () => {
@@ -40,6 +45,7 @@ const App = () => {
     <ErrorBoundary>
       <Router>
         <ScrollToTop />
+        <Suspense fallback={<div className="min-h-screen bg-white" />}>
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/landing" element={<Landing />} />
@@ -50,7 +56,11 @@ const App = () => {
           <Route path="/service/:serviceId" element={<ServiceDetail />} />
           <Route path="/mortgage" element={<AmericanPacificMortgage />} />
           <Route path="/estimate" element={<HomeEstimate />} />
+          <Route path="/terms" element={<Terms />} />
+          <Route path="/privacy" element={<Privacy />} />
+          <Route path="/dmca" element={<DMCA />} />
         </Routes>
+        </Suspense>
       </Router>
     </ErrorBoundary>
   );

@@ -45,14 +45,14 @@ const Testimonials = () => {
       <div className="max-w-7xl mx-auto px-6 sm:px-12 lg:px-16 relative z-10">
         <div className="text-center mb-12 sm:mb-16">
           <span className="text-gold text-xs uppercase tracking-[0.3em] font-extrabold">Testimonials</span>
-          <h2 className="mt-4 font-sans text-5xl md:text-6xl text-black font-bold">Client Stories</h2>
+          <h2 className="mt-4 font-sans text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-black font-bold">Client Stories</h2>
           <p className="text-gold mt-2 text-lg font-semibold">Historias de Éxito</p>
         </div>
 
         {/* Carousel Container */}
         <div className="relative max-w-5xl mx-auto">
           {/* Main Testimonial Display */}
-          <div className="relative min-h-[350px] sm:min-h-[300px] flex items-center justify-center">
+          <div className="relative min-h-[280px] sm:min-h-[300px] md:min-h-[350px] flex items-center justify-center">
             {TESTIMONIALS.map((testimonial, index) => (
               <div
                 key={index}
@@ -62,7 +62,7 @@ const Testimonials = () => {
                     : 'opacity-0 scale-95 pointer-events-none'
                 }`}
               >
-                <div className="bg-white border border-gray-200 shadow-premium p-8 sm:p-12 mx-auto max-w-4xl hover-lift clip-angle-top-right">
+                <div className="bg-white border border-gray-200 shadow-premium p-5 sm:p-8 md:p-12 mx-auto max-w-4xl hover-lift clip-angle-top-right">
                   {/* Quote Icon */}
                   <div className="flex justify-center mb-6">
                     <div className="w-16 h-16 bg-gold/10 flex items-center justify-center">

@@ -1,29 +1,39 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import ContactForm from '../components/ContactForm';
-import { PROPERTIES } from '../constants';
+import ListingAttribution from '../components/mls/ListingAttribution';
+import IDXCompliance from '../components/mls/IDXCompliance';
+import { getListingById } from '../lib/mls/mockData';
+import { logPropertyView } from '../lib/mls/auditTrail';
 import {
-  Bed, Bath, Maximize, MapPin, Calendar, Home, Heart, Share2,
-  ChevronLeft, ChevronRight, X, Calculator, TrendingUp, Building
+  Bed, Bath, Maximize, MapPin, Home, Heart, Share2,
+  ChevronLeft, ChevronRight, X, Calculator, Building
 } from 'lucide-react';
 
 const PropertyDetail = () => {
   const { id } = useParams<{ id: string }>();
-  const property = PROPERTIES.find(p => p.id === id);
+  const property = id ? getListingById(id) : null;
 
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [showGallery, setShowGallery] = useState(false);
   const [showCalculator, setShowCalculator] = useState(false);
 
+  // Log property view for GEPAR audit trail
+  useEffect(() => {
+    if (property) {
+      logPropertyView(property.id);
+    }
+  }, [property]);
+
   if (!property) {
     return (
-      <div className="bg-blackmin-h-screen flex items-center justify-center">
+      <div className="bg-white min-h-screen flex items-center justify-center">
         <div className="text-center">
           <h1 className="text-4xl font-sans text-gold mb-4">Property Not Found</h1>
-          <Link to="/properties" className="text-white hover:text-gold">
-            ← Back to Properties
+          <Link to="/properties" className="text-black hover:text-gold">
+            &larr; Back to Properties
           </Link>
         </div>
       </div>
@@ -39,16 +49,17 @@ const PropertyDetail = () => {
   };
 
   return (
-    <div className="bg-blackmin-h-screen">
+    <div className="bg-white min-h-screen">
       <Navbar />
 
       {/* Image Gallery */}
       <section className="relative pt-20">
-        <div className="relative h-[70vh] bg-gray-100">
+        <div className="relative h-[50vh] sm:h-[60vh] md:h-[70vh] bg-gray-100">
           <img
             src={property.images[currentImageIndex]}
-            alt={property.title}
+            alt={`${property.address}, ${property.city}`}
             className="w-full h-full object-cover cursor-pointer"
+            loading="lazy"
             onClick={() => setShowGallery(true)}
           />
 
@@ -73,7 +84,7 @@ const PropertyDetail = () => {
           )}
 
           {/* Image Counter */}
-          <div className="absolute bottom-4 left-1/2 -translate-x-1/2 px-4 py-2 bg-dark/80 text-black text-sm rounded-full">
+          <div className="absolute bottom-4 left-1/2 -translate-x-1/2 px-4 py-2 bg-dark/80 text-white text-sm rounded-full">
             {currentImageIndex + 1} / {property.images.length}
           </div>
 
@@ -99,17 +110,17 @@ const PropertyDetail = () => {
 
         {/* Thumbnail Strip */}
         {property.images.length > 1 && (
-          <div className="max-w-7xl mx-auto px-4 -mt-16 relative z-10">
+          <div className="max-w-7xl mx-auto px-4 -mt-8 sm:-mt-12 md:-mt-16 relative z-10">
             <div className="flex gap-2 overflow-x-auto pb-4">
               {property.images.map((img, index) => (
                 <button
                   key={index}
                   onClick={() => setCurrentImageIndex(index)}
-                  className={`flex-shrink-0 w-24 h-24 rounded overflow-hidden border-2 transition-all ${
+                  className={`flex-shrink-0 w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 rounded overflow-hidden border-2 transition-all ${
                     index === currentImageIndex ? 'border-gold' : 'border-white/20 hover:border-white/40'
                   }`}
                 >
-                  <img src={img} alt={`View ${index + 1}`} className="w-full h-full object-cover" />
+                  <img src={img} alt={`View ${index + 1}`} className="w-full h-full object-cover" loading="lazy" />
                 </button>
               ))}
             </div>
@@ -120,33 +131,27 @@ const PropertyDetail = () => {
       {/* Main Content */}
       <section className="py-12 px-4">
         <div className="max-w-7xl mx-auto">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8 lg:gap-12">
             {/* Left Column - Details */}
             <div className="lg:col-span-2 space-y-8">
               {/* Header */}
               <div className="animate-fade-in-up">
-                <Link to="/properties" className="text-gold hover:text-white flex items-center gap-2 mb-4">
+                <Link to="/properties" className="text-gold hover:text-black flex items-center gap-2 mb-4">
                   <ChevronLeft size={16} />
                   Back to Properties
                 </Link>
 
-                <div className="flex items-start justify-between gap-4 mb-4">
-                  <h1 className="font-sans text-4xl md:text-5xl text-white">
-                    {property.title}
-                  </h1>
-                </div>
-
-                <div className="flex items-center gap-2 text-black/60 mb-6">
+                <div className="flex items-center gap-2 text-black/60 mb-4">
                   <MapPin size={18} className="text-gold" />
-                  <span className="text-lg">{property.address}, {property.neighborhood}</span>
+                  <span className="text-lg">{property.address}, {property.city}, {property.state} {property.zip}</span>
                 </div>
 
-                <div className="text-5xl font-sans text-gold mb-6">
+                <div className="text-3xl sm:text-4xl md:text-5xl font-sans text-gold mb-6">
                   ${property.price.toLocaleString()}
                 </div>
 
                 {/* Key Stats */}
-                <div className="flex flex-wrap gap-6 pb-6 border-b border-gray-200">
+                <div className="flex flex-wrap gap-3 sm:gap-4 md:gap-6 pb-6 border-b border-gray-200">
                   <div className="flex items-center gap-2">
                     <Bed size={24} className="text-gold" />
                     <div>
@@ -189,53 +194,86 @@ const PropertyDetail = () => {
               </div>
 
               {/* Features */}
-              <div className="animate-fade-in-up delay-200">
-                <h2 className="text-2xl font-sans text-gold mb-4">Property Features</h2>
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                  {property.features.map((feature, index) => (
-                    <div
-                      key={index}
-                      className="flex items-center gap-2 text-black/80 bg-white border border-gray-200 px-4 py-3 rounded"
-                    >
-                      <div className="w-2 h-2 bg-gold rounded-full" />
-                      <span>{feature}</span>
-                    </div>
-                  ))}
+              {property.features.length > 0 && (
+                <div className="animate-fade-in-up delay-200">
+                  <h2 className="text-2xl font-sans text-gold mb-4">Property Features</h2>
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                    {property.features.map((feature, index) => (
+                      <div
+                        key={index}
+                        className="flex items-center gap-2 text-black/80 bg-white border border-gray-200 px-4 py-3 rounded"
+                      >
+                        <div className="w-2 h-2 bg-gold rounded-full" />
+                        <span>{feature}</span>
+                      </div>
+                    ))}
+                  </div>
                 </div>
-              </div>
+              )}
 
               {/* Property Details */}
               <div className="animate-fade-in-up delay-300">
                 <h2 className="text-2xl font-sans text-gold mb-4">Property Details</h2>
-                <div className="bg-white border border-gray-200 rounded-lg p-6">
+                <div className="bg-gray-50 border border-gray-200 rounded-lg p-6">
                   <div className="grid grid-cols-2 gap-6">
                     <div className="border-b border-gray-200 pb-4">
                       <div className="text-xs text-black/60 uppercase tracking-wider mb-1">Property Type</div>
-                      <div className="text-white">{property.propertyType}</div>
+                      <div className="text-black font-medium">{property.propertyType}</div>
                     </div>
                     <div className="border-b border-gray-200 pb-4">
                       <div className="text-xs text-black/60 uppercase tracking-wider mb-1">Year Built</div>
-                      <div className="text-white">{property.yearBuilt}</div>
+                      <div className="text-black font-medium">{property.yearBuilt}</div>
                     </div>
                     <div className="border-b border-gray-200 pb-4">
                       <div className="text-xs text-black/60 uppercase tracking-wider mb-1">Days on Market</div>
-                      <div className="text-white">{property.daysOnMarket} days</div>
+                      <div className="text-black font-medium">{property.daysOnMarket} days</div>
                     </div>
-                    {property.mlsNumber && (
-                      <div className="border-b border-gray-200 pb-4">
-                        <div className="text-xs text-black/60 uppercase tracking-wider mb-1">MLS Number</div>
-                        <div className="text-white">{property.mlsNumber}</div>
-                      </div>
-                    )}
+                    <div className="border-b border-gray-200 pb-4">
+                      <div className="text-xs text-black/60 uppercase tracking-wider mb-1">MLS Number</div>
+                      <div className="text-black font-medium font-mono">{property.mlsNumber}</div>
+                    </div>
+                    <div className="border-b border-gray-200 pb-4">
+                      <div className="text-xs text-black/60 uppercase tracking-wider mb-1">Neighborhood</div>
+                      <div className="text-black font-medium">{property.neighborhood}</div>
+                    </div>
+                    <div className="border-b border-gray-200 pb-4">
+                      <div className="text-xs text-black/60 uppercase tracking-wider mb-1">Status</div>
+                      <div className="text-black font-medium">{property.status}</div>
+                    </div>
                   </div>
                 </div>
               </div>
+
+              {/* REQUIRED: Listing Attribution (GEPAR Section 18) */}
+              <div className="animate-fade-in-up delay-350">
+                <ListingAttribution
+                  officeName={property.listOfficeName}
+                  agentName={property.listAgentName}
+                  mlsNumber={property.mlsNumber}
+                  variant="detail"
+                />
+              </div>
+
+              {/* Virtual Tour */}
+              {property.virtualTour && (
+                <div className="animate-fade-in-up">
+                  <a
+                    href={property.virtualTour}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 px-6 py-3 bg-gold text-dark font-bold uppercase tracking-widest hover:shadow-gold-glow transition-premium"
+                  >
+                    <Home size={18} />
+                    View Virtual Tour
+                  </a>
+                </div>
+              )}
 
               {/* Mortgage Calculator Button */}
               <div className="animate-fade-in-up delay-400">
                 <button
                   onClick={() => setShowCalculator(!showCalculator)}
-                  className="w-full flex items-center justify-center gap-2 px-6 py-4 bg-gold text-dark font-bold uppercase tracking-widest hover:bg-white transition-colors"
+                  className="w-full flex items-center justify-center gap-2 px-6 py-4 bg-gold text-dark font-bold uppercase tracking-widest hover:bg-white hover:text-gold border-2 border-gold transition-colors"
                 >
                   <Calculator size={20} />
                   {showCalculator ? 'Hide' : 'Show'} Mortgage Calculator
@@ -253,7 +291,7 @@ const PropertyDetail = () => {
             <div className="lg:col-span-1">
               <div className="sticky top-24 animate-fade-in-up delay-500">
                 <div className="bg-white border border-gray-200 p-8 rounded-lg shadow-2xl">
-                  <h3 className="font-sans text-2xl text-center text-white mb-2">
+                  <h3 className="font-sans text-2xl text-center text-black mb-2">
                     Schedule a Showing
                   </h3>
                   <p className="text-black/60 text-center text-sm mb-6">
@@ -286,7 +324,7 @@ const PropertyDetail = () => {
 
           <img
             src={property.images[currentImageIndex]}
-            alt={property.title}
+            alt={`${property.address} - Image ${currentImageIndex + 1}`}
             className="max-w-full max-h-full object-contain"
           />
 
@@ -297,11 +335,14 @@ const PropertyDetail = () => {
             <ChevronRight size={32} className="text-white" />
           </button>
 
-          <div className="absolute bottom-4 left-1/2 -translate-x-1/2 text-black text-lg">
+          <div className="absolute bottom-4 left-1/2 -translate-x-1/2 text-white text-lg">
             {currentImageIndex + 1} / {property.images.length}
           </div>
         </div>
       )}
+
+      {/* MLS Disclaimer - REQUIRED by GEPAR */}
+      <IDXCompliance variant="full" showLogo />
 
       <Footer />
     </div>
@@ -329,11 +370,11 @@ const MortgageCalculator = ({ price }: { price: number }) => {
   }, [price, downPayment, interestRate, loanTerm]);
 
   return (
-    <div className="bg-white border border-gold/20 rounded-lg p-6 space-y-6">
+    <div className="bg-gray-50 border border-gold/20 rounded-lg p-6 space-y-6">
       <h3 className="text-xl font-sans text-gold text-center">Estimated Monthly Payment</h3>
 
       <div className="text-center">
-        <div className="text-4xl font-sans text-white">${monthlyPayment.toLocaleString(undefined, { maximumFractionDigits: 0 })}</div>
+        <div className="text-4xl font-sans text-black">${monthlyPayment.toLocaleString(undefined, { maximumFractionDigits: 0 })}</div>
         <div className="text-sm text-black/60 mt-1">per month</div>
       </div>
 
@@ -378,7 +419,7 @@ const MortgageCalculator = ({ price }: { price: number }) => {
           <select
             value={loanTerm}
             onChange={(e) => setLoanTerm(parseInt(e.target.value))}
-            className="w-full bg-blackborder border-gray-200 text-white px-4 py-3 focus:outline-none focus:border-gold transition-colors rounded"
+            className="w-full bg-white border border-gray-200 text-black px-4 py-3 focus:outline-none focus:border-gold transition-colors rounded"
           >
             <option value="15">15 years</option>
             <option value="20">20 years</option>

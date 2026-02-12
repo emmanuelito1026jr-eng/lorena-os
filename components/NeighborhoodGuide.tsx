@@ -15,7 +15,7 @@ const NeighborhoodGuide = () => {
         <div className="flex flex-col md:flex-row justify-between items-end mb-16">
           <div>
             <span className="text-gold text-xs uppercase tracking-[0.25em] font-extrabold">Local Expertise</span>
-            <h2 className="mt-3 font-sans text-5xl md:text-6xl text-black font-bold">
+            <h2 className="mt-3 font-sans text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-black font-bold">
               Explore <span className="gradient-text">El Paso</span>
             </h2>
             <p className="mt-3 text-black/70 max-w-2xl font-light">
@@ -31,7 +31,7 @@ const NeighborhoodGuide = () => {
           </a>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
           {NEIGHBORHOODS.map((hood, index) => {
             const detailNeighborhood = NEIGHBORHOODS_DETAIL.find(n => n.name === hood.name);
             const linkTo = detailNeighborhood ? `#/neighborhood/${detailNeighborhood.id}` : `#/properties?neighborhood=${hood.name}`;
@@ -40,7 +40,7 @@ const NeighborhoodGuide = () => {
               <a
                 key={index}
                 href={linkTo}
-                className="neighborhood-card group relative h-64 md:h-80 lg:h-96 overflow-hidden cursor-pointer hover-lift block shadow-premium hover:shadow-gold-glow transition-premium"
+                className="neighborhood-card group relative h-48 sm:h-56 md:h-72 lg:h-96 overflow-hidden cursor-pointer hover-lift block shadow-premium hover:shadow-gold-glow transition-premium"
               >
                 <img
                   src={hood.image}

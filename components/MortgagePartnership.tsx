@@ -220,12 +220,12 @@ const MortgagePartnership = () => {
         </div>
 
         {/* Benefits Section */}
-        <div className="bg-black p-12 sm:p-16 shadow-premium">
+        <div className="bg-black p-6 sm:p-8 md:p-12 lg:p-16 shadow-premium">
           <h3 className="font-sans text-3xl sm:text-4xl md:text-5xl text-white text-center mb-16 font-bold">
             Why Our Partnership <span className="text-gold">Works For You</span>
           </h3>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 sm:gap-12">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-8 md:gap-12">
             {[
               {
                 icon: Users,

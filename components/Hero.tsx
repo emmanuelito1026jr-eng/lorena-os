@@ -39,7 +39,7 @@ const Hero = () => {
       <div className="absolute inset-0 bg-black/50"></div>
 
       {/* Content */}
-      <div className="relative z-10 max-w-7xl mx-auto px-6 text-center sm:px-12 lg:px-16 pt-20">
+      <div className="relative z-10 max-w-7xl mx-auto px-4 text-center sm:px-6 md:px-12 lg:px-16 pt-20">
         <h1 className="animate-fade-in-up font-playfair text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-white mb-6 leading-tight drop-shadow-lg">
           Casas En El Paso, Texas
         </h1>
@@ -75,7 +75,7 @@ const Hero = () => {
           ].map((stat) => (
             <div
               key={stat.label}
-              className={`animate-fade-in-up ${stat.delay} bg-white/10 backdrop-blur-md rounded-xl p-6 sm:p-8 min-w-[140px] sm:min-w-[180px] text-center hover:-translate-y-1 transition-transform duration-300`}
+              className={`animate-fade-in-up ${stat.delay} bg-white/10 backdrop-blur-md rounded-xl p-4 sm:p-6 md:p-8 min-w-[100px] sm:min-w-[140px] md:min-w-[180px] text-center hover:-translate-y-1 transition-transform duration-300`}
             >
               <p className="text-4xl font-playfair font-bold text-gold mb-2">{stat.number}</p>
               <p className="text-sm font-lato text-white/90 uppercase tracking-wide">{stat.label}</p>
@@ -91,7 +91,7 @@ const Hero = () => {
         aria-label="Scroll to about section"
       >
         <div className="flex flex-col items-center gap-2">
-          <div className="w-[1px] h-16 bg-gradient-to-b from-transparent via-gold to-transparent"></div>
+          <div className="w-[1px] h-12 sm:h-16 bg-gradient-to-b from-transparent via-gold to-transparent"></div>
           <ChevronDown className="text-gold group-hover:text-white transition-premium" size={24} />
         </div>
       </a>
