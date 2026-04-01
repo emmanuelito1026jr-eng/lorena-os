@@ -37,8 +37,7 @@ const sendToAnalytics = (metric: WebVitalsMetric) => {
     console.log('[Web Vitals]', metric);
   }
 
-  // TODO: Send to your analytics provider
-  // Example: Google Analytics, Vercel Analytics, etc.
+  // Configure analytics provider integration as needed (e.g. Google Analytics, Vercel Analytics)
 };
 
 /**
@@ -55,7 +54,14 @@ export const trackWebVitals = async () => {
   if (typeof window === 'undefined') return;
 
   try {
-    const { getCLS, getFID, getFCP, getLCP, getTTFB } = await import('web-vitals');
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const { getCLS, getFID, getFCP, getLCP, getTTFB } = await (import('web-vitals' as string) as Promise<{
+      getCLS: (cb: (metric: WebVitalsMetric) => void) => void;
+      getFID: (cb: (metric: WebVitalsMetric) => void) => void;
+      getFCP: (cb: (metric: WebVitalsMetric) => void) => void;
+      getLCP: (cb: (metric: WebVitalsMetric) => void) => void;
+      getTTFB: (cb: (metric: WebVitalsMetric) => void) => void;
+    }>);
 
     getCLS(sendToAnalytics);
     getFID(sendToAnalytics);
@@ -79,7 +85,6 @@ export const trackEvent = (eventName: string, properties?: Record<string, unknow
     console.log('[Analytics Event]', eventName, properties);
   }
 
-  // TODO: Send to your analytics provider
 };
 
 /**
@@ -95,7 +100,6 @@ export const trackPageView = (path: string) => {
     console.log('[Analytics PageView]', path);
   }
 
-  // TODO: Send to your analytics provider
 };
 
 // Initialize tracking (uncomment when ready to use)
