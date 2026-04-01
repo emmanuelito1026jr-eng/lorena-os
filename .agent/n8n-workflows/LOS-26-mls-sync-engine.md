@@ -21,7 +21,7 @@ The MLS Sync Engine is the backbone of Lorena Realtor OS's live property data. I
 | Auth Header | `Authorization: OAuth <SPARK_API_TOKEN>` |
 | User-Agent | `LorenaRealtorOS/1.0` |
 | X-SparkApi-User-Agent | `LorenaRealtorOS/1.0` |
-| Feed ID | `bs1gx50w59ms8w6qyza2tpmjl` |
+| Feed ID | `bslgx50w59ms8w6qyza2tpmjl` |
 | Account | `Lorena Ontiveros-Ortega (gep.8809)` |
 | MLS | Greater El Paso MLS (GEPAR) |
 | Role | IDX |

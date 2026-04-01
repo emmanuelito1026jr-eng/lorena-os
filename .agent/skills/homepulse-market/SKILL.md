@@ -38,7 +38,7 @@ Real-time El Paso real estate market intelligence dashboard that gives Lorena a 
 
 ### External APIs
 
-- **Spark API (GEPAR)** — MLS data source, Feed ID: `bs1gx50w59ms8w6qyza2tpmjl`
+- **Spark API (GEPAR)** — MLS data source, Feed ID: `bslgx50w59ms8w6qyza2tpmjl`
 - Sync engine in `lib/mls/` (adapter, sparkApi, syncService)
 
 ### Hook Details

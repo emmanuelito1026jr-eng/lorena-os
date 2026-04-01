@@ -5,7 +5,7 @@
  * NEVER import this in frontend code (API credentials must not be exposed).
  *
  * Credentials:
- *   Feed ID:  bs1gx50w59ms8w6qyza2tpmjl
+ *   Feed ID:  bslgx50w59ms8w6qyza2tpmjl
  *   Token:    <SPARK_API_TOKEN> (set via process.env.SPARK_API_TOKEN)
  *   Account:  Lorena Ontiveros-Ortega (gep.8809)
  *   MLS:      Greater El Paso MLS (GEPAR)

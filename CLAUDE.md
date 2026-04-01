@@ -17,7 +17,7 @@ A complete AI-powered real estate operating system for Lorena Ontiveros-Ortega (
 - Automation: n8n (self-hosted - workflows, drips, scoring, alerts)
 - SMS/Voice: Twilio
 - Email: SendGrid
-- MLS: Spark API (GEPAR — Feed ID: bs1gx50w59ms8w6qyza2tpmjl, sync engine in lib/mls/)
+- MLS: Spark API (GEPAR — Feed ID: bslgx50w59ms8w6qyza2tpmjl, sync engine in lib/mls/)
 - Mobile: React Native + Expo (Phase 5)
 - Hosting: Vercel
 - Fonts: Playfair Display (headlines) + Lato (body)
@@ -304,7 +304,7 @@ Read the relevant Phase prompt BEFORE building any feature from that phase.
 ## Notes
 
 - **CINC MIGRATION IS SMALL:** Under 100 leads. Clean CSV export - n8n workflow - Supabase import. No massive data headaches.
-- **MLS ACCESS APPROVED:** Spark API credentials are live. Feed ID: bs1gx50w59ms8w6qyza2tpmjl. Sync engine built in lib/mls/.
+- **MLS ACCESS APPROVED:** Spark API credentials are live. Feed ID: bslgx50w59ms8w6qyza2tpmjl. Sync engine built in lib/mls/.
 - **LORENA'S CINC PLAN:** Pro ($1,500/mo) + AI Alex ($200/mo) + VOIP Dialer (~$50-100/mo) + Managed Ad Spend (paying but NOT running ads) = ~$1,750-$1,800/mo total
 - **THE KEY INSIGHT:** Lorena closed MORE deals before CINC. Our system must be dramatically simpler, not just feature-equivalent. Every screen should feel like "finally, something that works" not "another complicated tool."
 - **ETTA ADOPTION IS LOW:** Most clients use the website, not the app. Our portal must be so good clients actually open it. Push property alerts + showing reminders via SMS to drive portal usage.

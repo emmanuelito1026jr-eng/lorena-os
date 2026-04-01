@@ -98,7 +98,7 @@ Escalate to Emmanuel when:
 
 ## Verification Protocol
 
-- [ ] Spark API Feed ID: `bs1gx50w59ms8w6qyza2tpmjl` (never changes)
+- [ ] Spark API Feed ID: `bslgx50w59ms8w6qyza2tpmjl` (never changes)
 - [ ] All property displays include IDX attribution/disclaimer
 - [ ] Stale data banner shows when last_sync > 24 hours ago
 - [ ] No prohibited MLS fields exposed to public (agent-only fields hidden)
@@ -119,7 +119,7 @@ Escalate to Emmanuel when:
 
 - **MLS Provider:** GEPAR (Greater El Paso Association of Realtors)
 - **API:** Spark API (RESO Web API compliant)
-- **Feed ID:** bs1gx50w59ms8w6qyza2tpmjl
+- **Feed ID:** bslgx50w59ms8w6qyza2tpmjl
 - **Sync Frequency:** Every 15 minutes (via n8n LOS-26)
 - **El Paso Median Price:** ~$230K
 - **Property Types:** Single family, townhomes, condos, mobile homes, multi-family

@@ -41,7 +41,7 @@ This is a server-side pipeline. The Spark API client (`sparkApi.ts`) must NEVER 
 
 | Field | Value |
 |-------|-------|
-| Feed ID | `bs1gx50w59ms8w6qyza2tpmjl` |
+| Feed ID | `bslgx50w59ms8w6qyza2tpmjl` |
 | Account | Lorena Ontiveros-Ortega (`gep.8809`) |
 | MLS | Greater El Paso Association of REALTORS (GEPAR) |
 | Role | IDX |
