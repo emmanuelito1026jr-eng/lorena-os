@@ -1,0 +1,367 @@
+{
+  "name": "[LOS-21] Post-Close Nurture Launcher",
+  "nodes": [
+    {
+      "parameters": {
+        "path": "deal-closed",
+        "httpMethod": "POST",
+        "responseMode": "onReceived"
+      },
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        200,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "functionCode": "const b = items[0].json.body || items[0].json;\nitems[0].json = {lead_id: b.lead_id, deal_id: b.deal_id, property_address: b.property_address, close_date: b.close_date || new Date().toISOString()};\nreturn items;"
+      },
+      "name": "Extract",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [
+        400,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "tableId": "leads",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "id",
+              "keyValue": "={{ $json.lead_id }}"
+            }
+          ]
+        }
+      },
+      "name": "Get Lead",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 2,
+      "position": [
+        600,
+        300
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "37rJREccSDhKtIGi",
+          "name": "Supabase Service Role"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "from": "={{$credentials.twilioApi.phoneNumber}}",
+        "to": "={{ $json.phone }}",
+        "message": "={{ ($json.preferred_language === 'es' ? '\ud83c\udf89 \u00a1Felicidades ' + ($json.first_name || '') + '! \u00a1Bienvenido(a) a tu nuevo hogar en ' + $node['Extract'].json.property_address + '! Fue un placer ayudarte. - Lorena' : '\ud83c\udf89 Congratulations ' + ($json.first_name || '') + '! Welcome to your new home at ' + $node['Extract'].json.property_address + '! It was a pleasure helping you. - Lorena') }}"
+      },
+      "name": "Congrats SMS",
+      "type": "n8n-nodes-base.twilio",
+      "typeVersion": 1,
+      "position": [
+        800,
+        300
+      ],
+      "credentials": {
+        "twilioApi": {
+          "id": "PENDING",
+          "name": "Twilio - Lorena SMS"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fromEmail": "lorena.realtor@icloud.com",
+        "toEmail": "={{ $node['Get Lead'].json.email }}",
+        "subject": "={{ '\ud83c\udf89 Welcome to your new home at ' + $node['Extract'].json.property_address + '!' }}",
+        "contentHtml": "={{ '<div style=\"font-family:Arial,sans-serif;max-width:600px;margin:0 auto;\"><h2 style=\"color:#2D5A27;\">Congratulations!</h2><p>Dear ' + ($node['Get Lead'].json.first_name || '') + ',</p><p>I am so happy I could help you find your perfect home at <strong>' + $node['Extract'].json.property_address + '</strong>!</p><p>Here are some helpful resources for new homeowners:</p><ul><li>\ud83d\udcdd Change your address at USPS.com</li><li>\u26a1 Set up utilities (El Paso Electric, El Paso Water)</li><li>\ud83c\udfe1 Consider homeowner\\'s insurance review</li></ul><p>If you ever need anything \u2014 or know someone looking for a home \u2014 don\\'t hesitate to reach out!</p><p>Warmly,<br><strong>Lorena</strong></p></div>' }}"
+      },
+      "name": "Congrats Email",
+      "type": "n8n-nodes-base.sendGrid",
+      "typeVersion": 1,
+      "position": [
+        1000,
+        300
+      ],
+      "credentials": {
+        "sendGridApi": {
+          "id": "PENDING",
+          "name": "SendGrid - Lorena Email"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "create",
+        "tableId": "messages",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "lead_id",
+              "fieldValue": "={{ $node['Extract'].json.lead_id }}"
+            },
+            {
+              "fieldId": "agent_id",
+              "fieldValue": "6d51a7c2-271f-484a-bb11-5ee935f1358a"
+            },
+            {
+              "fieldId": "channel",
+              "fieldValue": "email"
+            },
+            {
+              "fieldId": "direction",
+              "fieldValue": "outbound"
+            },
+            {
+              "fieldId": "content",
+              "fieldValue": "Post-close congrats email sent"
+            },
+            {
+              "fieldId": "is_ai",
+              "fieldValue": "false"
+            },
+            {
+              "fieldId": "automation_source",
+              "fieldValue": "post_close"
+            }
+          ]
+        }
+      },
+      "name": "Log Email",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 2,
+      "position": [
+        1200,
+        300
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "37rJREccSDhKtIGi",
+          "name": "Supabase Service Role"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "tableId": "leads",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "id",
+              "keyValue": "={{ $node['Extract'].json.lead_id }}"
+            }
+          ]
+        },
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "status",
+              "fieldValue": "closed_won"
+            }
+          ]
+        }
+      },
+      "name": "Update Lead",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 2,
+      "position": [
+        1400,
+        300
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "37rJREccSDhKtIGi",
+          "name": "Supabase Service Role"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "amount": 30,
+        "unit": "days"
+      },
+      "name": "Wait 30 Days",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1,
+      "position": [
+        1600,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "from": "={{$credentials.twilioApi.phoneNumber}}",
+        "to": "={{ $node['Get Lead'].json.phone }}",
+        "message": "={{ ($node['Get Lead'].json.preferred_language === 'es' ? 'Hola ' + ($node['Get Lead'].json.first_name || '') + '! \u00bfC\u00f3mo va todo en tu nuevo hogar? Si necesitas algo o conoces a alguien buscando casa, \u00a1no dudes en contactarme! - Lorena \ud83c\udfe1' : 'Hi ' + ($node['Get Lead'].json.first_name || '') + '! How\\'s everything going in your new home? If you need anything or know someone looking for a home, don\\'t hesitate to reach out! - Lorena \ud83c\udfe1') }}"
+      },
+      "name": "30-Day Check-in",
+      "type": "n8n-nodes-base.twilio",
+      "typeVersion": 1,
+      "position": [
+        1800,
+        300
+      ],
+      "credentials": {
+        "twilioApi": {
+          "id": "PENDING",
+          "name": "Twilio - Lorena SMS"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "amount": 335,
+        "unit": "days"
+      },
+      "name": "Wait Anniversary",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1,
+      "position": [
+        2000,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "fromEmail": "lorena.realtor@icloud.com",
+        "toEmail": "={{ $node['Get Lead'].json.email }}",
+        "subject": "={{ '\ud83c\udf82 Happy Home Anniversary, ' + ($node['Get Lead'].json.first_name || '') + '!' }}",
+        "contentHtml": "={{ '<div style=\"font-family:Arial,sans-serif;\"><h2>Happy Home Anniversary!</h2><p>It\\'s been a year since you closed on ' + $node['Extract'].json.property_address + '!</p><p>Curious about your home\\'s current value? Reply and I\\'ll send you a free market update.</p><p>Best,<br>Lorena</p></div>' }}"
+      },
+      "name": "Anniversary Email",
+      "type": "n8n-nodes-base.sendGrid",
+      "typeVersion": 1,
+      "position": [
+        2200,
+        300
+      ],
+      "credentials": {
+        "sendGridApi": {
+          "id": "PENDING",
+          "name": "SendGrid - Lorena Email"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Extract",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract": {
+      "main": [
+        [
+          {
+            "node": "Get Lead",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Lead": {
+      "main": [
+        [
+          {
+            "node": "Congrats SMS",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Congrats SMS": {
+      "main": [
+        [
+          {
+            "node": "Congrats Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Congrats Email": {
+      "main": [
+        [
+          {
+            "node": "Log Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Log Email": {
+      "main": [
+        [
+          {
+            "node": "Update Lead",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Lead": {
+      "main": [
+        [
+          {
+            "node": "Wait 30 Days",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait 30 Days": {
+      "main": [
+        [
+          {
+            "node": "30-Day Check-in",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "30-Day Check-in": {
+      "main": [
+        [
+          {
+            "node": "Wait Anniversary",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait Anniversary": {
+      "main": [
+        [
+          {
+            "node": "Anniversary Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  }
+}

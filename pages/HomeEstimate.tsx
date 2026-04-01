@@ -1,9 +1,13 @@
-import { useState, useMemo } from 'react';
+import React, { useState, useMemo } from 'react';
+import { usePageTitle } from '../hooks/usePageTitle';
+import { useTranslation } from '../lib/i18n';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import { Home, MapPin, Bed, Bath, Maximize, Calendar } from 'lucide-react';
 
 const HomeEstimate = () => {
+  usePageTitle('Home Estimate');
+  const { t } = useTranslation();
   const [formData, setFormData] = useState({
     address: '',
     bedrooms: '3',
@@ -17,12 +21,14 @@ const HomeEstimate = () => {
   });
 
   const [submitted, setSubmitted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   // Simple estimation algorithm
   const estimatedValue = useMemo(() => {
     const basePricePerSqFt = 150; // El Paso average
     const sqft = parseInt(formData.squareFeet) || 0;
-    const age = 2026 - parseInt(formData.yearBuilt);
+    const age = new Date().getFullYear() - parseInt(formData.yearBuilt);
 
     let baseValue = sqft * basePricePerSqFt;
 
@@ -44,25 +50,46 @@ const HomeEstimate = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    const webhookUrl = import.meta.env.VITE_WEBHOOK_URL;
-    if (!webhookUrl) return;
+    setError(null);
+    setIsSubmitting(true);
 
     try {
-      await fetch(webhookUrl, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          ...formData,
-          estimatedValue,
-          type: 'Home Estimate',
-          timestamp: new Date().toISOString(),
-          source: 'home-estimate-page'
-        })
-      });
+      const webhookUrl = import.meta.env.VITE_WEBHOOK_URL;
+      if (webhookUrl && !webhookUrl.includes('your-n8n-instance')) {
+        await fetch(webhookUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            ...formData,
+            estimatedValue,
+            type: 'Home Estimate',
+            timestamp: new Date().toISOString(),
+            source: 'home-estimate-page'
+          })
+        });
+      } else {
+        const { supabase } = await import('../lib/supabase/client');
+        const nameParts = formData.name.trim().split(/\s+/);
+        const { data: agent } = await supabase
+          .from('profiles').select('id').eq('role', 'agent').limit(1).single();
+        await supabase.from('leads').insert({
+          first_name: nameParts[0] || 'Home',
+          last_name: nameParts.slice(1).join(' ') || 'Estimate',
+          email: formData.email || null,
+          phone: formData.phone || null,
+          source: 'website' as const,
+          tags: ['home-estimate'],
+          preferred_language: 'en',
+          notes: `Home Estimate: ${formData.address}. ${formData.bedrooms}bd/${formData.bathrooms}ba, ${formData.squareFeet}sqft, built ${formData.yearBuilt}. Est. value: $${estimatedValue?.toLocaleString()}`,
+          agent_id: agent?.id,
+        });
+      }
       setSubmitted(true);
-    } catch (error) {
-      console.error('Submission error:', error);
+    } catch (err) {
+      console.error('Submission error:', err);
+      setError('Failed to submit your request. Please try again or call us directly at (915) 487-5581.');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -110,8 +137,9 @@ const HomeEstimate = () => {
                     value={formData.address}
                     onChange={handleChange}
                     required
+                    autoComplete="street-address"
                     className="w-full px-4 py-3 border border-gray-200 rounded focus:border-gold focus:outline-none transition-premium font-lato"
-                    placeholder="123 Main St, El Paso, TX 79901"
+                    placeholder={t('homeEstimate.addressPlaceholder')}
                   />
                 </div>
 
@@ -183,7 +211,7 @@ const HomeEstimate = () => {
                       onChange={handleChange}
                       required
                       min="1900"
-                      max="2026"
+                      max={new Date().getFullYear()}
                       className="w-full px-4 py-3 border border-gray-200 rounded focus:border-gold focus:outline-none transition-premium font-lato"
                     />
                   </div>
@@ -222,40 +250,62 @@ const HomeEstimate = () => {
 
                 {/* Contact Fields */}
                 <div className="space-y-6 mb-8">
-                  <input
-                    type="text"
-                    name="name"
-                    value={formData.name}
-                    onChange={handleChange}
-                    required
-                    placeholder="Full Name"
-                    className="w-full px-4 py-3 border border-gray-200 rounded focus:border-gold focus:outline-none transition-premium font-lato"
-                  />
-                  <input
-                    type="email"
-                    name="email"
-                    value={formData.email}
-                    onChange={handleChange}
-                    required
-                    placeholder="Email Address"
-                    className="w-full px-4 py-3 border border-gray-200 rounded focus:border-gold focus:outline-none transition-premium font-lato"
-                  />
-                  <input
-                    type="tel"
-                    name="phone"
-                    value={formData.phone}
-                    onChange={handleChange}
-                    required
-                    placeholder="Phone Number"
-                    className="w-full px-4 py-3 border border-gray-200 rounded focus:border-gold focus:outline-none transition-premium font-lato"
-                  />
+                  <div>
+                    <label htmlFor="estimate-name" className="block text-dark/80 text-sm uppercase tracking-wider font-lato font-semibold mb-2">Full Name</label>
+                    <input
+                      id="estimate-name"
+                      type="text"
+                      name="name"
+                      value={formData.name}
+                      onChange={handleChange}
+                      required
+                      autoComplete="name"
+                      placeholder={t('homeEstimate.namePlaceholder')}
+                      className="w-full px-4 py-3 border border-gray-200 rounded focus:border-gold focus:outline-none transition-premium font-lato"
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor="estimate-email" className="block text-dark/80 text-sm uppercase tracking-wider font-lato font-semibold mb-2">Email Address</label>
+                    <input
+                      id="estimate-email"
+                      type="email"
+                      name="email"
+                      value={formData.email}
+                      onChange={handleChange}
+                      required
+                      autoComplete="email"
+                      placeholder={t('homeEstimate.emailPlaceholder')}
+                      className="w-full px-4 py-3 border border-gray-200 rounded focus:border-gold focus:outline-none transition-premium font-lato"
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor="estimate-phone" className="block text-dark/80 text-sm uppercase tracking-wider font-lato font-semibold mb-2">Phone Number</label>
+                    <input
+                      id="estimate-phone"
+                      type="tel"
+                      name="phone"
+                      value={formData.phone}
+                      onChange={handleChange}
+                      required
+                      autoComplete="tel"
+                      placeholder={t('homeEstimate.phonePlaceholder')}
+                      className="w-full px-4 py-3 border border-gray-200 rounded focus:border-gold focus:outline-none transition-premium font-lato"
+                    />
+                  </div>
                 </div>
+
+                {error && (
+                  <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded text-red-700 font-lato text-sm">
+                    {error}
+                  </div>
+                )}
 
                 <button
                   type="submit"
-                  className="w-full px-8 py-4 bg-gold text-dark font-lato font-bold uppercase tracking-widest hover:shadow-gold-glow transition-premium"
+                  disabled={isSubmitting}
+                  className="w-full px-8 py-4 bg-gold text-dark font-lato font-bold uppercase tracking-widest hover:shadow-gold-glow transition-premium disabled:opacity-60 disabled:cursor-not-allowed"
                 >
-                  Get Detailed Estimate
+                  {isSubmitting ? 'Submitting...' : 'Get Detailed Estimate'}
                 </button>
               </>
             ) : (

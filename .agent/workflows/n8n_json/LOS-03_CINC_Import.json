@@ -1,0 +1,338 @@
+{
+  "name": "[LOS-03] CINC CSV Import Processor",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "import-leads",
+        "options": {}
+      },
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        240,
+        300
+      ],
+      "webhookId": "bf088f9c-745f-4cb0-a662-6d0eddd15a84"
+    },
+    {
+      "parameters": {
+        "tableId": "profiles",
+        "returnAll": true,
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "role",
+              "keyValue": "agent",
+              "condition": "eq"
+            }
+          ]
+        },
+        "limit": 1,
+        "filterType": "manual",
+        "matchType": "allFilters",
+        "resource": "row",
+        "operation": "getAll"
+      },
+      "name": "Get Agent",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 2,
+      "position": [
+        460,
+        300
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "37rJREccSDhKtIGi",
+          "name": "Supabase Service Role"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "tableId": "lead_imports",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "agent_id",
+              "fieldValue": "={{$node[\"Get Agent\"].json[\"id\"]}}"
+            },
+            {
+              "fieldId": "filename",
+              "fieldValue": "CINC Export"
+            },
+            {
+              "fieldId": "status",
+              "fieldValue": "processing"
+            }
+          ]
+        },
+        "operation": "create",
+        "resource": "row"
+      },
+      "name": "Init Import",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 2,
+      "position": [
+        680,
+        300
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "37rJREccSDhKtIGi",
+          "name": "Supabase Service Role"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "batchSize": 10,
+        "options": {}
+      },
+      "name": "Split Batches",
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 1,
+      "position": [
+        900,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "functionCode": "const results = [];\nfor (const item of items) {\n  const lead = item.json;\n  const statusMap = {\n    'New Lead': 'new_lead',\n    'Attempted Contact': 'attempted_contact',\n    'Contacted': 'contacted',\n    'Appt. Set': 'appointment_set',\n    'Appt. Met': 'appointment_met',\n    'Active Client': 'active_client',\n    'Pending Client': 'pending_client',\n    'Past Client': 'past_client'\n  };\n  \n  results.push({\n    json: {\n      firstName: lead['First Name'],\n      lastName: lead['Last Name'],\n      email: lead['Email'],\n      phone: lead['Phone'] ? lead['Phone'].replace(/\\D/g, '') : null,\n      source: lead['Source'] === 'Google' ? 'website' : (lead['Source'] || 'cinc').toLowerCase(),\n      status: statusMap[lead['Pipeline Stage']] || 'new_lead',\n      isSeller: (lead['Buyer/Seller'] || '').toLowerCase().includes('seller'),\n      tags: (lead['Labels'] || '').split(',').map(t => t.trim()).filter(t => t),\n      score: 5 + (lead['Phone'] ? 5 : 0) + (lead['Email'] ? 5 : 0) + (lead['Pre-Qualified'] ? 10 : 0),\n      temp: 'cool'\n    }\n  });\n}\nreturn results;"
+      },
+      "name": "Map Fields",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [
+        1120,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "upsert",
+        "tableId": "leads",
+        "columns": "email",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "agent_id",
+              "fieldValue": "={{$node[\"Get Agent\"].json[\"id\"]}}"
+            },
+            {
+              "fieldId": "first_name",
+              "fieldValue": "={{$node[\"Map Fields\"].json[\"firstName\"]}}"
+            },
+            {
+              "fieldId": "last_name",
+              "fieldValue": "={{$node[\"Map Fields\"].json[\"lastName\"]}}"
+            },
+            {
+              "fieldId": "email",
+              "fieldValue": "={{$node[\"Map Fields\"].json[\"email\"]}}"
+            },
+            {
+              "fieldId": "phone",
+              "fieldValue": "={{$node[\"Map Fields\"].json[\"phone\"]}}"
+            },
+            {
+              "fieldId": "source",
+              "fieldValue": "={{$node[\"Map Fields\"].json[\"source\"]}}"
+            },
+            {
+              "fieldId": "status",
+              "fieldValue": "={{$node[\"Map Fields\"].json[\"status\"]}}"
+            },
+            {
+              "fieldId": "score",
+              "fieldValue": "={{$node[\"Map Fields\"].json[\"score\"]}}"
+            },
+            {
+              "fieldId": "deal_type",
+              "fieldValue": "={{$node[\"Calc New Lead\"].json[\"isSeller\"] ? 'selling' : 'buying'}}"
+            },
+            {
+              "fieldId": "tags",
+              "fieldValue": "={{$node[\"Map Fields\"].json[\"tags\"]}}"
+            },
+            {
+              "fieldId": "import_batch_id",
+              "fieldValue": "={{$node[\"Init Import\"].json[\"id\"]}}"
+            }
+          ]
+        },
+        "resource": "row"
+      },
+      "name": "Upsert Leads",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 2,
+      "position": [
+        1340,
+        300
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "37rJREccSDhKtIGi",
+          "name": "Supabase Service Role"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "tableId": "utils",
+        "operation": "executeQuery",
+        "query": "UPDATE lead_imports SET imported_rows = imported_rows + {{$node[\"Map Fields\"].json.length}} WHERE id = '{{$node[\"Init Import\"].json[\"id\"]}}'"
+      },
+      "name": "Update Import",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 1,
+      "position": [
+        1560,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "boolean": [
+            {
+              "value1": "={{$node[\"Split Batches\"].context[\"noItemsLeft\"]}}",
+              "value2": true
+            }
+          ]
+        }
+      },
+      "name": "Done?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        1780,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "tableId": "lead_imports",
+        "updateKey": "id",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "id",
+              "fieldValue": "={{$node[\"Init Import\"].json[\"id\"]}}"
+            },
+            {
+              "fieldId": "status",
+              "fieldValue": "completed"
+            }
+          ]
+        },
+        "operation": "create",
+        "resource": "row"
+      },
+      "name": "Complete Import",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 2,
+      "position": [
+        2000,
+        200
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "37rJREccSDhKtIGi",
+          "name": "Supabase Service Role"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Get Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Agent": {
+      "main": [
+        [
+          {
+            "node": "Init Import",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Init Import": {
+      "main": [
+        [
+          {
+            "node": "Split Batches",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Batches": {
+      "main": [
+        [
+          {
+            "node": "Map Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Map Fields": {
+      "main": [
+        [
+          {
+            "node": "Upsert Leads",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upsert Leads": {
+      "main": [
+        [
+          {
+            "node": "Done?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Done?": {
+      "main": [
+        [
+          {
+            "node": "Complete Import",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Split Batches",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  }
+}

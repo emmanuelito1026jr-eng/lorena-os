@@ -82,36 +82,69 @@ export interface MLSMedia {
 // Consumer-safe display type (filtered from MLSListing)
 export interface PropertyDisplayData {
   id: string;
+  sparkId?: string;
   mlsNumber: string;
 
-  // Attribution (REQUIRED)
+  // Attribution (REQUIRED by GEPAR Section 18.2.12)
   listOfficeName: string;
   listAgentName: string;
+  listAgentEmail?: string;
+  listAgentPhone?: string;
+  coListAgentName?: string;
 
   // Status
   status: 'For Sale' | 'Pending' | 'Sold';
 
   // Pricing
   price: number;
+  originalPrice?: number;
+  soldPrice?: number;
+  pricePerSqft?: number;
 
   // Address
   address: string;
+  unitNumber?: string;
   city: string;
   state: string;
   zip: string;
+  county?: string;
   neighborhood: string;
 
   // Details
   beds: number;
   baths: number;
+  halfBaths?: number;
   sqft: number;
   lotSize?: number;
+  lotSqft?: number;
   yearBuilt: number;
+  stories?: number;
+  garageSpaces?: number;
+  pool?: boolean;
   propertyType: string;
+
+  // Construction
+  construction?: string[];
+  roof?: string;
+  foundation?: string;
+
+  // Financial
+  hoaFee?: number;
+  hoaFrequency?: string;
+  taxAmount?: number;
+  taxYear?: number;
+
+  // Schools
+  schoolDistrict?: string;
+  elementarySchool?: string;
+  middleSchool?: string;
+  highSchool?: string;
 
   // Media
   images: string[];
+  thumbnails?: string[];
   virtualTour?: string;
+  videoUrl?: string;
 
   // Marketing
   description: string;
@@ -119,7 +152,11 @@ export interface PropertyDisplayData {
 
   // Metadata
   daysOnMarket: number;
+  cumulativeDom?: number;
+  listDate?: string;
+  closeDate?: string;
   lastUpdated: string;
+  isLorenasListing?: boolean;
 
   // Location
   latitude?: number;

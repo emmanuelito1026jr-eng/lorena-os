@@ -1,0 +1,274 @@
+{
+  "name": "[LOS-13] Zillow Lead Email Parser",
+  "nodes": [
+    {
+      "parameters": {
+        "path": "zillow-lead",
+        "httpMethod": "POST",
+        "responseMode": "onReceived"
+      },
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        200,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "functionCode": "const b = items[0].json.body || items[0].json;\n// Parse Zillow email forward or API payload\nlet name = b.name || b.from_name || '';\nlet email = b.email || b.from_email || '';\nlet phone = b.phone || '';\nlet property = b.property_address || b.subject || '';\nlet message = b.message || b.body || '';\n\n// Try to parse from email body if it's a forward\nif (message && !name) {\n  const nameMatch = message.match(/Name:\\s*(.+)/i);\n  if (nameMatch) name = nameMatch[1].trim();\n  const emailMatch = message.match(/Email:\\s*(.+)/i);\n  if (emailMatch) email = emailMatch[1].trim();\n  const phoneMatch = message.match(/Phone:\\s*([\\d\\-\\(\\)\\+\\s]+)/);\n  if (phoneMatch) phone = phoneMatch[1].trim();\n  const propMatch = message.match(/(?:Property|Address):\\s*(.+)/i);\n  if (propMatch) property = propMatch[1].trim();\n}\n\nconst nameParts = name.split(' ');\nitems[0].json.first_name = nameParts[0] || '';\nitems[0].json.last_name = nameParts.slice(1).join(' ') || '';\nitems[0].json.email = email;\nitems[0].json.phone = phone;\nitems[0].json.property = property;\nitems[0].json.message = message;\nreturn items;"
+      },
+      "name": "Parse Zillow",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [
+        400,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "tableId": "leads",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "email",
+              "keyValue": "={{ $json.email }}"
+            }
+          ]
+        },
+        "limit": 1
+      },
+      "name": "Check Dup",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 2,
+      "position": [
+        600,
+        300
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "37rJREccSDhKtIGi",
+          "name": "Supabase Service Role"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{ $json.id }}",
+              "operation": "isEmpty"
+            }
+          ]
+        }
+      },
+      "name": "Is New?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        800,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "create",
+        "tableId": "leads",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "agent_id",
+              "fieldValue": "6d51a7c2-271f-484a-bb11-5ee935f1358a"
+            },
+            {
+              "fieldId": "first_name",
+              "fieldValue": "={{ $node['Parse Zillow'].json.first_name }}"
+            },
+            {
+              "fieldId": "last_name",
+              "fieldValue": "={{ $node['Parse Zillow'].json.last_name }}"
+            },
+            {
+              "fieldId": "email",
+              "fieldValue": "={{ $node['Parse Zillow'].json.email }}"
+            },
+            {
+              "fieldId": "phone",
+              "fieldValue": "={{ $node['Parse Zillow'].json.phone }}"
+            },
+            {
+              "fieldId": "source",
+              "fieldValue": "zillow"
+            },
+            {
+              "fieldId": "status",
+              "fieldValue": "new_lead"
+            },
+            {
+              "fieldId": "score",
+              "fieldValue": "15"
+            },
+            {
+              "fieldId": "temperature",
+              "fieldValue": "cool"
+            },
+            {
+              "fieldId": "tags",
+              "fieldValue": "={zillow}"
+            }
+          ]
+        }
+      },
+      "name": "Create Lead",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 2,
+      "position": [
+        1000,
+        200
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "37rJREccSDhKtIGi",
+          "name": "Supabase Service Role"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "create",
+        "tableId": "notifications",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "agent_id",
+              "fieldValue": "6d51a7c2-271f-484a-bb11-5ee935f1358a"
+            },
+            {
+              "fieldId": "type",
+              "fieldValue": "new_lead"
+            },
+            {
+              "fieldId": "title",
+              "fieldValue": "={{ '\ud83c\udfe0 Zillow lead: ' + $node['Parse Zillow'].json.first_name }}"
+            },
+            {
+              "fieldId": "message",
+              "fieldValue": "={{ $node['Parse Zillow'].json.first_name + ' interested in ' + $node['Parse Zillow'].json.property }}"
+            },
+            {
+              "fieldId": "lead_id",
+              "fieldValue": "={{ $node['Create Lead'].json.id }}"
+            }
+          ]
+        }
+      },
+      "name": "Notify",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 2,
+      "position": [
+        1200,
+        200
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "37rJREccSDhKtIGi",
+          "name": "Supabase Service Role"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://n8n.srv957236.hstgr.cloud/webhook/speed-to-lead",
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "={{ JSON.stringify({lead_id: $node['Create Lead'].json.id, source: 'zillow'}) }}",
+        "options": {}
+      },
+      "name": "Trigger STL",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        1400,
+        200
+      ]
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Parse Zillow",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse Zillow": {
+      "main": [
+        [
+          {
+            "node": "Check Dup",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Dup": {
+      "main": [
+        [
+          {
+            "node": "Is New?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Is New?": {
+      "main": [
+        [
+          {
+            "node": "Create Lead",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "Create Lead": {
+      "main": [
+        [
+          {
+            "node": "Notify",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Notify": {
+      "main": [
+        [
+          {
+            "node": "Trigger STL",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  }
+}

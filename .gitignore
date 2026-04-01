@@ -12,9 +12,23 @@ dist
 dist-ssr
 *.local
 
+# Environment files
+.env
+.env.*
+!.env.example
+
+# Supabase Edge Function secrets (service role key)
+supabase/functions/.env
+
 # Testing
 coverage
 .vitest
+
+# Claude Code local config
+.claude/
+
+# Supabase temp files
+supabase/.temp/
 
 # Editor directories and files
 .vscode/*

@@ -1,20 +1,36 @@
 import { useParams, Link } from 'react-router-dom';
+import { usePageMeta } from '../hooks/usePageMeta';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
+import IDXCompliance from '../components/mls/IDXCompliance';
 import { NEIGHBORHOODS_DETAIL } from '../constants';
-import { getListings } from '../lib/mls/mockData';
-import { MapPin, TrendingUp, Users, DollarSign, School, Home, Award, ChevronLeft } from 'lucide-react';
+import { useListings } from '../hooks/useListings';
+import { TrendingUp, Users, DollarSign, School, Home, Award, ChevronLeft } from 'lucide-react';
+
+const NEIGHBORHOOD_ZIPS: Record<string, string[]> = {
+  'Westside': ['79912'],
+  'Upper Valley': ['79922', '79932'],
+  'Northeast': ['79924', '79904'],
+  'Horizon City': ['79928'],
+  'Central': ['79901', '79902'],
+  'Eastlake': ['79927', '79936'],
+};
 
 const NeighborhoodDetail = () => {
   const { id } = useParams<{ id: string }>();
   const neighborhood = NEIGHBORHOODS_DETAIL.find(n => n.id === id);
+  usePageMeta({
+    title: neighborhood ? `${neighborhood.name} — El Paso Neighborhood Guide` : 'Neighborhood Not Found',
+    description: neighborhood ? `Explore ${neighborhood.name} in El Paso, TX — home prices, schools, amenities, and lifestyle. Your complete neighborhood guide.` : undefined,
+    canonicalUrl: neighborhood ? `https://casasenelpasotx.com/neighborhood/${id}` : undefined,
+  });
 
   if (!neighborhood) {
     return (
       <div className="bg-white min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <h1 className="text-4xl font-sans text-gold mb-4">Neighborhood Not Found</h1>
-          <Link to="/#neighborhoods" className="text-white hover:text-gold">
+          <h1 className="text-4xl font-playfair text-gold mb-4">Neighborhood Not Found</h1>
+          <Link to="/#neighborhoods" className="text-black/60 hover:text-gold">
             ← Back to Neighborhoods
           </Link>
         </div>
@@ -22,7 +38,13 @@ const NeighborhoodDetail = () => {
     );
   }
 
-  const neighborhoodProperties = getListings({ neighborhoods: [neighborhood.name] });
+  const zips = NEIGHBORHOOD_ZIPS[neighborhood.name] || [];
+  const { data: listingsResult } = useListings(
+    { zip_code: zips[0] },
+    1,
+    6,
+  );
+  const neighborhoodProperties = listingsResult?.data ?? [];
 
   return (
     <div className="bg-white min-h-screen">
@@ -35,7 +57,8 @@ const NeighborhoodDetail = () => {
             src={neighborhood.image}
             alt={neighborhood.name}
             className="w-full h-full object-cover"
-            loading="lazy"
+            width={800}
+            height={600}
           />
           <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-black/60 to-dark"></div>
         </div>
@@ -49,7 +72,7 @@ const NeighborhoodDetail = () => {
             Back to Neighborhoods
           </Link>
 
-          <h1 className="font-sans text-3xl sm:text-4xl md:text-5xl lg:text-7xl text-white mb-4 animate-fade-in-up delay-100">
+          <h1 className="font-playfair text-3xl sm:text-4xl md:text-5xl lg:text-7xl text-white mb-4 animate-fade-in-up delay-100">
             {neighborhood.name}
           </h1>
           <p className="text-white/80 text-xl max-w-2xl mx-auto animate-fade-in-up delay-200">
@@ -64,7 +87,7 @@ const NeighborhoodDetail = () => {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
             <div className="bg-white border border-gray-200 rounded-lg shadow-premium p-4 sm:p-5 md:p-6 text-center hover-lift animate-fade-in-up">
               <DollarSign className="text-gold mx-auto mb-3" size={32} />
-              <div className="text-3xl font-sans text-black mb-1">
+              <div className="text-3xl font-playfair text-black mb-1">
                 ${(neighborhood.medianPrice / 1000).toFixed(0)}K
               </div>
               <div className="text-xs text-black/60 uppercase tracking-wider">Median Price</div>
@@ -72,7 +95,7 @@ const NeighborhoodDetail = () => {
 
             <div className="bg-white border border-gray-200 rounded-lg shadow-premium p-4 sm:p-5 md:p-6 text-center hover-lift animate-fade-in-up delay-100">
               <Users className="text-gold mx-auto mb-3" size={32} />
-              <div className="text-3xl font-sans text-black mb-1">
+              <div className="text-3xl font-playfair text-black mb-1">
                 {(neighborhood.demographics.population / 1000).toFixed(0)}K
               </div>
               <div className="text-xs text-black/60 uppercase tracking-wider">Population</div>
@@ -80,7 +103,7 @@ const NeighborhoodDetail = () => {
 
             <div className="bg-white border border-gray-200 rounded-lg shadow-premium p-4 sm:p-5 md:p-6 text-center hover-lift animate-fade-in-up delay-200">
               <TrendingUp className="text-gold mx-auto mb-3" size={32} />
-              <div className="text-3xl font-sans text-black mb-1">
+              <div className="text-3xl font-playfair text-black mb-1">
                 {neighborhood.demographics.homeownership}%
               </div>
               <div className="text-xs text-black/60 uppercase tracking-wider">Homeownership</div>
@@ -88,8 +111,8 @@ const NeighborhoodDetail = () => {
 
             <div className="bg-white border border-gray-200 rounded-lg shadow-premium p-4 sm:p-5 md:p-6 text-center hover-lift animate-fade-in-up delay-300">
               <Home className="text-gold mx-auto mb-3" size={32} />
-              <div className="text-3xl font-sans text-black mb-1">
-                {neighborhoodProperties.length}
+              <div className="text-3xl font-playfair text-black mb-1">
+                {listingsResult?.totalCount ?? 0}
               </div>
               <div className="text-xs text-black/60 uppercase tracking-wider">Available Homes</div>
             </div>
@@ -105,12 +128,12 @@ const NeighborhoodDetail = () => {
             <div className="lg:col-span-2 space-y-12">
               {/* Price Range */}
               <div className="animate-fade-in-up">
-                <h2 className="text-3xl font-sans text-gold mb-6">Price Range</h2>
+                <h2 className="text-3xl font-playfair text-gold mb-6">Price Range</h2>
                 <div className="bg-white border border-gray-200 shadow-premium rounded-lg p-6">
                   <div className="flex justify-between items-center mb-4">
                     <div>
                       <div className="text-sm text-black/60 uppercase tracking-wider mb-1">Low</div>
-                      <div className="text-2xl font-sans text-black">
+                      <div className="text-2xl font-playfair text-black">
                         ${(neighborhood.priceRange[0] / 1000).toFixed(0)}K
                       </div>
                     </div>
@@ -121,7 +144,7 @@ const NeighborhoodDetail = () => {
                     </div>
                     <div>
                       <div className="text-sm text-black/60 uppercase tracking-wider mb-1">High</div>
-                      <div className="text-2xl font-sans text-black">
+                      <div className="text-2xl font-playfair text-black">
                         ${(neighborhood.priceRange[1] / 1000).toFixed(0)}K
                       </div>
                     </div>
@@ -131,7 +154,7 @@ const NeighborhoodDetail = () => {
 
               {/* Schools */}
               <div className="animate-fade-in-up delay-100">
-                <h2 className="text-3xl font-sans text-gold mb-6">Top-Rated Schools</h2>
+                <h2 className="text-3xl font-playfair text-gold mb-6">Top-Rated Schools</h2>
                 <div className="space-y-4">
                   {neighborhood.schools.map((school, index) => (
                     <div key={index} className="bg-white border border-gray-200 shadow-premium rounded-lg p-6 hover-lift">
@@ -159,7 +182,7 @@ const NeighborhoodDetail = () => {
 
               {/* Amenities */}
               <div className="animate-fade-in-up delay-200">
-                <h2 className="text-3xl font-sans text-gold mb-6">Amenities & Features</h2>
+                <h2 className="text-3xl font-playfair text-gold mb-6">Amenities & Features</h2>
                 <div className="bg-white border border-gray-200 shadow-premium rounded-lg p-6">
                   <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                     {neighborhood.amenities.map((amenity, index) => (
@@ -174,15 +197,15 @@ const NeighborhoodDetail = () => {
 
               {/* Demographics */}
               <div className="animate-fade-in-up delay-300">
-                <h2 className="text-3xl font-sans text-gold mb-6">Demographics</h2>
+                <h2 className="text-3xl font-playfair text-gold mb-6">Demographics</h2>
                 <div className="grid grid-cols-2 gap-6">
                   <div className="bg-white border border-gray-200 shadow-premium rounded-lg p-6">
                     <div className="text-sm text-black/60 uppercase tracking-wider mb-2">Median Age</div>
-                    <div className="text-3xl font-sans text-black">{neighborhood.demographics.medianAge}</div>
+                    <div className="text-3xl font-playfair text-black">{neighborhood.demographics.medianAge}</div>
                   </div>
                   <div className="bg-white border border-gray-200 shadow-premium rounded-lg p-6">
                     <div className="text-sm text-black/60 uppercase tracking-wider mb-2">Median Income</div>
-                    <div className="text-3xl font-sans text-black">
+                    <div className="text-3xl font-playfair text-black">
                       ${(neighborhood.demographics.medianIncome / 1000).toFixed(0)}K
                     </div>
                   </div>
@@ -193,7 +216,7 @@ const NeighborhoodDetail = () => {
             {/* Right Column - Available Properties */}
             <div className="lg:col-span-1">
               <div className="sticky top-24">
-                <h3 className="text-2xl font-sans text-gold mb-6 animate-fade-in-up">
+                <h3 className="text-2xl font-playfair text-gold mb-6 animate-fade-in-up">
                   Available in {neighborhood.name}
                 </h3>
 
@@ -211,6 +234,8 @@ const NeighborhoodDetail = () => {
                             src={property.images[0]}
                             alt={property.address}
                             className="w-full h-full object-cover"
+                            width={800}
+                            height={600}
                             loading="lazy"
                           />
                           <div className="absolute top-2 right-2 bg-gold text-dark px-2 py-1 text-xs font-bold">
@@ -226,6 +251,10 @@ const NeighborhoodDetail = () => {
                             <span>•</span>
                             <span>{property.baths} baths</span>
                           </div>
+                          {/* GEPAR Rule 18.3.4 + 18.2.12: Listing agent + office required */}
+                          <p className="text-sm text-black/50 mt-2">Courtesy of {property.listOfficeName}</p>
+                          <p className="text-sm text-black/50">{property.listAgentName}</p>
+                          <p className="text-xs text-black/40 font-mono mt-0.5">MLS# {property.mlsNumber}</p>
                         </div>
                       </Link>
                     ))}
@@ -253,6 +282,9 @@ const NeighborhoodDetail = () => {
           </div>
         </div>
       </section>
+
+      {/* MLS Disclaimer - REQUIRED by GEPAR on pages showing listing data */}
+      <IDXCompliance variant="full" showLogo />
 
       <Footer />
     </div>

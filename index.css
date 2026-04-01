@@ -4,10 +4,11 @@
 
 :root {
   /* Realty ONE Colors */
-  --color-gold: #c5a95e;
-  --color-black: #000000;
+  --color-gold: #c9a84c;
+  --color-ivory: #F5F0E8;
+  --color-black: #0A0A0A;
   --color-black-light: #262626;
-  --color-white: #ffffff;
+  --color-white: #FAFAF5;
 
   /* Spacing (rem-based) */
   --spacing-xs: 0.5rem;
@@ -23,6 +24,173 @@
   /* Max width */
   --max-width: 2300px;
 }
+
+/* ==========================================
+   DARK MODE
+   ========================================== */
+[data-theme="dark"] {
+  --color-gold: #c9a84c;
+  --color-ivory: #1a1a1a;
+  --color-black: #f5f5f0;
+  --color-black-light: #e5e5e0;
+  --color-white: #0a0a0a;
+}
+
+/* Dark mode overrides for public site */
+[data-theme="dark"] .bg-white { background-color: #111111 !important; }
+[data-theme="dark"] .bg-warm-white { background-color: #0a0a0a !important; }
+[data-theme="dark"] .bg-warm-ivory { background-color: #1a1a1a !important; }
+[data-theme="dark"] .bg-gray-50 { background-color: #1a1a1a !important; }
+[data-theme="dark"] .bg-gray-100 { background-color: #1a1a1a !important; }
+[data-theme="dark"] .text-dark { color: #f5f5f0 !important; }
+[data-theme="dark"] .text-black { color: #f5f5f0 !important; }
+[data-theme="dark"] .text-gray-500 { color: #999999 !important; }
+[data-theme="dark"] .text-gray-600 { color: #888888 !important; }
+[data-theme="dark"] .text-gray-700 { color: #aaaaaa !important; }
+[data-theme="dark"] .text-gray-800 { color: #cccccc !important; }
+[data-theme="dark"] .text-gray-900 { color: #f5f5f0 !important; }
+[data-theme="dark"] .border-gray-200 { border-color: #333333 !important; }
+[data-theme="dark"] .border-gray-100 { border-color: #2a2a2a !important; }
+[data-theme="dark"] .shadow-premium { box-shadow: 0 4px 24px rgba(0,0,0,0.3) !important; }
+[data-theme="dark"] .shadow-premium-lg { box-shadow: 0 8px 40px rgba(0,0,0,0.4) !important; }
+
+/* Navbar */
+[data-theme="dark"] .navbar { background-color: #111111 !important; border-color: #333333 !important; }
+
+/* Inline bg colors used in components */
+[data-theme="dark"] .bg-\[\#FAFAF5\] { background-color: #111111 !important; }
+[data-theme="dark"] .bg-\[\#F5F0E8\] { background-color: #1a1a1a !important; }
+[data-theme="dark"] .bg-\[\#f9f6f0\] { background-color: #1a1a1a !important; }
+
+/* Form inputs */
+[data-theme="dark"] input,
+[data-theme="dark"] textarea,
+[data-theme="dark"] select {
+  background-color: #1a1a1a !important;
+  color: #f5f5f0 !important;
+  border-color: #333333 !important;
+}
+
+/* Cards */
+[data-theme="dark"] .hover-lift:hover {
+  box-shadow: 0 20px 40px rgba(201, 168, 76, 0.15);
+}
+
+/* ==========================================
+   DASHBOARD DARK MODE
+   Overrides for dashboard-* Tailwind tokens
+   that reference fixed hex values and don't
+   respond to CSS variable swaps.
+   ========================================== */
+
+/* --- Backgrounds --- */
+[data-theme="dark"] .bg-dashboard-offwhite { background-color: #0A0A0A !important; }
+[data-theme="dark"] .bg-dashboard-surface { background-color: #1a1a1a !important; }
+[data-theme="dark"] .hover\:bg-dashboard-surface:hover { background-color: #222222 !important; }
+[data-theme="dark"] .bg-dashboard-teal-light { background-color: rgba(13, 148, 136, 0.15) !important; }
+
+/* Dashboard cards use plain bg-white everywhere */
+[data-theme="dark"] .bg-dashboard-offwhite .bg-white { background-color: #111111 !important; }
+
+/* --- Text --- */
+[data-theme="dark"] .text-dashboard-black { color: #FAFAF5 !important; }
+[data-theme="dark"] .text-dashboard-body { color: #e5e5e0 !important; }
+[data-theme="dark"] .text-dashboard-secondary { color: #9CA3AF !important; }
+[data-theme="dark"] .text-dashboard-heading { color: #FAFAF5 !important; }
+
+/* --- Borders --- */
+[data-theme="dark"] .border-dashboard-border { border-color: rgba(255, 255, 255, 0.1) !important; }
+[data-theme="dark"] .divide-dashboard-border > :not([hidden]) ~ :not([hidden]) { border-color: rgba(255, 255, 255, 0.1) !important; }
+
+/* --- Focus rings (gold stays gold, but adjust border utilities) --- */
+[data-theme="dark"] .focus\:border-dashboard-gold\/60:focus { border-color: rgba(201, 168, 76, 0.6) !important; }
+
+/* --- Dashboard inputs (bg-dashboard-offwhite used as input bg) --- */
+[data-theme="dark"] .bg-dashboard-offwhite input,
+[data-theme="dark"] .bg-dashboard-offwhite select,
+[data-theme="dark"] .bg-dashboard-offwhite textarea {
+  background-color: #1a1a1a !important;
+  color: #FAFAF5 !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+/* Inputs that directly carry bg-dashboard-offwhite need a card-friendly dark bg */
+[data-theme="dark"] input.bg-dashboard-offwhite,
+[data-theme="dark"] select.bg-dashboard-offwhite,
+[data-theme="dark"] textarea.bg-dashboard-offwhite {
+  background-color: #1a1a1a !important;
+  color: #FAFAF5 !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+/* --- BottomNav + More panel (use bg-white directly) --- */
+[data-theme="dark"] nav.fixed.bg-white { background-color: #111111 !important; }
+[data-theme="dark"] [role="dialog"] .bg-white,
+[data-theme="dark"] div[role="dialog"].bg-white { background-color: #111111 !important; }
+
+/* --- Sidebar --- */
+/* Sidebar is already dark (bg-dashboard-black). No change needed in dark mode.
+   Its text uses text-white and text-dashboard-secondary which are fine. */
+
+/* --- Dashboard shadows --- */
+[data-theme="dark"] .shadow-premium { box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4) !important; }
+[data-theme="dark"] .shadow-premium-lg { box-shadow: 0 8px 40px rgba(0, 0, 0, 0.5) !important; }
+[data-theme="dark"] .shadow-gold-glow { box-shadow: 0 8px 32px rgba(201, 168, 76, 0.2) !important; }
+
+/* --- Tab pills (bg-white active state used in Leads, Deals, Messages, Market) --- */
+[data-theme="dark"] .bg-dashboard-surface .bg-white,
+[data-theme="dark"] .bg-dashboard-offwhite .shadow-sm.bg-white { background-color: #2a2a2a !important; }
+
+/* --- Select dropdowns in dashboard --- */
+[data-theme="dark"] select.bg-white {
+  background-color: #1a1a1a !important;
+  color: #FAFAF5 !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+/* --- Toggle switch bg (Settings page) --- */
+[data-theme="dark"] .bg-dashboard-border { background-color: #333333 !important; }
+
+/* --- Dashboard card bg-white → dark cards --- */
+[data-theme="dark"] .bg-dashboard-offwhite .bg-white,
+[data-theme="dark"] .space-y-6 > .bg-white,
+[data-theme="dark"] .grid > .bg-white,
+[data-theme="dark"] .lg\:col-span-3.bg-white,
+[data-theme="dark"] .lg\:col-span-2.bg-white {
+  background-color: #111111 !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+/* --- Recharts dark mode --- */
+[data-theme="dark"] .recharts-cartesian-axis-tick-value { fill: #9CA3AF !important; }
+[data-theme="dark"] .recharts-cartesian-grid line { stroke: rgba(255, 255, 255, 0.06) !important; }
+[data-theme="dark"] .recharts-tooltip-wrapper .recharts-default-tooltip {
+  background-color: #1a1a1a !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
+  color: #FAFAF5 !important;
+}
+[data-theme="dark"] .recharts-tooltip-item { color: #e5e5e0 !important; }
+[data-theme="dark"] .recharts-legend-item-text { color: #9CA3AF !important; }
+
+/* --- Dashboard stat cards hover --- */
+[data-theme="dark"] .hover\:border-dashboard-gold\/40:hover { border-color: rgba(201, 168, 76, 0.4) !important; }
+
+/* --- Light-colored backgrounds inside dashboard (bg-red-50, bg-amber-50, etc.) --- */
+[data-theme="dark"] .bg-red-50,
+[data-theme="dark"] .bg-red-50\/50 { background-color: rgba(220, 38, 38, 0.1) !important; }
+[data-theme="dark"] .bg-amber-50,
+[data-theme="dark"] .bg-amber-50\/50 { background-color: rgba(245, 158, 11, 0.1) !important; }
+[data-theme="dark"] .bg-teal-50\/30 { background-color: rgba(13, 148, 136, 0.08) !important; }
+[data-theme="dark"] .bg-emerald-50 { background-color: rgba(16, 185, 129, 0.1) !important; }
+[data-theme="dark"] .bg-purple-50 { background-color: rgba(147, 51, 234, 0.1) !important; }
+[data-theme="dark"] .bg-blue-50 { background-color: rgba(37, 99, 235, 0.1) !important; }
+[data-theme="dark"] .bg-green-50 { background-color: rgba(22, 163, 74, 0.1) !important; }
+[data-theme="dark"] .bg-yellow-50 { background-color: rgba(234, 179, 8, 0.1) !important; }
+[data-theme="dark"] .bg-emerald-100 { background-color: rgba(16, 185, 129, 0.15) !important; }
+
+/* --- Score colors stay unchanged (hot, warm, cool, cold) --- */
+/* --- Gold (#C9A84C) stays unchanged — NEVER alter gold in dark mode --- */
+/* --- Teal (#0D9488) and accent (#F59E0B) stay unchanged --- */
 
 /* Custom Animations */
 @layer utilities {
@@ -119,7 +287,7 @@
 
   /* Gradient Text - Updated for new gold */
   .gradient-text {
-    background: linear-gradient(135deg, #c5a95e 0%, #d4b76f 50%, #c5a95e 100%);
+    background: linear-gradient(135deg, #c9a84c 0%, #d4b76f 50%, #c9a84c 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -141,7 +309,7 @@
     background: linear-gradient(
       90deg,
       transparent,
-      rgba(197, 169, 94, 0.1),
+      rgba(201, 168, 76, 0.1),
       transparent
     );
     animation: shimmer 2s infinite;
@@ -154,7 +322,7 @@
 
   .hover-lift:hover {
     transform: translateY(-8px);
-    box-shadow: 0 20px 40px rgba(197, 169, 94, 0.2);
+    box-shadow: 0 20px 40px rgba(201, 168, 76, 0.2);
   }
 
   /* Pulse Gold */
@@ -173,9 +341,14 @@
     min-height: 44px;
   }
 
+  /* Safe area for devices with home indicator (iPhone X+) */
+  .safe-area-bottom {
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+
   /* Mobile-friendly tap highlight */
   .tap-highlight-gold {
-    -webkit-tap-highlight-color: rgba(197, 169, 94, 0.3);
+    -webkit-tap-highlight-color: rgba(201, 168, 76, 0.3);
   }
 
   /* Standardized Button Patterns (Compass-style) */
@@ -274,6 +447,15 @@
   }
 }
 
+@keyframes progress {
+  from {
+    width: 0%;
+  }
+  to {
+    width: 100%;
+  }
+}
+
 @keyframes slideInUp {
   from {
     transform: translateY(100%);
@@ -365,7 +547,7 @@ button:focus-visible,
 input:focus-visible,
 select:focus-visible,
 textarea:focus-visible {
-  outline: 2px solid #c5a95e;
+  outline: 2px solid #c9a84c;
   outline-offset: 2px;
 }
 

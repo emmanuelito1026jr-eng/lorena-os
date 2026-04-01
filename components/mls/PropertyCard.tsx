@@ -27,9 +27,11 @@ const PropertyCard = React.memo(({
       <div className="relative h-48 sm:h-56 md:h-64 overflow-hidden">
         <img
           src={property.images[0] || '/images/properties/home-1.jpg'}
-          alt={`${property.address}, ${property.city}`}
+          alt={`${property.propertyType} at ${property.address}, ${property.city} - ${property.beds} bed, ${property.baths} bath, $${property.price.toLocaleString()}`}
           className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
           loading="lazy"
+          width={800}
+          height={600}
         />
 
         {/* Status Badge */}
@@ -75,7 +77,7 @@ const PropertyCard = React.memo(({
       {/* Content */}
       <div className="p-4 sm:p-5 md:p-6">
         {/* Price */}
-        <div className="text-2xl font-sans font-bold text-gold mb-1">
+        <div className="text-2xl font-playfair font-bold text-gold mb-1">
           ${property.price.toLocaleString()}
         </div>
 
@@ -110,10 +112,10 @@ const PropertyCard = React.memo(({
           <span>Built {property.yearBuilt}</span>
         </div>
 
-        {/* New Listing Badge */}
-        {property.daysOnMarket <= 14 && (
+        {/* New Listing Badge — 7 days per GEPAR spec */}
+        {property.daysOnMarket <= 7 && (
           <div className="mt-3 text-xs font-semibold text-gold">
-            New Listing &mdash; {property.daysOnMarket} days on market
+            New Listing &mdash; {property.daysOnMarket} {property.daysOnMarket === 1 ? 'day' : 'days'} on market
           </div>
         )}
 
@@ -121,6 +123,8 @@ const PropertyCard = React.memo(({
         <ListingAttribution
           officeName={property.listOfficeName}
           agentName={property.listAgentName}
+          agentEmail={property.listAgentEmail}
+          agentPhone={property.listAgentPhone}
           mlsNumber={property.mlsNumber}
           variant="card"
         />

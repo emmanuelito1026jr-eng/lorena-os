@@ -1,0 +1,320 @@
+{
+  "name": "[LOS-09] Under-Contract Checklist Automator",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "deal-stage-change",
+        "options": {}
+      },
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        240,
+        300
+      ],
+      "webhookId": "268958a6-d57d-445c-826c-f68ef99c9270"
+    },
+    {
+      "parameters": {
+        "keepOnlySet": true,
+        "values": {
+          "string": [
+            {
+              "name": "deal_id",
+              "value": "={{$json.body.deal_id}}"
+            },
+            {
+              "name": "new_stage",
+              "value": "={{$json.body.new_stage}}"
+            },
+            {
+              "name": "closing_date",
+              "value": "={{$json.body.closing_date}}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "name": "Extract Data",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 1,
+      "position": [
+        460,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{$node[\"Extract Data\"].json[\"new_stage\"]}}",
+              "value2": "under_contract"
+            }
+          ]
+        }
+      },
+      "name": "Is UC?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        680,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "tableId": "deals",
+        "updateKey": "id",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "id",
+              "fieldValue": "={{$node[\"Extract Data\"].json[\"deal_id\"]}}"
+            },
+            {
+              "fieldId": "stage",
+              "fieldValue": "={{$node[\"Extract Data\"].json[\"new_stage\"]}}"
+            }
+          ]
+        },
+        "resource": "row"
+      },
+      "name": "Update Deal",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 2,
+      "position": [
+        900,
+        100
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "37rJREccSDhKtIGi",
+          "name": "Supabase Service Role"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "functionCode": "const closing = new Date(items[0].json.closing_date);\nreturn [\n  { json: { deal_id: items[0].json.deal_id, title: 'Earnest Money', due: new Date(Date.now() + 3*86400000).toISOString(), assigned: 'buyer' } },\n  { json: { deal_id: items[0].json.deal_id, title: 'Inspection', due: new Date(closing - 20*86400000).toISOString(), assigned: 'buyer' } },\n  { json: { deal_id: items[0].json.deal_id, title: 'Appraisal', due: new Date(closing - 15*86400000).toISOString(), assigned: 'lender' } },\n  { json: { deal_id: items[0].json.deal_id, title: 'Closing', due: closing.toISOString(), assigned: 'agent' } }\n];"
+      },
+      "name": "Gen Checklist",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [
+        900,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "tableId": "deal_checklists",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "deal_id",
+              "fieldValue": "={{$json[\"deal_id\"]}}"
+            },
+            {
+              "fieldId": "title",
+              "fieldValue": "={{$json[\"title\"]}}"
+            },
+            {
+              "fieldId": "due_date",
+              "fieldValue": "={{$json[\"due\"]}}"
+            },
+            {
+              "fieldId": "assigned_to",
+              "fieldValue": "={{$json[\"assigned\"]}}"
+            }
+          ]
+        },
+        "operation": "create",
+        "resource": "row"
+      },
+      "name": "Insert Items",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 2,
+      "position": [
+        1120,
+        400
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "37rJREccSDhKtIGi",
+          "name": "Supabase Service Role"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "from": "={{$credentials.twilioApi.phoneNumber}}",
+        "to": "={{ $node[\"Get Agent\"] ? $node[\"Get Agent\"].json.phone : \"\" }}",
+        "message": "=\ud83d\udccb Deal checklist created for {{ $node[\"Extract Data\"].json.property_address || \"property\" }}. Milestones tracked. Check your dashboard."
+      },
+      "name": "SMS Checklist Alert",
+      "type": "n8n-nodes-base.twilio",
+      "typeVersion": 1,
+      "position": [
+        1000,
+        500
+      ],
+      "credentials": {
+        "twilioApi": {
+          "id": "PENDING",
+          "name": "Twilio - Lorena SMS"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "tableId": "profiles",
+        "limit": 1
+      },
+      "name": "Get Agent",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 2,
+      "position": [
+        800,
+        500
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "37rJREccSDhKtIGi",
+          "name": "Supabase Service Role"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "create",
+        "tableId": "notifications",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "agent_id",
+              "fieldValue": "6d51a7c2-271f-484a-bb11-5ee935f1358a"
+            },
+            {
+              "fieldId": "type",
+              "fieldValue": "deal_checklist"
+            },
+            {
+              "fieldId": "title",
+              "fieldValue": "\ud83d\udccb Deal Checklist Created"
+            },
+            {
+              "fieldId": "message",
+              "fieldValue": "={{ 'Checklist created for ' + ($node['Extract Data'].json.property_address || 'deal') }}"
+            }
+          ]
+        }
+      },
+      "name": "Notify Checklist",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 2,
+      "position": [
+        1200,
+        300
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "37rJREccSDhKtIGi",
+          "name": "Supabase Service Role"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Extract Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Data": {
+      "main": [
+        [
+          {
+            "node": "Is UC?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Is UC?": {
+      "main": [
+        [
+          {
+            "node": "Gen Checklist",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Update Deal",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Update Deal",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gen Checklist": {
+      "main": [
+        [
+          {
+            "node": "Insert Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Insert Items": {
+      "main": [
+        [
+          {
+            "node": "Get Agent",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Notify Checklist",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Agent": {
+      "main": [
+        [
+          {
+            "node": "SMS Checklist Alert",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  }
+}

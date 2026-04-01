@@ -1,6 +1,9 @@
 User-agent: *
 Allow: /
+Disallow: /dashboard/
+Disallow: /login
+Disallow: /signup
+Disallow: /api/
+Disallow: /portal/
 
 Sitemap: https://casasenelpasotx.com/sitemap.xml
-
-Crawl-delay: 1

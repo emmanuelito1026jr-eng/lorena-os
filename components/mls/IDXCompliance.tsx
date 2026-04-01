@@ -1,5 +1,4 @@
-import { formatMLSDisclaimer } from '../../lib/mls/compliance';
-import { formatLastRefresh } from '../../lib/mls/dataRefresh';
+import { BUSINESS_EMAIL } from '../../constants';
 
 interface IDXComplianceProps {
   variant?: 'full' | 'compact';
@@ -7,26 +6,27 @@ interface IDXComplianceProps {
   className?: string;
 }
 
+const currentYear = new Date().getFullYear();
+
 const IDXCompliance = ({
   variant = 'full',
   showLogo = true,
   className = '',
 }: IDXComplianceProps) => {
-  const disclaimer = formatMLSDisclaimer(variant);
-  const lastUpdated = formatLastRefresh();
-
   if (variant === 'compact') {
     return (
       <div className={`text-xs text-black/50 ${className}`}>
-        <p>{disclaimer}</p>
-        <p className="mt-1">{lastUpdated}</p>
+        <p>
+          &copy; {currentYear} Greater El Paso Association of REALTORS&reg;.
+          Information deemed reliable but not guaranteed.
+        </p>
       </div>
     );
   }
 
   return (
     <section className={`py-12 px-4 bg-white border-t border-gray-200 ${className}`}>
-      <div className="max-w-7xl mx-auto">
+      <div className="max-w-7xl mx-auto text-center space-y-4">
         {showLogo && (
           <div className="flex justify-center mb-6">
             <img
@@ -37,11 +37,35 @@ const IDXCompliance = ({
             />
           </div>
         )}
-        <p className="text-xs text-black/60 font-lato leading-relaxed text-center max-w-4xl mx-auto">
-          {disclaimer}
+
+        {/* Agent & Broker Info — GEPAR Section 18 */}
+        <p className="text-sm text-black/70 font-lato">
+          Lorena Ontiveros-Ortega &nbsp;|&nbsp; The Right Move Real Estate Group LLC &nbsp;|&nbsp; Licensed in Texas
         </p>
-        <p className="text-xs text-black/40 font-lato text-center mt-3">
-          {lastUpdated}
+
+        {/* MLS Data Source & Date Period */}
+        <p className="text-xs text-black/60 font-lato leading-relaxed max-w-4xl mx-auto">
+          Based on information from the Greater El Paso Association of REALTORS&reg;
+          Multiple Listing Service. IDX information is provided exclusively for
+          consumers&rsquo; personal, non-commercial use, and may not be used for
+          any purpose other than to identify prospective properties consumers may
+          be interested in purchasing. Information is believed to be accurate but
+          not guaranteed.
+        </p>
+
+        {/* Copyright */}
+        <p className="text-xs text-black/40 font-lato">
+          &copy; {currentYear} Greater El Paso Association of REALTORS&reg;. All rights reserved.
+        </p>
+
+        {/* Report Link */}
+        <p className="text-xs">
+          <a
+            href={`mailto:${BUSINESS_EMAIL}?subject=Inaccurate%20Listing%20Data`}
+            className="text-gold hover:underline font-lato"
+          >
+            Report inaccurate listing data
+          </a>
         </p>
       </div>
     </section>

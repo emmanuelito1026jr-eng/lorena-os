@@ -1,0 +1,399 @@
+{
+  "name": "[LOS-15] Smart Email Drip Orchestrator",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 15 * * *"
+            }
+          ]
+        }
+      },
+      "name": "Cron Daily",
+      "type": "n8n-nodes-base.cron",
+      "typeVersion": 1,
+      "position": [
+        200,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "tableId": "drip_enrollments",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "status",
+              "keyValue": "active"
+            },
+            {
+              "keyName": "next_send_at",
+              "keyValue": "={{ new Date().toISOString() }}",
+              "condition": "lte"
+            }
+          ]
+        },
+        "filterType": "manual",
+        "matchType": "allFilters",
+        "limit": 50
+      },
+      "name": "Get Enrollments",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 2,
+      "position": [
+        400,
+        300
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "37rJREccSDhKtIGi",
+          "name": "Supabase Service Role"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "batchSize": 1
+      },
+      "name": "Loop",
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 1,
+      "position": [
+        600,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "tableId": "leads",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "id",
+              "keyValue": "={{ $json.lead_id }}"
+            }
+          ]
+        }
+      },
+      "name": "Get Lead",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 2,
+      "position": [
+        800,
+        300
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "37rJREccSDhKtIGi",
+          "name": "Supabase Service Role"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "functionCode": "const lead = items[0].json;\nconst lang = lead.preferred_language || 'en';\nconst name = lead.first_name || 'there';\n\nitems[0].json.claude_drip = JSON.stringify({\n  model: \"claude-sonnet-4-5-20250929\", max_tokens: 1000,\n  messages: [{role: \"user\", content: `Write a nurture email for ${name}, a real estate lead in El Paso TX. Language: ${lang}. Include a market update or helpful tip. Output ONLY valid JSON: {\"subject\": \"...\", \"body\": \"...(HTML)\"}`}]\n});\nreturn items;"
+      },
+      "name": "Build Drip Email",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [
+        1000,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.anthropic.com/v1/messages",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-api-key",
+              "value": "={{$env.ANTHROPIC_API_KEY}}"
+            },
+            {
+              "name": "anthropic-version",
+              "value": "2023-06-01"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "={{ $json.claude_drip }}",
+        "options": {}
+      },
+      "name": "Claude Drip",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        1200,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "functionCode": "const c=items[0].json.content;let t=c&&Array.isArray(c)?c[0].text:'';let s='El Paso Real Estate Update',b=t;\ntry{let cl=t.replace(/```json\\n?/g,'').replace(/```\\n?/g,'').trim();const p=JSON.parse(cl);s=p.subject||s;b=p.body||b;}catch(e){}\nitems[0].json.email_subject=s;items[0].json.email_body=b;return items;"
+      },
+      "name": "Parse Drip",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [
+        1400,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "fromEmail": "lorena.realtor@icloud.com",
+        "toEmail": "={{ $node['Get Lead'].json.email }}",
+        "subject": "={{ $json.email_subject }}",
+        "contentHtml": "={{ $json.email_body }}"
+      },
+      "name": "Send Drip Email",
+      "type": "n8n-nodes-base.sendGrid",
+      "typeVersion": 1,
+      "position": [
+        1600,
+        300
+      ],
+      "credentials": {
+        "sendGridApi": {
+          "id": "PENDING",
+          "name": "SendGrid - Lorena Email"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "create",
+        "tableId": "drip_messages_sent",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "enrollment_id",
+              "fieldValue": "={{ $node['Loop'].json.id }}"
+            },
+            {
+              "fieldId": "step_number",
+              "fieldValue": "={{ ($node['Loop'].json.current_step || 0) + 1 }}"
+            },
+            {
+              "fieldId": "channel",
+              "fieldValue": "email"
+            },
+            {
+              "fieldId": "content",
+              "fieldValue": "={{ $node['Parse Drip'].json.email_body }}"
+            }
+          ]
+        }
+      },
+      "name": "Log Drip",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 2,
+      "position": [
+        1800,
+        300
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "37rJREccSDhKtIGi",
+          "name": "Supabase Service Role"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "tableId": "drip_enrollments",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "id",
+              "keyValue": "={{ $node['Loop'].json.id }}"
+            }
+          ]
+        },
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "current_step",
+              "fieldValue": "={{ ($node['Loop'].json.current_step || 0) + 1 }}"
+            },
+            {
+              "fieldId": "next_send_at",
+              "fieldValue": "={{ new Date(Date.now() + ($node['Loop'].json.interval_days || 3) * 86400000).toISOString() }}"
+            }
+          ]
+        }
+      },
+      "name": "Advance Step",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 2,
+      "position": [
+        1900,
+        300
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "37rJREccSDhKtIGi",
+          "name": "Supabase Service Role"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "boolean": [
+            {
+              "value1": "={{ $json.done }}",
+              "value2": true
+            }
+          ]
+        }
+      },
+      "name": "More?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        2100,
+        300
+      ]
+    }
+  ],
+  "connections": {
+    "Cron Daily": {
+      "main": [
+        [
+          {
+            "node": "Get Enrollments",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Enrollments": {
+      "main": [
+        [
+          {
+            "node": "Loop",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop": {
+      "main": [
+        [
+          {
+            "node": "Get Lead",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "Get Lead": {
+      "main": [
+        [
+          {
+            "node": "Build Drip Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Drip Email": {
+      "main": [
+        [
+          {
+            "node": "Claude Drip",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Claude Drip": {
+      "main": [
+        [
+          {
+            "node": "Parse Drip",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse Drip": {
+      "main": [
+        [
+          {
+            "node": "Send Drip Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Drip Email": {
+      "main": [
+        [
+          {
+            "node": "Log Drip",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Log Drip": {
+      "main": [
+        [
+          {
+            "node": "Advance Step",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Advance Step": {
+      "main": [
+        [
+          {
+            "node": "More?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "More?": {
+      "main": [
+        [
+          {
+            "node": "Loop",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  }
+}

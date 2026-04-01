@@ -1,0 +1,370 @@
+{
+  "name": "[LOS-16] Stale Lead Reactivation Engine",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 17 * * 1"
+            }
+          ]
+        }
+      },
+      "name": "Cron Monday",
+      "type": "n8n-nodes-base.cron",
+      "typeVersion": 1,
+      "position": [
+        200,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "tableId": "leads",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "temperature",
+              "keyValue": "cold"
+            },
+            {
+              "keyName": "status",
+              "keyValue": "lost",
+              "condition": "notEqual"
+            }
+          ]
+        },
+        "limit": 20
+      },
+      "name": "Get Stale Leads",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 2,
+      "position": [
+        400,
+        300
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "37rJREccSDhKtIGi",
+          "name": "Supabase Service Role"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "batchSize": 1
+      },
+      "name": "Loop",
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 1,
+      "position": [
+        600,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "functionCode": "const lead = items[0].json;\nconst lang = lead.preferred_language || 'en';\nitems[0].json.claude_react = JSON.stringify({\n  model: \"claude-sonnet-4-5-20250929\", max_tokens: 500,\n  messages: [{role: \"user\", content: `Write a warm re-engagement SMS to ${lead.first_name || 'there'}, a real estate lead who went quiet. Originally interested in: ${(lead.preferred_areas || []).join(', ') || 'El Paso'}. Language: ${lang}. NOT aggressive. Ask a soft question. Under 300 chars. Output ONLY valid JSON: {\"sms_text\": \"...\"}`}]\n});\nreturn items;"
+      },
+      "name": "Build SMS",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [
+        800,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.anthropic.com/v1/messages",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-api-key",
+              "value": "={{$env.ANTHROPIC_API_KEY}}"
+            },
+            {
+              "name": "anthropic-version",
+              "value": "2023-06-01"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "={{ $json.claude_react }}",
+        "options": {}
+      },
+      "name": "Claude Reactivate",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        1000,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "functionCode": "const c=items[0].json.content;let t=c&&Array.isArray(c)?c[0].text:'';\ntry{let cl=t.replace(/```json\\n?/g,'').replace(/```\\n?/g,'').trim();t=JSON.parse(cl).sms_text||t;}catch(e){}\nitems[0].json.sms_text=t.substring(0,300);return items;"
+      },
+      "name": "Parse SMS",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [
+        1200,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "from": "={{$credentials.twilioApi.phoneNumber}}",
+        "to": "={{ $node['Loop'].json.phone }}",
+        "message": "={{ $json.sms_text }}"
+      },
+      "name": "Send SMS",
+      "type": "n8n-nodes-base.twilio",
+      "typeVersion": 1,
+      "position": [
+        1400,
+        300
+      ],
+      "credentials": {
+        "twilioApi": {
+          "id": "PENDING",
+          "name": "Twilio - Lorena SMS"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "create",
+        "tableId": "messages",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "lead_id",
+              "fieldValue": "={{ $node['Loop'].json.id }}"
+            },
+            {
+              "fieldId": "agent_id",
+              "fieldValue": "6d51a7c2-271f-484a-bb11-5ee935f1358a"
+            },
+            {
+              "fieldId": "channel",
+              "fieldValue": "sms"
+            },
+            {
+              "fieldId": "direction",
+              "fieldValue": "outbound"
+            },
+            {
+              "fieldId": "content",
+              "fieldValue": "={{ $node['Parse SMS'].json.sms_text }}"
+            },
+            {
+              "fieldId": "is_ai",
+              "fieldValue": "true"
+            },
+            {
+              "fieldId": "automation_source",
+              "fieldValue": "reactivation"
+            }
+          ]
+        }
+      },
+      "name": "Log SMS",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 2,
+      "position": [
+        1600,
+        300
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "37rJREccSDhKtIGi",
+          "name": "Supabase Service Role"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "create",
+        "tableId": "lead_activity",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "lead_id",
+              "fieldValue": "={{ $node['Loop'].json.id }}"
+            },
+            {
+              "fieldId": "action",
+              "fieldValue": "reactivation_attempt"
+            },
+            {
+              "fieldId": "points",
+              "fieldValue": "0"
+            },
+            {
+              "fieldId": "source",
+              "fieldValue": "reactivation"
+            }
+          ]
+        }
+      },
+      "name": "Log Activity",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 2,
+      "position": [
+        1800,
+        300
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "37rJREccSDhKtIGi",
+          "name": "Supabase Service Role"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "boolean": [
+            {
+              "value1": "={{ true }}",
+              "value2": true
+            }
+          ]
+        }
+      },
+      "name": "More?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        2000,
+        300
+      ]
+    }
+  ],
+  "connections": {
+    "Cron Monday": {
+      "main": [
+        [
+          {
+            "node": "Get Stale Leads",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Stale Leads": {
+      "main": [
+        [
+          {
+            "node": "Loop",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop": {
+      "main": [
+        [
+          {
+            "node": "Build SMS",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "Build SMS": {
+      "main": [
+        [
+          {
+            "node": "Claude Reactivate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Claude Reactivate": {
+      "main": [
+        [
+          {
+            "node": "Parse SMS",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse SMS": {
+      "main": [
+        [
+          {
+            "node": "Send SMS",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send SMS": {
+      "main": [
+        [
+          {
+            "node": "Log SMS",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Log SMS": {
+      "main": [
+        [
+          {
+            "node": "Log Activity",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Log Activity": {
+      "main": [
+        [
+          {
+            "node": "More?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "More?": {
+      "main": [
+        [
+          {
+            "node": "Loop",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  }
+}

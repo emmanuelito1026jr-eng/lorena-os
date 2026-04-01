@@ -5,7 +5,7 @@ import { Star, Quote, ChevronLeft, ChevronRight, Pause, Play } from 'lucide-reac
 const Testimonials = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isAutoPlaying, setIsAutoPlaying] = useState(true);
-  const [isTransitioning, setIsTransitioning] = useState(false);
+  const [, setIsTransitioning] = useState(false);
 
   // Auto-play functionality
   useEffect(() => {
@@ -45,7 +45,7 @@ const Testimonials = () => {
       <div className="max-w-7xl mx-auto px-6 sm:px-12 lg:px-16 relative z-10">
         <div className="text-center mb-12 sm:mb-16">
           <span className="text-gold text-xs uppercase tracking-[0.3em] font-extrabold">Testimonials</span>
-          <h2 className="mt-4 font-sans text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-black font-bold">Client Stories</h2>
+          <h2 className="mt-4 font-playfair text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-black font-bold">Client Stories</h2>
           <p className="text-gold mt-2 text-lg font-semibold">Historias de Éxito</p>
         </div>
 
@@ -84,7 +84,7 @@ const Testimonials = () => {
 
                   {/* Client Info */}
                   <div className="flex items-center justify-center gap-4 pt-6 border-t border-gray-200">
-                    <div className="w-14 h-14 bg-gold flex items-center justify-center text-white font-sans font-black text-xl shadow-premium">
+                    <div className="w-14 h-14 bg-gold flex items-center justify-center text-white font-playfair font-black text-xl shadow-premium">
                       {testimonial.name.charAt(0)}
                     </div>
                     <div className="text-left">
@@ -168,16 +168,6 @@ const Testimonials = () => {
         )}
       </div>
 
-      <style>{`
-        @keyframes progress {
-          from {
-            width: 0%;
-          }
-          to {
-            width: 100%;
-          }
-        }
-      `}</style>
     </section>
   );
 };

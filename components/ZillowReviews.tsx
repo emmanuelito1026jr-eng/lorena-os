@@ -3,7 +3,6 @@ import { Star, ExternalLink, Shield, Building2 } from 'lucide-react';
 
 const ZILLOW_PROFILE = 'https://www.zillow.com/profile/lorena%20realtor6';
 
-// TODO: Replace with Zillow widget embed code if available
 const WIDGET_EMBED_CODE = '';
 
 const ZillowReviews = () => {
@@ -30,9 +29,9 @@ const ZillowReviews = () => {
       <div className="max-w-7xl mx-auto px-6 sm:px-12 lg:px-16">
         {/* Section Header */}
         <div className="text-center mb-16">
-          <span className="text-gold text-xs uppercase tracking-[0.25em] font-extrabold">Trusted Platform</span>
-          <h2 className="mt-3 font-sans text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-black font-bold">
-            Zillow <span className="gradient-text">Reviews</span>
+          <span className="text-[#0055D4] text-xs uppercase tracking-[0.25em] font-extrabold">Trusted Platform</span>
+          <h2 className="mt-3 font-playfair text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-black font-bold">
+            Zillow <span className="text-[#0055D4]">Reviews</span>
           </h2>
           <p className="mt-4 text-black/60 max-w-2xl mx-auto font-light text-lg">
             See what my clients say on Zillow's trusted real estate platform
@@ -45,41 +44,41 @@ const ZillowReviews = () => {
           </div>
         ) : (
           <div className="max-w-4xl mx-auto">
-            <div className="bg-white border border-gray-200 shadow-premium overflow-hidden">
-              {/* Top Banner */}
-              <div className="bg-black p-4 sm:p-6 md:p-8 lg:p-12 text-center">
+            <div className="bg-white border border-gray-200 shadow-premium overflow-hidden rounded-lg">
+              {/* Top Banner — Zillow blue accent */}
+              <div className="bg-white border-b-4 border-[#0055D4] p-4 sm:p-6 md:p-8 lg:p-12 text-center">
                 <div className="flex items-center justify-center gap-3 mb-4">
-                  <Building2 className="text-gold" size={24} />
-                  <span className="text-white/80 text-sm uppercase tracking-widest font-bold">Zillow Premier Agent</span>
+                  <Building2 className="text-[#0055D4]" size={24} />
+                  <span className="text-[#0055D4] text-sm uppercase tracking-widest font-bold">Zillow Premier Agent</span>
                 </div>
-                <h3 className="font-sans text-3xl sm:text-4xl text-white font-bold mb-2">
+                <h3 className="font-playfair text-3xl sm:text-4xl text-black font-bold mb-2">
                   Lorena Ontiveros-Ortega
                 </h3>
-                <p className="text-gold text-sm uppercase tracking-widest font-extrabold mb-6">
+                <p className="text-black/60 text-sm uppercase tracking-widest font-extrabold mb-6">
                   The Right Move Real Estate Group
                 </p>
 
                 {/* Star Rating */}
                 <div className="flex items-center justify-center gap-2 mb-4">
                   {[...Array(5)].map((_, i) => (
-                    <Star key={i} size={28} className="text-gold fill-gold" />
+                    <Star key={i} size={28} className="text-[#0055D4] fill-[#0055D4]" />
                   ))}
                 </div>
-                <p className="text-white/70 text-lg font-light">5.0 Star Rating on Zillow</p>
+                <p className="text-black/50 text-lg font-light">5.0 Star Rating on Zillow</p>
               </div>
 
               {/* Stats Row */}
               <div className="grid grid-cols-3 border-b border-gray-200">
                 <div className="p-6 sm:p-8 text-center border-r border-gray-200">
-                  <p className="text-3xl sm:text-4xl font-sans font-bold text-gold mb-1">15+</p>
+                  <p className="text-3xl sm:text-4xl font-playfair font-bold text-[#0055D4] mb-1">15+</p>
                   <p className="text-xs sm:text-sm text-black/60 uppercase tracking-wider font-medium">Reviews</p>
                 </div>
                 <div className="p-6 sm:p-8 text-center border-r border-gray-200">
-                  <p className="text-3xl sm:text-4xl font-sans font-bold text-gold mb-1">5.0</p>
+                  <p className="text-3xl sm:text-4xl font-playfair font-bold text-[#0055D4] mb-1">5.0</p>
                   <p className="text-xs sm:text-sm text-black/60 uppercase tracking-wider font-medium">Rating</p>
                 </div>
                 <div className="p-6 sm:p-8 text-center">
-                  <p className="text-3xl sm:text-4xl font-sans font-bold text-gold mb-1">100%</p>
+                  <p className="text-3xl sm:text-4xl font-playfair font-bold text-[#0055D4] mb-1">100%</p>
                   <p className="text-xs sm:text-sm text-black/60 uppercase tracking-wider font-medium">Recommended</p>
                 </div>
               </div>
@@ -93,7 +92,7 @@ const ZillowReviews = () => {
                   href={ZILLOW_PROFILE}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-3 px-8 py-4 bg-gold text-white font-bold uppercase tracking-widest hover:shadow-gold-glow transition-premium text-sm"
+                  className="inline-flex items-center gap-3 px-8 py-4 bg-[#0055D4] text-white font-bold uppercase tracking-widest hover:bg-[#003D99] transition-premium text-sm rounded"
                 >
                   View Zillow Reviews
                   <ExternalLink size={16} />

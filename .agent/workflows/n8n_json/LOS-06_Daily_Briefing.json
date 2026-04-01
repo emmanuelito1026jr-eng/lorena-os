@@ -1,0 +1,402 @@
+{
+  "name": "[LOS-06] AI Daily Briefing Generator",
+  "nodes": [
+    {
+      "parameters": {
+        "triggerTimes": {
+          "item": [
+            {
+              "hour": 13,
+              "minute": 0
+            }
+          ]
+        }
+      },
+      "name": "Cron Daily",
+      "type": "n8n-nodes-base.cron",
+      "typeVersion": 1,
+      "position": [
+        240,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "tableId": "profiles",
+        "returnAll": true,
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "role",
+              "keyValue": "agent",
+              "condition": "eq"
+            }
+          ]
+        },
+        "limit": 1,
+        "filterType": "manual",
+        "matchType": "allFilters",
+        "resource": "row",
+        "operation": "getAll"
+      },
+      "name": "Get Agent",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 2,
+      "position": [
+        460,
+        300
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "37rJREccSDhKtIGi",
+          "name": "Supabase Service Role"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "tableId": "leads",
+        "returnAll": true,
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "temperature",
+              "keyValue": "hot",
+              "condition": "eq"
+            }
+          ]
+        },
+        "filterType": "manual",
+        "matchType": "allFilters",
+        "resource": "row",
+        "operation": "getAll"
+      },
+      "name": "Get Hot",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 2,
+      "position": [
+        680,
+        200
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "37rJREccSDhKtIGi",
+          "name": "Supabase Service Role"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "tableId": "deals",
+        "returnAll": true,
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "stage",
+              "keyValue": "active_listing",
+              "condition": "eq"
+            }
+          ]
+        },
+        "filterType": "manual",
+        "matchType": "allFilters",
+        "resource": "row",
+        "operation": "getAll"
+      },
+      "name": "Get Deals",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 2,
+      "position": [
+        680,
+        400
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "37rJREccSDhKtIGi",
+          "name": "Supabase Service Role"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.anthropic.com/v1/messages",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-api-key",
+              "value": "={{$env.ANTHROPIC_API_KEY}}"
+            },
+            {
+              "name": "content-type",
+              "value": "application/json"
+            },
+            {
+              "name": "anthropic-version",
+              "value": "2023-06-01"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "model",
+              "value": "claude-sonnet-4-5-20250929"
+            },
+            {
+              "name": "max_tokens",
+              "value": 2000
+            },
+            {
+              "name": "messages",
+              "value": "=[{\"role\": \"user\", \"content\": \"Generate daily briefing. Hot Leads: {{$node[\"Get Hot\"].json.length}}. Active Deals: {{$node[\"Get Deals\"].json.length}}. Return JSON: {greeting, hot_leads: [], active_deals_summary, urgent_items: []}\"}]"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "name": "Claude Brief",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 1,
+      "position": [
+        900,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "functionCode": "const content = items[0].json.content[0].text;\nreturn [{ json: JSON.parse(content) }];"
+      },
+      "name": "Parse Brief",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [
+        1120,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "tableId": "daily_briefings",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "agent_id",
+              "fieldValue": "={{$node[\"Get Agent\"].json[\"id\"]}}"
+            },
+            {
+              "fieldId": "date",
+              "fieldValue": "={{new Date().toISOString().split('T')[0]}}"
+            },
+            {
+              "fieldId": "content",
+              "fieldValue": "={{$node[\"Parse Brief\"].json}}"
+            }
+          ]
+        },
+        "operation": "create",
+        "resource": "row"
+      },
+      "name": "Save Brief",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 2,
+      "position": [
+        1340,
+        300
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "37rJREccSDhKtIGi",
+          "name": "Supabase Service Role"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "tableId": "notifications",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "agent_id",
+              "fieldValue": "={{$node[\"Get Agent\"].json[\"id\"]}}"
+            },
+            {
+              "fieldId": "type",
+              "fieldValue": "daily_briefing"
+            },
+            {
+              "fieldId": "title",
+              "fieldValue": "\u2600\ufe0f Morning Briefing"
+            },
+            {
+              "fieldId": "message",
+              "fieldValue": "={{$node[\"Parse Brief\"].json[\"greeting\"]}}"
+            }
+          ]
+        },
+        "operation": "create",
+        "resource": "row"
+      },
+      "name": "Notify",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 2,
+      "position": [
+        1560,
+        300
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "37rJREccSDhKtIGi",
+          "name": "Supabase Service Role"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fromEmail": "lorena.realtor@icloud.com",
+        "toEmail": "lorena@casasenelpaso.com",
+        "subject": "=\u2600\ufe0f Your Daily Briefing - {{ new Date().toLocaleDateString() }}",
+        "contentHtml": "={{ $node[\"Parse Brief\"].json.briefing_html || JSON.stringify($node[\"Parse Brief\"].json) }}",
+        "contentType": "text/html"
+      },
+      "name": "Email Briefing",
+      "type": "n8n-nodes-base.sendGrid",
+      "typeVersion": 1,
+      "position": [
+        1200,
+        300
+      ],
+      "credentials": {
+        "sendGridApi": {
+          "id": "PENDING",
+          "name": "SendGrid - Lorena Email"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "from": "={{$credentials.twilioApi.phoneNumber}}",
+        "to": "={{ $node[\"Get Agent\"].json.phone || \"\" }}",
+        "message": "=\u2600\ufe0f Morning briefing ready! Check your email for full details."
+      },
+      "name": "SMS Summary",
+      "type": "n8n-nodes-base.twilio",
+      "typeVersion": 1,
+      "position": [
+        1200,
+        500
+      ],
+      "credentials": {
+        "twilioApi": {
+          "id": "PENDING",
+          "name": "Twilio - Lorena SMS"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Cron Daily": {
+      "main": [
+        [
+          {
+            "node": "Get Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Agent": {
+      "main": [
+        [
+          {
+            "node": "Get Hot",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Get Deals",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Hot": {
+      "main": [
+        [
+          {
+            "node": "Claude Brief",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Deals": {
+      "main": [
+        [
+          {
+            "node": "Claude Brief",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Claude Brief": {
+      "main": [
+        [
+          {
+            "node": "Parse Brief",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse Brief": {
+      "main": [
+        [
+          {
+            "node": "Save Brief",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Save Brief": {
+      "main": [
+        [
+          {
+            "node": "Notify",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Notify": {
+      "main": [
+        [
+          {
+            "node": "Email Briefing",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "SMS Summary",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  }
+}

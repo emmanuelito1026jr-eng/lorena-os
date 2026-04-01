@@ -1,0 +1,340 @@
+{
+  "name": "[LOS-20] Post-Showing Follow-Up",
+  "nodes": [
+    {
+      "parameters": {
+        "path": "post-showing",
+        "httpMethod": "POST",
+        "responseMode": "onReceived"
+      },
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        200,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "functionCode": "const b = items[0].json.body || items[0].json;\nitems[0].json = {\n  lead_id: b.lead_id, showing_id: b.showing_id,\n  property_address: b.property_address,\n  feedback: b.feedback || '',\n  interested: b.interested !== undefined ? b.interested : null\n};\nreturn items;"
+      },
+      "name": "Extract",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [
+        400,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "tableId": "leads",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "id",
+              "keyValue": "={{ $json.lead_id }}"
+            }
+          ]
+        }
+      },
+      "name": "Get Lead",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 2,
+      "position": [
+        600,
+        300
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "37rJREccSDhKtIGi",
+          "name": "Supabase Service Role"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "tableId": "showings",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "id",
+              "keyValue": "={{ $node['Extract'].json.showing_id }}"
+            }
+          ]
+        },
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "status",
+              "fieldValue": "completed"
+            },
+            {
+              "fieldId": "feedback",
+              "fieldValue": "={{ $node['Extract'].json.feedback }}"
+            }
+          ]
+        }
+      },
+      "name": "Update Showing",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 2,
+      "position": [
+        800,
+        300
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "37rJREccSDhKtIGi",
+          "name": "Supabase Service Role"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "amount": 2,
+        "unit": "hours"
+      },
+      "name": "Wait 2h",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1,
+      "position": [
+        1000,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "functionCode": "const lead = $node['Get Lead'].json;\nconst ext = $node['Extract'].json;\nconst lang = lead.preferred_language || 'en';\nitems[0].json.claude_followup = JSON.stringify({\n  model: \"claude-sonnet-4-5-20250929\", max_tokens: 500,\n  messages: [{role: \"user\", content: `Write a post-showing follow-up SMS for ${lead.first_name || 'there'} who just saw ${ext.property_address}. ${ext.feedback ? 'Agent feedback: ' + ext.feedback : ''}. Language: ${lang}. Ask about their impression, offer to answer questions. Under 200 chars. Output ONLY valid JSON: {\"sms_text\": \"...\"}`}]\n});\nreturn items;"
+      },
+      "name": "Build Follow-Up",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [
+        1200,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.anthropic.com/v1/messages",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-api-key",
+              "value": "={{$env.ANTHROPIC_API_KEY}}"
+            },
+            {
+              "name": "anthropic-version",
+              "value": "2023-06-01"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "={{ $json.claude_followup }}",
+        "options": {}
+      },
+      "name": "Claude Follow-Up",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        1400,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "functionCode": "const c=items[0].json.content;let t=c&&Array.isArray(c)?c[0].text:'';\ntry{let cl=t.replace(/```json\\n?/g,'').replace(/```\\n?/g,'').trim();t=JSON.parse(cl).sms_text||t;}catch(e){}\nitems[0].json.sms_text=t.substring(0,300);return items;"
+      },
+      "name": "Parse SMS",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [
+        1600,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "from": "={{$credentials.twilioApi.phoneNumber}}",
+        "to": "={{ $node['Get Lead'].json.phone }}",
+        "message": "={{ $json.sms_text }}"
+      },
+      "name": "Send SMS",
+      "type": "n8n-nodes-base.twilio",
+      "typeVersion": 1,
+      "position": [
+        1800,
+        300
+      ],
+      "credentials": {
+        "twilioApi": {
+          "id": "PENDING",
+          "name": "Twilio - Lorena SMS"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "create",
+        "tableId": "messages",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "lead_id",
+              "fieldValue": "={{ $node['Extract'].json.lead_id }}"
+            },
+            {
+              "fieldId": "agent_id",
+              "fieldValue": "6d51a7c2-271f-484a-bb11-5ee935f1358a"
+            },
+            {
+              "fieldId": "channel",
+              "fieldValue": "sms"
+            },
+            {
+              "fieldId": "direction",
+              "fieldValue": "outbound"
+            },
+            {
+              "fieldId": "content",
+              "fieldValue": "={{ $node['Parse SMS'].json.sms_text }}"
+            },
+            {
+              "fieldId": "is_ai",
+              "fieldValue": "true"
+            },
+            {
+              "fieldId": "automation_source",
+              "fieldValue": "post_showing"
+            }
+          ]
+        }
+      },
+      "name": "Log SMS",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 2,
+      "position": [
+        2000,
+        300
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "37rJREccSDhKtIGi",
+          "name": "Supabase Service Role"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Extract",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract": {
+      "main": [
+        [
+          {
+            "node": "Get Lead",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Lead": {
+      "main": [
+        [
+          {
+            "node": "Update Showing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Showing": {
+      "main": [
+        [
+          {
+            "node": "Wait 2h",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait 2h": {
+      "main": [
+        [
+          {
+            "node": "Build Follow-Up",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Follow-Up": {
+      "main": [
+        [
+          {
+            "node": "Claude Follow-Up",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Claude Follow-Up": {
+      "main": [
+        [
+          {
+            "node": "Parse SMS",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse SMS": {
+      "main": [
+        [
+          {
+            "node": "Send SMS",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send SMS": {
+      "main": [
+        [
+          {
+            "node": "Log SMS",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  }
+}

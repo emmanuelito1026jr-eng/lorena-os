@@ -1,0 +1,390 @@
+{
+  "name": "[LOS-10] System Health Monitor",
+  "nodes": [
+    {
+      "parameters": {
+        "triggerTimes": {
+          "item": [
+            {
+              "mode": "everyMinute",
+              "minute": 30
+            }
+          ]
+        }
+      },
+      "name": "Cron30m",
+      "type": "n8n-nodes-base.cron",
+      "typeVersion": 1,
+      "position": [
+        240,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "tableId": "profiles",
+        "returnAll": true,
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "role",
+              "keyValue": "agent",
+              "condition": "eq"
+            }
+          ]
+        },
+        "limit": 1,
+        "filterType": "manual",
+        "matchType": "allFilters",
+        "resource": "row",
+        "operation": "getAll"
+      },
+      "name": "Get Agent",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 2,
+      "position": [
+        460,
+        300
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "37rJREccSDhKtIGi",
+          "name": "Supabase Service Role"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "tableId": "leads",
+        "returnAll": true,
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "status",
+              "keyValue": "new_lead",
+              "condition": "eq"
+            }
+          ]
+        },
+        "filterType": "manual",
+        "matchType": "allFilters",
+        "resource": "row",
+        "operation": "getAll"
+      },
+      "name": "Check Unresponded",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 2,
+      "position": [
+        680,
+        200
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "37rJREccSDhKtIGi",
+          "name": "Supabase Service Role"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "tableId": "deal_checklists",
+        "returnAll": true,
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "status",
+              "keyValue": "pending",
+              "condition": "eq"
+            }
+          ]
+        },
+        "filterType": "manual",
+        "matchType": "allFilters",
+        "resource": "row",
+        "operation": "getAll"
+      },
+      "name": "Check Overdue",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 2,
+      "position": [
+        680,
+        400
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "37rJREccSDhKtIGi",
+          "name": "Supabase Service Role"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "boolean": [
+            {
+              "value1": "={{$node[\"Check Unresponded\"].json.length > 0}}",
+              "value2": true
+            }
+          ]
+        }
+      },
+      "name": "Has Unresponded?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        900,
+        200
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "boolean": [
+            {
+              "value1": "={{$node[\"Check Overdue\"].json.length > 0}}",
+              "value2": true
+            }
+          ]
+        }
+      },
+      "name": "Has Overdue?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        900,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "tableId": "notifications",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "agent_id",
+              "fieldValue": "={{$node[\"Get Agent\"].json[\"id\"]}}"
+            },
+            {
+              "fieldId": "type",
+              "fieldValue": "warning"
+            },
+            {
+              "fieldId": "title",
+              "fieldValue": "\u26a0\ufe0f Unresponded Leads"
+            },
+            {
+              "fieldId": "message",
+              "fieldValue": "={{$node[\"Check Unresponded\"].json.length}} leads waiting >24h"
+            }
+          ]
+        },
+        "operation": "create",
+        "resource": "row"
+      },
+      "name": "Notify Leads",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 2,
+      "position": [
+        1120,
+        200
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "37rJREccSDhKtIGi",
+          "name": "Supabase Service Role"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "tableId": "notifications",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "agent_id",
+              "fieldValue": "={{$node[\"Get Agent\"].json[\"id\"]}}"
+            },
+            {
+              "fieldId": "type",
+              "fieldValue": "overdue"
+            },
+            {
+              "fieldId": "title",
+              "fieldValue": "\ud83d\udea8 Overdue Items"
+            },
+            {
+              "fieldId": "message",
+              "fieldValue": "={{$node[\"Check Overdue\"].json.length}} checklist items overdue"
+            }
+          ]
+        },
+        "operation": "create",
+        "resource": "row"
+      },
+      "name": "Notify Overdue",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 2,
+      "position": [
+        1120,
+        400
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "37rJREccSDhKtIGi",
+          "name": "Supabase Service Role"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "from": "={{$credentials.twilioApi.phoneNumber}}",
+        "to": "={{ $node[\"Get Agent\"].json.phone || \"\" }}",
+        "message": "=\u26a0\ufe0f System Alert: Unresponded or overdue items detected. Check your Lorena OS dashboard."
+      },
+      "name": "SMS Error Alert",
+      "type": "n8n-nodes-base.twilio",
+      "typeVersion": 1,
+      "position": [
+        1000,
+        500
+      ],
+      "credentials": {
+        "twilioApi": {
+          "id": "PENDING",
+          "name": "Twilio - Lorena SMS"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fromEmail": "lorena.realtor@icloud.com",
+        "toEmail": "lorena@casasenelpaso.com",
+        "subject": "=\u26a0\ufe0f Lorena OS System Health Alert",
+        "contentHtml": "=<h2>System Health Alert</h2><p>The following issues were detected:</p><p>Check your Lorena OS dashboard for details.</p>",
+        "contentType": "text/html"
+      },
+      "name": "Email Error Details",
+      "type": "n8n-nodes-base.sendGrid",
+      "typeVersion": 1,
+      "position": [
+        1000,
+        700
+      ],
+      "credentials": {
+        "sendGridApi": {
+          "id": "PENDING",
+          "name": "SendGrid - Lorena Email"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Cron30m": {
+      "main": [
+        [
+          {
+            "node": "Get Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Agent": {
+      "main": [
+        [
+          {
+            "node": "Check Unresponded",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Check Overdue",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Unresponded": {
+      "main": [
+        [
+          {
+            "node": "Has Unresponded?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Overdue": {
+      "main": [
+        [
+          {
+            "node": "Has Overdue?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Has Unresponded?": {
+      "main": [
+        [
+          {
+            "node": "Notify Leads",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Has Overdue?": {
+      "main": [
+        [
+          {
+            "node": "Notify Overdue",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Notify Leads": {
+      "main": [
+        [
+          {
+            "node": "SMS Error Alert",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Notify Overdue": {
+      "main": [
+        [
+          {
+            "node": "SMS Error Alert",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SMS Error Alert": {
+      "main": [
+        [
+          {
+            "node": "Email Error Details",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  }
+}

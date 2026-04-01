@@ -1,0 +1,206 @@
+{
+  "name": "[LOS-07] Lead Source ROI Tracker",
+  "nodes": [
+    {
+      "parameters": {
+        "triggerTimes": {
+          "item": [
+            {
+              "mode": "everyWeek",
+              "hour": 18,
+              "weekday": 1
+            }
+          ]
+        }
+      },
+      "name": "Cron Weekly",
+      "type": "n8n-nodes-base.cron",
+      "typeVersion": 1,
+      "position": [
+        240,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "tableId": "profiles",
+        "returnAll": true,
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "role",
+              "keyValue": "agent",
+              "condition": "eq"
+            }
+          ]
+        },
+        "limit": 1,
+        "filterType": "manual",
+        "matchType": "allFilters",
+        "resource": "row",
+        "operation": "getAll"
+      },
+      "name": "Get Agent",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 2,
+      "position": [
+        460,
+        300
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "37rJREccSDhKtIGi",
+          "name": "Supabase Service Role"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "tableId": "leads",
+        "operation": "executeQuery",
+        "query": "SELECT source, COUNT(*) as total, COUNT(*) FILTER (WHERE status='past_client') as closed FROM leads GROUP BY source ORDER BY total DESC"
+      },
+      "name": "Get Stats",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 1,
+      "position": [
+        680,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "functionCode": "const stats = items.map(i => i.json);\nconst best = stats[0] || { source: 'none', total: 0, closed: 0 };\nconst rate = best.total > 0 ? (best.closed/best.total*100).toFixed(1) : 0;\nreturn [{ json: { bestSource: best.source, total: best.total, rate } }];"
+      },
+      "name": "Calc ROI",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [
+        900,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "tableId": "notifications",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "agent_id",
+              "fieldValue": "={{$node[\"Get Agent\"].json[\"id\"]}}"
+            },
+            {
+              "fieldId": "type",
+              "fieldValue": "weekly_report"
+            },
+            {
+              "fieldId": "title",
+              "fieldValue": "\ud83d\udcca Weekly ROI Report"
+            },
+            {
+              "fieldId": "message",
+              "fieldValue": "={{$node[\"Calc ROI\"].json[\"bestSource\"]}} is top source with {{$node[\"Calc ROI\"].json[\"total\"]}} leads."
+            }
+          ]
+        },
+        "operation": "create",
+        "resource": "row"
+      },
+      "name": "Notify",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 2,
+      "position": [
+        1120,
+        300
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "37rJREccSDhKtIGi",
+          "name": "Supabase Service Role"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fromEmail": "lorena.realtor@icloud.com",
+        "toEmail": "lorena@casasenelpaso.com",
+        "subject": "=\ud83d\udcca Weekly Lead Source ROI Report",
+        "contentHtml": "={{ $node[\"Calc ROI\"].json.report_html || \"<h2>Weekly ROI Report</h2><p>\" + JSON.stringify($node[\"Calc ROI\"].json) + \"</p>\" }}",
+        "contentType": "text/html"
+      },
+      "name": "Email ROI Report",
+      "type": "n8n-nodes-base.sendGrid",
+      "typeVersion": 1,
+      "position": [
+        1000,
+        300
+      ],
+      "credentials": {
+        "sendGridApi": {
+          "id": "PENDING",
+          "name": "SendGrid - Lorena Email"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Cron Weekly": {
+      "main": [
+        [
+          {
+            "node": "Get Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Agent": {
+      "main": [
+        [
+          {
+            "node": "Get Stats",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Stats": {
+      "main": [
+        [
+          {
+            "node": "Calc ROI",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Calc ROI": {
+      "main": [
+        [
+          {
+            "node": "Notify",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Notify": {
+      "main": [
+        [
+          {
+            "node": "Email ROI Report",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  }
+}

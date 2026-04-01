@@ -1,16 +1,32 @@
 import { Award, GraduationCap, TrendingUp, Users, MapPin, Languages, Heart, Star } from 'lucide-react';
+import { usePageMeta } from '../hooks/usePageMeta';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import ContactForm from '../components/ContactForm';
 import { STATS, TESTIMONIALS } from '../constants';
 
 const About = () => {
+  usePageMeta({
+    title: 'About Lorena Ontiveros-Ortega',
+    description: 'Meet Lorena Ontiveros-Ortega — bilingual El Paso Realtor specializing in residential real estate, military relocations near Fort Bliss, and first-time home buyers.',
+    canonicalUrl: 'https://casasenelpasotx.com/about',
+    jsonLd: {
+      '@type': 'Person',
+      name: 'Lorena Ontiveros-Ortega',
+      jobTitle: 'Real Estate Agent',
+      url: 'https://casasenelpasotx.com/about',
+      telephone: '+1-915-487-5581',
+      worksFor: { '@type': 'Organization', name: 'The Right Move Real Estate Group' },
+      areaServed: 'El Paso, TX',
+      knowsLanguage: ['en', 'es'],
+    },
+  });
   return (
-    <div className="bg-blackmin-h-screen">
+    <div className="bg-black min-h-screen">
       <Navbar />
 
       {/* Hero Section */}
-      <section className="relative pt-32 pb-20 px-4 bg-gradient-to-b from-dark-charcoal to-dark overflow-hidden">
+      <section className="relative pt-32 pb-20 px-4 bg-gradient-to-b from-dark-100 to-dark overflow-hidden">
         <div className="absolute top-20 right-0 w-96 h-96 bg-gold/5 rounded-full blur-3xl"></div>
         <div className="absolute bottom-0 left-0 w-96 h-96 bg-gold/10 rounded-full blur-3xl"></div>
 
@@ -25,12 +41,13 @@ const About = () => {
                     src="/images/lorena-portrait.png"
                     alt="Lorena Ontiveros-Ortega, professional real estate agent"
                     className="w-full h-full object-cover transition-all duration-700"
-                    loading="lazy"
+                    width={400}
+                    height={400}
                   />
                 </div>
                 {/* Floating Stats */}
-                <div className="absolute -bottom-6 -right-6 glass-strong p-6 rounded-lg">
-                  <div className="text-4xl font-sans text-gold mb-1">10+</div>
+                <div className="absolute -bottom-6 -right-6 bg-[#1a1a1a] border border-white/10 shadow-lg p-6 rounded-lg">
+                  <div className="text-4xl font-playfair text-gold mb-1">10+</div>
                   <div className="text-xs text-white/60 uppercase tracking-wider">Years Banking</div>
                 </div>
               </div>
@@ -39,7 +56,7 @@ const About = () => {
             {/* Right: Content */}
             <div className="animate-fade-in-up delay-200">
               <span className="text-gold text-xs uppercase tracking-[0.3em]">About Lorena</span>
-              <h1 className="mt-4 font-sans text-5xl md:text-6xl text-white mb-6">
+              <h1 className="mt-4 font-playfair text-5xl md:text-6xl text-white mb-6">
                 Bridging Cultures, <br />
                 <span className="gradient-text italic">Building Wealth</span>
               </h1>
@@ -67,8 +84,8 @@ const About = () => {
               {/* Quick Stats */}
               <div className="mt-8 grid grid-cols-2 gap-3 sm:gap-4">
                 {STATS.map((stat, index) => (
-                  <div key={index} className="glass rounded-lg p-3 sm:p-4 hover-lift">
-                    <div className="text-xl sm:text-2xl font-sans text-gold mb-1">{stat.value}</div>
+                  <div key={index} className="bg-[#1a1a1a] border border-white/10 shadow-lg rounded-lg p-3 sm:p-4 hover-lift">
+                    <div className="text-xl sm:text-2xl font-playfair text-gold mb-1">{stat.value}</div>
                     <div className="text-[10px] sm:text-xs text-white/60 uppercase tracking-wider">{stat.label}</div>
                   </div>
                 ))}
@@ -83,7 +100,7 @@ const About = () => {
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16 animate-fade-in-up">
             <span className="text-gold text-xs uppercase tracking-[0.3em]">My Journey</span>
-            <h2 className="mt-4 font-sans text-4xl md:text-5xl text-white">
+            <h2 className="mt-4 font-playfair text-4xl md:text-5xl text-white">
               From Banking to <span className="gradient-text">Real Estate</span>
             </h2>
           </div>
@@ -132,7 +149,7 @@ const About = () => {
                     <>
                       {/* Content Left */}
                       <div className="md:text-right">
-                        <div className="glass-strong rounded-lg p-4 sm:p-6 hover-lift inline-block w-full md:w-auto">
+                        <div className="bg-[#1a1a1a] border border-white/10 shadow-lg rounded-lg p-4 sm:p-6 hover-lift inline-block w-full md:w-auto">
                           <div className="flex md:hidden items-center gap-3 mb-3">
                             <div className="w-12 h-12 bg-gold rounded-full flex items-center justify-center flex-shrink-0">
                               <item.icon className="text-dark" size={20} />
@@ -140,7 +157,7 @@ const About = () => {
                             <div className="text-gold text-xs uppercase tracking-wider">{item.year}</div>
                           </div>
                           <div className="hidden md:block text-gold text-xs uppercase tracking-wider mb-2">{item.year}</div>
-                          <h3 className="text-white text-xl sm:text-2xl font-sans mb-2 sm:mb-3">{item.title}</h3>
+                          <h3 className="text-white text-xl sm:text-2xl font-playfair mb-2 sm:mb-3">{item.title}</h3>
                           <p className="text-white/60 text-sm sm:text-base">{item.description}</p>
                         </div>
                       </div>
@@ -161,7 +178,7 @@ const About = () => {
                       </div>
                       {/* Content Right */}
                       <div>
-                        <div className="glass-strong rounded-lg p-4 sm:p-6 hover-lift inline-block w-full md:w-auto">
+                        <div className="bg-[#1a1a1a] border border-white/10 shadow-lg rounded-lg p-4 sm:p-6 hover-lift inline-block w-full md:w-auto">
                           <div className="flex md:hidden items-center gap-3 mb-3">
                             <div className="w-12 h-12 bg-gold rounded-full flex items-center justify-center flex-shrink-0">
                               <item.icon className="text-dark" size={20} />
@@ -169,7 +186,7 @@ const About = () => {
                             <div className="text-gold text-xs uppercase tracking-wider">{item.year}</div>
                           </div>
                           <div className="hidden md:block text-gold text-xs uppercase tracking-wider mb-2">{item.year}</div>
-                          <h3 className="text-white text-xl sm:text-2xl font-sans mb-2 sm:mb-3">{item.title}</h3>
+                          <h3 className="text-white text-xl sm:text-2xl font-playfair mb-2 sm:mb-3">{item.title}</h3>
                           <p className="text-white/60 text-sm sm:text-base">{item.description}</p>
                         </div>
                       </div>
@@ -187,7 +204,7 @@ const About = () => {
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16 animate-fade-in-up">
             <span className="text-gold text-xs uppercase tracking-[0.3em]">Competitive Advantage</span>
-            <h2 className="mt-4 font-sans text-4xl md:text-5xl text-black">
+            <h2 className="mt-4 font-playfair text-4xl md:text-5xl text-black">
               Why Choose <span className="gradient-text">Lorena?</span>
             </h2>
           </div>
@@ -239,7 +256,7 @@ const About = () => {
                 <div className="w-16 h-16 bg-gold/20 rounded-full flex items-center justify-center mb-4">
                   <item.icon className="text-gold" size={28} />
                 </div>
-                <h3 className="text-black text-xl font-sans mb-3">{item.title}</h3>
+                <h3 className="text-black text-xl font-playfair mb-3">{item.title}</h3>
                 <p className="text-black/70">{item.description}</p>
               </div>
             ))}
@@ -252,7 +269,7 @@ const About = () => {
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16 animate-fade-in-up">
             <span className="text-gold text-xs uppercase tracking-[0.3em]">Client Success Stories</span>
-            <h2 className="mt-4 font-sans text-4xl md:text-5xl text-black">
+            <h2 className="mt-4 font-playfair text-4xl md:text-5xl text-black">
               What Families <span className="gradient-text">Are Saying</span>
             </h2>
           </div>
@@ -284,7 +301,7 @@ const About = () => {
       <section className="py-20 px-4 bg-white">
         <div className="max-w-4xl mx-auto">
           <div className="bg-white border border-gray-200 rounded-lg shadow-premium p-12 text-center animate-fade-in-up">
-            <h2 className="font-sans text-4xl md:text-5xl text-black mb-6">
+            <h2 className="font-playfair text-4xl md:text-5xl text-black mb-6">
               Ready to Find Your <span className="gradient-text">Dream Home?</span>
             </h2>
             <p className="text-black/80 text-lg mb-8 max-w-2xl mx-auto">

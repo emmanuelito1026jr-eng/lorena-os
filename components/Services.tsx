@@ -1,8 +1,6 @@
-import { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { SERVICES } from '../constants';
 import { Home, TrendingUp, Building, ArrowRight } from 'lucide-react';
-import { staggerReveal } from '../utils/animations';
 
 // Icon mapping helper
 const getIcon = (name: string) => {
@@ -20,16 +18,12 @@ const getServiceId = (subtitle: string): string => {
 };
 
 const Services = () => {
-  useEffect(() => {
-    staggerReveal('.service-card', 0.15);
-  }, []);
-
   return (
     <section id="services" className="py-24 md:py-32 lg:py-40 bg-white">
       <div className="max-w-7xl mx-auto px-6 sm:px-12 lg:px-16">
         <div className="text-center mb-16">
           <span className="text-gold text-xs uppercase tracking-[0.25em] font-extrabold">Expertise</span>
-          <h2 className="mt-3 font-sans text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-black font-bold">Comprehensive Real Estate Services</h2>
+          <h2 className="mt-3 font-playfair text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-black font-bold">Comprehensive Real Estate Services</h2>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -40,7 +34,8 @@ const Services = () => {
               <Link
                 key={index}
                 to={`/service/${serviceId}`}
-                className="service-card group bg-white border border-gray-200 hover:border-gold transition-premium hover:shadow-gold-glow block shadow-premium overflow-hidden"
+                className="service-card group bg-white border border-gray-200 hover:border-gold transition-premium hover:shadow-gold-glow block shadow-premium overflow-hidden animate-fade-in-up"
+                style={{ animationDelay: `${index * 150}ms` }}
               >
                 {/* Image Section */}
                 <div className="relative h-40 sm:h-48 md:h-56 overflow-hidden">
@@ -49,6 +44,8 @@ const Services = () => {
                     alt={service.subtitle}
                     className="w-full h-full object-cover transition-premium group-hover:scale-110"
                     loading="lazy"
+                    width={800}
+                    height={600}
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
                   <div className="absolute bottom-4 left-4 w-12 h-12 bg-gold flex items-center justify-center text-white shadow-lg">
@@ -58,7 +55,7 @@ const Services = () => {
 
                 {/* Content Section */}
                 <div className="p-4 sm:p-6 md:p-8">
-                  <h3 className="font-sans text-2xl text-black font-bold mb-1">{service.title}</h3>
+                  <h3 className="font-playfair text-2xl text-black font-bold mb-1">{service.title}</h3>
                   <h4 className="text-gold text-sm uppercase tracking-widest mb-4 font-extrabold">{service.subtitle}</h4>
                   <p className="text-black/70 leading-relaxed mb-6 font-light">
                     {service.description}

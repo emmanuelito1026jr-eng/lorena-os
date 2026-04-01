@@ -1,0 +1,323 @@
+{
+  "name": "[LOS-18] Showing Coordinator",
+  "nodes": [
+    {
+      "parameters": {
+        "path": "schedule-showing",
+        "httpMethod": "POST",
+        "responseMode": "onReceived"
+      },
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        200,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "functionCode": "const b = items[0].json.body || items[0].json;\nitems[0].json = {\n  lead_id: b.lead_id,\n  deal_id: b.deal_id || null,\n  property_address: b.property_address,\n  showing_date: b.showing_date,\n  showing_time: b.showing_time,\n  notes: b.notes || ''\n};\nreturn items;"
+      },
+      "name": "Extract Showing",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [
+        400,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "tableId": "leads",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "id",
+              "keyValue": "={{ $json.lead_id }}"
+            }
+          ]
+        }
+      },
+      "name": "Get Lead",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 2,
+      "position": [
+        600,
+        300
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "37rJREccSDhKtIGi",
+          "name": "Supabase Service Role"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "create",
+        "tableId": "showings",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "lead_id",
+              "fieldValue": "={{ $node['Extract Showing'].json.lead_id }}"
+            },
+            {
+              "fieldId": "agent_id",
+              "fieldValue": "6d51a7c2-271f-484a-bb11-5ee935f1358a"
+            },
+            {
+              "fieldId": "property_address",
+              "fieldValue": "={{ $node['Extract Showing'].json.property_address }}"
+            },
+            {
+              "fieldId": "showing_date",
+              "fieldValue": "={{ $node['Extract Showing'].json.showing_date }}"
+            },
+            {
+              "fieldId": "showing_time",
+              "fieldValue": "={{ $node['Extract Showing'].json.showing_time }}"
+            },
+            {
+              "fieldId": "status",
+              "fieldValue": "scheduled"
+            },
+            {
+              "fieldId": "notes",
+              "fieldValue": "={{ $node['Extract Showing'].json.notes }}"
+            }
+          ]
+        }
+      },
+      "name": "Create Showing",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 2,
+      "position": [
+        800,
+        300
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "37rJREccSDhKtIGi",
+          "name": "Supabase Service Role"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "from": "={{$credentials.twilioApi.phoneNumber}}",
+        "to": "={{ $node['Get Lead'].json.phone }}",
+        "message": "={{ ($node['Get Lead'].json.preferred_language === 'es' ? '\u00a1Hola ' + ($node['Get Lead'].json.first_name || '') + '! Tu visita est\u00e1 confirmada para ' + $node['Extract Showing'].json.property_address + ' el ' + $node['Extract Showing'].json.showing_date + ' a las ' + $node['Extract Showing'].json.showing_time + '. \u00a1Nos vemos! - Lorena' : 'Hi ' + ($node['Get Lead'].json.first_name || '') + '! Your showing is confirmed for ' + $node['Extract Showing'].json.property_address + ' on ' + $node['Extract Showing'].json.showing_date + ' at ' + $node['Extract Showing'].json.showing_time + '. See you there! - Lorena') }}"
+      },
+      "name": "Confirm SMS",
+      "type": "n8n-nodes-base.twilio",
+      "typeVersion": 1,
+      "position": [
+        1000,
+        300
+      ],
+      "credentials": {
+        "twilioApi": {
+          "id": "PENDING",
+          "name": "Twilio - Lorena SMS"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "create",
+        "tableId": "messages",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "lead_id",
+              "fieldValue": "={{ $node['Extract Showing'].json.lead_id }}"
+            },
+            {
+              "fieldId": "agent_id",
+              "fieldValue": "6d51a7c2-271f-484a-bb11-5ee935f1358a"
+            },
+            {
+              "fieldId": "channel",
+              "fieldValue": "sms"
+            },
+            {
+              "fieldId": "direction",
+              "fieldValue": "outbound"
+            },
+            {
+              "fieldId": "content",
+              "fieldValue": "Showing confirmation sent"
+            },
+            {
+              "fieldId": "is_ai",
+              "fieldValue": "false"
+            },
+            {
+              "fieldId": "automation_source",
+              "fieldValue": "showing_coordinator"
+            }
+          ]
+        }
+      },
+      "name": "Log SMS",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 2,
+      "position": [
+        1200,
+        300
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "37rJREccSDhKtIGi",
+          "name": "Supabase Service Role"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "create",
+        "tableId": "notifications",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "agent_id",
+              "fieldValue": "6d51a7c2-271f-484a-bb11-5ee935f1358a"
+            },
+            {
+              "fieldId": "type",
+              "fieldValue": "showing_scheduled"
+            },
+            {
+              "fieldId": "title",
+              "fieldValue": "={{ '\ud83d\udcc5 Showing: ' + $node['Extract Showing'].json.property_address }}"
+            },
+            {
+              "fieldId": "message",
+              "fieldValue": "={{ $node['Extract Showing'].json.showing_date + ' at ' + $node['Extract Showing'].json.showing_time + ' with ' + ($node['Get Lead'].json.first_name || 'lead') }}"
+            },
+            {
+              "fieldId": "lead_id",
+              "fieldValue": "={{ $node['Extract Showing'].json.lead_id }}"
+            }
+          ]
+        }
+      },
+      "name": "Notify Agent",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 2,
+      "position": [
+        1400,
+        300
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "37rJREccSDhKtIGi",
+          "name": "Supabase Service Role"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://n8n.srv957236.hstgr.cloud/webhook/pre-showing-brief",
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "={{ JSON.stringify({lead_id: $node['Extract Showing'].json.lead_id, property_address: $node['Extract Showing'].json.property_address, showing_id: $node['Create Showing'].json.id}) }}",
+        "options": {}
+      },
+      "name": "Trigger Brief",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        1600,
+        300
+      ]
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Extract Showing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Showing": {
+      "main": [
+        [
+          {
+            "node": "Get Lead",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Lead": {
+      "main": [
+        [
+          {
+            "node": "Create Showing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Showing": {
+      "main": [
+        [
+          {
+            "node": "Confirm SMS",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Confirm SMS": {
+      "main": [
+        [
+          {
+            "node": "Log SMS",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Log SMS": {
+      "main": [
+        [
+          {
+            "node": "Notify Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Notify Agent": {
+      "main": [
+        [
+          {
+            "node": "Trigger Brief",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  }
+}

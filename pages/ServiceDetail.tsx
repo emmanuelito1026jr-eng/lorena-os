@@ -1,8 +1,9 @@
 import { useParams, Link } from 'react-router-dom';
+import { usePageMeta } from '../hooks/usePageMeta';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import ContactForm from '../components/ContactForm';
-import { CheckCircle, ArrowRight, TrendingUp, Shield, Clock, Award, Heart, Users, DollarSign, Home as HomeIcon, ChevronLeft } from 'lucide-react';
+import { CheckCircle, ArrowRight, TrendingUp, Shield, Clock, Award, DollarSign, Home as HomeIcon, ChevronLeft } from 'lucide-react';
 
 const SERVICES_DATA = {
   buyers: {
@@ -10,7 +11,7 @@ const SERVICES_DATA = {
     title: 'Buyer Services',
     subtitle: 'Compradores',
     tagline: 'Find Your Perfect Home with Expert Financial Guidance',
-    hero: 'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=1920&h=800&fit=crop&q=80',
+    hero: '/images/services/buying.jpg',
     description: 'With 10+ years of banking experience, I bring unique financial expertise to your home buying journey. I don\'t just help you find a home—I ensure you can afford it and build wealth through smart real estate decisions.',
 
     processSteps: [
@@ -93,7 +94,7 @@ const SERVICES_DATA = {
     title: 'Seller Services',
     subtitle: 'Vendedores',
     tagline: 'Maximize Your Home\'s Value with Strategic Marketing',
-    hero: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=1920&h=800&fit=crop&q=80',
+    hero: '/images/services/selling.jpg',
     description: 'Selling your home is one of the biggest financial decisions you\'ll make. With my marketing expertise and market knowledge, I position your property to sell quickly and for top dollar—often above asking price.',
 
     processSteps: [
@@ -176,7 +177,7 @@ const SERVICES_DATA = {
     title: 'Investment Services',
     subtitle: 'Inversiones',
     tagline: 'Build Wealth Through Strategic Real Estate Investing',
-    hero: 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=1920&h=800&fit=crop&q=80',
+    hero: '/images/services/valuation.jpg',
     description: 'El Paso\'s border location creates unique investment opportunities. I help you identify high-ROI properties, analyze cash flow potential, and build a real estate portfolio that generates passive income and long-term wealth.',
 
     processSteps: [
@@ -258,12 +259,17 @@ const SERVICES_DATA = {
 const ServiceDetail = () => {
   const { serviceId } = useParams<{ serviceId: string }>();
   const service = serviceId ? SERVICES_DATA[serviceId as keyof typeof SERVICES_DATA] : null;
+  usePageMeta({
+    title: service ? `${service.title} — El Paso Real Estate` : 'Service Not Found',
+    description: service ? `${service.title} services in El Paso, TX by Lorena Ontiveros-Ortega. Expert bilingual real estate guidance.` : undefined,
+    canonicalUrl: service ? `https://casasenelpasotx.com/service/${serviceId}` : undefined,
+  });
 
   if (!service) {
     return (
-      <div className="bg-blackmin-h-screen flex items-center justify-center">
+      <div className="bg-black min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <h1 className="text-4xl font-sans text-gold mb-4">Service Not Found</h1>
+          <h1 className="text-4xl font-playfair text-gold mb-4">Service Not Found</h1>
           <Link to="/#services" className="text-white hover:text-gold">
             ← Back to Services
           </Link>
@@ -273,7 +279,7 @@ const ServiceDetail = () => {
   }
 
   return (
-    <div className="bg-blackmin-h-screen">
+    <div className="bg-black min-h-screen">
       <Navbar />
 
       {/* Hero */}
@@ -294,7 +300,7 @@ const ServiceDetail = () => {
             {service.subtitle}
           </div>
 
-          <h1 className="font-sans text-5xl md:text-7xl text-white mb-6 animate-fade-in-up delay-100">
+          <h1 className="font-playfair text-5xl md:text-7xl text-white mb-6 animate-fade-in-up delay-100">
             {service.title}
           </h1>
 
@@ -310,7 +316,7 @@ const ServiceDetail = () => {
       </section>
 
       {/* Description */}
-      <section className="py-20 px-4 bg-gray-50">
+      <section className="py-20 px-4 bg-dark-100">
         <div className="max-w-4xl mx-auto text-center">
           <p className="text-xl text-white/80 leading-relaxed animate-fade-in-up">
             {service.description}
@@ -319,10 +325,10 @@ const ServiceDetail = () => {
       </section>
 
       {/* Process Steps */}
-      <section className="py-20 px-4 bg-white">
+      <section className="py-20 px-4 bg-dark">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
-            <h2 className="font-sans text-4xl md:text-5xl text-white mb-4">
+            <h2 className="font-playfair text-4xl md:text-5xl text-white mb-4">
               The <span className="gradient-text">Process</span>
             </h2>
             <p className="text-white/60 text-lg">Step-by-step guidance from start to finish</p>
@@ -332,14 +338,14 @@ const ServiceDetail = () => {
             {service.processSteps.map((step, index) => (
               <div
                 key={index}
-                className="glass-strong rounded-lg p-6 hover-lift animate-fade-in-up"
+                className="bg-[#1a1a1a] border border-white/10 shadow-lg rounded-lg p-6 hover-lift animate-fade-in-up"
                 style={{ animationDelay: `${index * 100}ms` }}
               >
-                <div className="text-6xl font-sans text-gold/20 mb-4">{step.number}</div>
+                <div className="text-6xl font-playfair text-gold/20 mb-4">{step.number}</div>
                 <div className="w-16 h-16 bg-gold/20 rounded-full flex items-center justify-center mb-4">
                   <step.icon className="text-gold" size={28} />
                 </div>
-                <h3 className="text-xl font-sans text-white mb-3">{step.title}</h3>
+                <h3 className="text-xl font-playfair text-white mb-3">{step.title}</h3>
                 <p className="text-white/60 mb-4">{step.description}</p>
                 <div className="flex items-center gap-2 text-sm text-gold">
                   <Clock size={14} />
@@ -352,10 +358,10 @@ const ServiceDetail = () => {
       </section>
 
       {/* Benefits */}
-      <section className="py-20 px-4 bg-gray-50">
+      <section className="py-20 px-4 bg-dark-100">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
-            <h2 className="font-sans text-4xl md:text-5xl text-white mb-4">
+            <h2 className="font-playfair text-4xl md:text-5xl text-white mb-4">
               What's <span className="gradient-text">Included</span>
             </h2>
           </div>
@@ -364,7 +370,7 @@ const ServiceDetail = () => {
             {service.benefits.map((benefit, index) => (
               <div
                 key={index}
-                className="flex items-start gap-3 glass rounded-lg p-4 hover-lift animate-fade-in-up"
+                className="flex items-start gap-3 bg-[#1a1a1a] border border-white/10 shadow-lg rounded-lg p-4 hover-lift animate-fade-in-up"
                 style={{ animationDelay: `${index * 50}ms` }}
               >
                 <CheckCircle className="text-gold shrink-0 mt-1" size={20} />
@@ -376,10 +382,10 @@ const ServiceDetail = () => {
       </section>
 
       {/* FAQs */}
-      <section className="py-20 px-4 bg-white">
+      <section className="py-20 px-4 bg-dark">
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-16">
-            <h2 className="font-sans text-4xl md:text-5xl text-white mb-4">
+            <h2 className="font-playfair text-4xl md:text-5xl text-white mb-4">
               Common <span className="gradient-text">Questions</span>
             </h2>
           </div>
@@ -388,7 +394,7 @@ const ServiceDetail = () => {
             {service.faqs.map((faq, index) => (
               <div
                 key={index}
-                className="glass-strong rounded-lg p-6 hover-lift animate-fade-in-up"
+                className="bg-[#1a1a1a] border border-white/10 shadow-lg rounded-lg p-6 hover-lift animate-fade-in-up"
                 style={{ animationDelay: `${index * 100}ms` }}
               >
                 <h3 className="text-xl text-gold font-semibold mb-3">{faq.q}</h3>
@@ -400,10 +406,10 @@ const ServiceDetail = () => {
       </section>
 
       {/* Testimonials */}
-      <section className="py-20 px-4 bg-gray-50">
+      <section className="py-20 px-4 bg-dark-100">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
-            <h2 className="font-sans text-4xl md:text-5xl text-white mb-4">
+            <h2 className="font-playfair text-4xl md:text-5xl text-white mb-4">
               Client <span className="gradient-text">Success Stories</span>
             </h2>
           </div>
@@ -412,7 +418,7 @@ const ServiceDetail = () => {
             {service.testimonials.map((testimonial, index) => (
               <div
                 key={index}
-                className="glass-strong rounded-lg p-8 hover-lift animate-fade-in-up"
+                className="bg-[#1a1a1a] border border-white/10 shadow-lg rounded-lg p-8 hover-lift animate-fade-in-up"
                 style={{ animationDelay: `${index * 150}ms` }}
               >
                 <div className="text-5xl text-gold/20 mb-4">"</div>
@@ -428,11 +434,11 @@ const ServiceDetail = () => {
       </section>
 
       {/* CTA */}
-      <section id="contact" className="py-20 px-4 bg-white">
+      <section id="contact" className="py-20 px-4 bg-dark">
         <div className="max-w-4xl mx-auto">
-          <div className="glass-strong rounded-lg p-12">
+          <div className="bg-[#1a1a1a] border border-white/10 shadow-lg rounded-lg p-12">
             <div className="text-center mb-8">
-              <h2 className="font-sans text-4xl md:text-5xl text-white mb-4">
+              <h2 className="font-playfair text-4xl md:text-5xl text-white mb-4">
                 Ready to <span className="gradient-text">Get Started?</span>
               </h2>
               <p className="text-white/80 text-lg">

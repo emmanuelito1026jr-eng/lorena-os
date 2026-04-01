@@ -1,8 +1,11 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { Menu, X, Phone } from 'lucide-react';
+import { useState, useEffect, useRef } from 'react';
+import { Menu, X, Phone, LayoutDashboard, LogIn, Moon, Sun } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
-import { NAV_LINKS, PHONE_NUMBER, COMPANY_NAME } from '../constants';
+import { NAV_LINKS, PHONE_NUMBER } from '../constants';
 import { gsap } from '../utils/gsap-config';
+import { useAuth } from '../hooks/useAuth';
+import { useTranslation } from '../lib/i18n';
+import { useTheme } from '../hooks/useTheme';
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -13,9 +16,9 @@ const Navbar = () => {
   const menuRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
   const navRef = useRef<HTMLElement>(null);
-
-  // Hide navbar on landing page
-  if (location.pathname === '/landing') return null;
+  const { user } = useAuth();
+  const { locale, setLocale, t } = useTranslation();
+  const { theme, toggleTheme } = useTheme();
 
   // Scroll behavior with GSAP (throttled via requestAnimationFrame)
   useEffect(() => {
@@ -27,13 +30,15 @@ const Navbar = () => {
         const currentScrollY = window.scrollY;
         setScrolled(currentScrollY > 50);
 
-        // Hide on scroll down, show on scroll up
-        if (navRef.current) {
+        // Hide on scroll down, show on scroll up (desktop only — mobile needs persistent nav)
+        if (navRef.current && window.innerWidth >= 768) {
           if (currentScrollY > lastScrollYRef.current && currentScrollY > 100) {
             gsap.to(navRef.current, { y: -100, duration: 0.3, ease: 'power2.out' });
           } else {
             gsap.to(navRef.current, { y: 0, duration: 0.3, ease: 'power2.out' });
           }
+        } else if (navRef.current) {
+          gsap.set(navRef.current, { y: 0 });
         }
 
         lastScrollYRef.current = currentScrollY;
@@ -44,6 +49,16 @@ const Navbar = () => {
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+  // Lock body scroll when mobile menu is open
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => { document.body.style.overflow = ''; };
+  }, [isOpen]);
 
   // Focus trap and keyboard handlers for mobile menu
   useEffect(() => {
@@ -86,6 +101,9 @@ const Navbar = () => {
     };
   }, [isOpen]);
 
+  // Hide navbar on landing page (after all hooks to respect Rules of Hooks)
+  if (location.pathname === '/landing') return null;
+
   return (
     <nav
       ref={navRef}
@@ -102,20 +120,46 @@ const Navbar = () => {
               src="/images/logo/right_move.png"
               alt="The Right Move Real Estate Group"
               className="h-10 md:h-12 w-auto object-contain"
+              width={120}
+              height={48}
             />
           </Link>
 
           {/* Desktop Nav */}
           <div className="hidden md:flex items-center space-x-8">
-            {NAV_LINKS.map((link) => (
-              <a
-                key={link.label}
-                href={link.href}
-                className="text-sm uppercase tracking-widest text-dark hover:text-gold transition-premium font-lato font-semibold"
-              >
-                {link.label}
-              </a>
-            ))}
+            {NAV_LINKS.map((link) => {
+              const labelMap: Record<string, string> = {
+                'Search Homes': t('nav.searchHomes'),
+                'Neighborhoods': t('nav.neighborhoods'),
+                'About': t('nav.about'),
+                'Home Estimate': t('nav.homeEstimate'),
+                'Contact': t('nav.contact'),
+              };
+              return (
+                <Link
+                  key={link.label}
+                  to={link.to}
+                  className="text-sm uppercase tracking-widest text-dark hover:text-gold transition-premium font-lato font-semibold"
+                >
+                  {labelMap[link.label] || link.label}
+                </Link>
+              );
+            })}
+            {/* Language Toggle */}
+            <button
+              onClick={() => setLocale(locale === 'en' ? 'es' : 'en')}
+              className="text-xs font-lato font-bold uppercase tracking-widest text-dark hover:text-gold transition-premium border border-gray-200 rounded px-2 py-1"
+              aria-label={locale === 'en' ? 'Switch to Spanish' : 'Switch to English'}
+            >
+              {locale === 'en' ? 'ES' : 'EN'}
+            </button>
+            <button
+              onClick={toggleTheme}
+              className="text-dark hover:text-gold transition-premium p-2"
+              aria-label={theme === 'light' ? 'Switch to dark mode' : 'Switch to light mode'}
+            >
+              {theme === 'light' ? <Moon size={18} /> : <Sun size={18} />}
+            </button>
             <a
               href={`tel:${PHONE_NUMBER}`}
               className="flex items-center gap-2 border-2 border-gold text-gold px-4 py-2 hover:bg-gold hover:text-white transition-premium uppercase text-xs tracking-widest font-bold"
@@ -124,6 +168,23 @@ const Navbar = () => {
               <Phone size={14} aria-hidden="true" />
               {PHONE_NUMBER}
             </a>
+            {user ? (
+              <Link
+                to="/dashboard"
+                className="flex items-center gap-2 bg-dark text-white px-4 py-2 hover:bg-dark-100 transition-premium uppercase text-xs tracking-widest font-bold rounded"
+              >
+                <LayoutDashboard size={14} aria-hidden="true" />
+                {t('nav.dashboard')}
+              </Link>
+            ) : (
+              <Link
+                to="/login"
+                className="flex items-center gap-2 bg-dark text-white px-4 py-2 hover:bg-dark-100 transition-premium uppercase text-xs tracking-widest font-bold rounded"
+              >
+                <LogIn size={14} aria-hidden="true" />
+                {t('nav.agentLogin')}
+              </Link>
+            )}
           </div>
 
           {/* Mobile Menu Button */}
@@ -153,16 +214,40 @@ const Navbar = () => {
           aria-label="Mobile menu"
         >
           <div className="px-4 pt-2 pb-8 space-y-4 flex flex-col items-center">
-            {NAV_LINKS.map((link) => (
-              <a
-                key={link.label}
-                href={link.href}
-                className="block px-3 py-2 text-base font-semibold text-black hover:text-gold transition-premium uppercase tracking-widest"
-                onClick={() => setIsOpen(false)}
-              >
-                {link.label}
-              </a>
-            ))}
+            {/* Mobile Language Toggle */}
+            <button
+              onClick={() => setLocale(locale === 'en' ? 'es' : 'en')}
+              className="text-xs font-lato font-bold uppercase tracking-widest text-gold border border-gold rounded-full px-4 py-2"
+            >
+              {locale === 'en' ? 'Espanol' : 'English'}
+            </button>
+            <button
+              onClick={toggleTheme}
+              className="flex items-center gap-2 text-xs font-lato font-bold uppercase tracking-widest text-gold border border-gold rounded-full px-4 py-2"
+              aria-label={theme === 'light' ? 'Switch to dark mode' : 'Switch to light mode'}
+            >
+              {theme === 'light' ? <Moon size={14} /> : <Sun size={14} />}
+              {theme === 'light' ? 'Dark' : 'Light'}
+            </button>
+            {NAV_LINKS.map((link) => {
+              const labelMap: Record<string, string> = {
+                'Search Homes': t('nav.searchHomes'),
+                'Neighborhoods': t('nav.neighborhoods'),
+                'About': t('nav.about'),
+                'Home Estimate': t('nav.homeEstimate'),
+                'Contact': t('nav.contact'),
+              };
+              return (
+                <Link
+                  key={link.label}
+                  to={link.to}
+                  className="block px-3 py-3 text-base font-semibold text-black hover:text-gold transition-premium uppercase tracking-widest min-h-[44px] flex items-center justify-center"
+                  onClick={() => setIsOpen(false)}
+                >
+                  {labelMap[link.label] || link.label}
+                </Link>
+              );
+            })}
             <a
               href={`tel:${PHONE_NUMBER}`}
               className="mt-4 flex items-center gap-2 bg-gold text-white px-6 py-3 font-bold uppercase tracking-widest hover:shadow-gold-glow transition-premium"
@@ -170,8 +255,27 @@ const Navbar = () => {
               aria-label="Call now"
             >
               <Phone size={16} aria-hidden="true" />
-              Call Now
+              {t('nav.callNow')}
             </a>
+            {user ? (
+              <Link
+                to="/dashboard"
+                className="mt-2 flex items-center gap-2 bg-dark text-white px-6 py-3 font-bold uppercase tracking-widest hover:bg-dark-100 transition-premium rounded"
+                onClick={() => setIsOpen(false)}
+              >
+                <LayoutDashboard size={16} aria-hidden="true" />
+                {t('nav.dashboard')}
+              </Link>
+            ) : (
+              <Link
+                to="/login"
+                className="mt-2 flex items-center gap-2 bg-dark text-white px-6 py-3 font-bold uppercase tracking-widest hover:bg-dark-100 transition-premium rounded"
+                onClick={() => setIsOpen(false)}
+              >
+                <LogIn size={16} aria-hidden="true" />
+                {t('nav.agentLogin')}
+              </Link>
+            )}
           </div>
         </div>
       )}

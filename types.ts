@@ -1,6 +1,6 @@
 export interface NavLink {
   readonly label: string;
-  readonly href: string;
+  readonly to: string;
 }
 
 export interface Service {
@@ -58,4 +58,48 @@ export interface Demographics {
   readonly medianAge: number;
   readonly medianIncome: number;
   readonly homeownership: number;
+}
+
+// Blog types
+export interface BlogPost {
+  readonly slug: string;
+  readonly title: string;
+  readonly titleEs: string;
+  readonly excerpt: string;
+  readonly excerptEs: string;
+  readonly content: string;
+  readonly contentEs: string;
+  readonly author: string;
+  readonly publishedAt: string;
+  readonly category: 'buying' | 'selling' | 'military' | 'market' | 'neighborhoods' | 'investing';
+  readonly image: string;
+  readonly readTime: number;
+}
+
+// Automation / Dashboard types (Phase 0)
+export interface DealSummary {
+  readonly id: string;
+  readonly dealType: 'buyer' | 'seller' | 'dual';
+  readonly stage: string;
+  readonly propertyAddress: string | null;
+  readonly listPrice: number | null;
+  readonly salePrice: number | null;
+  readonly estimatedCloseDate: string | null;
+}
+
+export interface PipelineTransition {
+  readonly id: string;
+  readonly leadId: string;
+  readonly fromStatus: string;
+  readonly toStatus: string;
+  readonly changedBy: string;
+  readonly createdAt: string;
+}
+
+export interface BehavioralEventSummary {
+  readonly id: string;
+  readonly leadId: string;
+  readonly eventType: string;
+  readonly pageUrl: string | null;
+  readonly createdAt: string;
 }

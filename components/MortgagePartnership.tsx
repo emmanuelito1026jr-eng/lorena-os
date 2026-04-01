@@ -1,4 +1,3 @@
-import { useEffect } from 'react';
 import { Phone, Mail, Globe, MapPin, Award, Shield, Users, TrendingUp } from 'lucide-react';
 import {
   REALTOR_NAME,
@@ -15,13 +14,8 @@ import {
   PARTNER_NMLS,
   PARTNER_ADDRESS
 } from '../constants';
-import { staggerReveal } from '../utils/animations';
 
 const MortgagePartnership = () => {
-  useEffect(() => {
-    staggerReveal('.partnership-card', 0.15);
-  }, []);
-
   return (
     <section className="py-24 md:py-32 lg:py-40 bg-white relative overflow-hidden">
       <div className="max-w-7xl mx-auto px-6 sm:px-12 lg:px-16 relative z-10">
@@ -37,7 +31,7 @@ const MortgagePartnership = () => {
             </div>
           </div>
 
-          <h2 className="font-sans text-4xl sm:text-5xl md:text-6xl text-black mb-6 leading-tight font-bold">
+          <h2 className="font-playfair text-4xl sm:text-5xl md:text-6xl text-black mb-6 leading-tight font-bold">
             The Perfect Couple for<br />
             <span className="gradient-text">Your Real Estate Needs</span>
           </h2>
@@ -51,7 +45,7 @@ const MortgagePartnership = () => {
         {/* Partnership Cards */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-20">
           {/* Lorena's Card */}
-          <div className="partnership-card group relative">
+          <div className="partnership-card group relative animate-fade-in-up">
             <div className="relative bg-white shadow-premium overflow-hidden border border-gray-200 hover:border-gold transition-premium hover:shadow-gold-glow">
               {/* Image Section */}
               <div className="relative aspect-[16/9] bg-gradient-to-br from-gray-100 to-gray-50 overflow-hidden">
@@ -60,6 +54,8 @@ const MortgagePartnership = () => {
                   alt={`${REALTOR_NAME}, Professional Realtor`}
                   className="w-full h-full object-contain"
                   loading="lazy"
+                  width={800}
+                  height={450}
                   onError={(e) => {
                     // Fallback to placeholder if image not found
                     e.currentTarget.style.display = 'none';
@@ -68,7 +64,7 @@ const MortgagePartnership = () => {
 
                 {/* Overlay Badge */}
                 <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent p-6">
-                  <h3 className="font-sans text-3xl text-white mb-1 font-bold">{REALTOR_NAME}</h3>
+                  <h3 className="font-playfair text-3xl text-white mb-1 font-bold">{REALTOR_NAME}</h3>
                   <p className="text-gold text-sm uppercase tracking-widest font-extrabold">Realtor®</p>
                 </div>
               </div>
@@ -128,7 +124,7 @@ const MortgagePartnership = () => {
           </div>
 
           {/* Emmanuel's Card */}
-          <div className="partnership-card group relative">
+          <div className="partnership-card group relative animate-fade-in-up" style={{ animationDelay: '150ms' }}>
             <div className="relative bg-white shadow-premium overflow-hidden border border-gray-200 hover:border-gold transition-premium hover:shadow-gold-glow">
               {/* Image Section */}
               <div className="relative aspect-[16/9] bg-gradient-to-br from-gray-100 to-gray-50 overflow-hidden">
@@ -137,6 +133,8 @@ const MortgagePartnership = () => {
                   alt={`${PARTNER_NAME}, ${PARTNER_TITLE} at ${PARTNER_COMPANY}`}
                   className="w-full h-full object-contain"
                   loading="lazy"
+                  width={800}
+                  height={450}
                   onError={(e) => {
                     // Fallback to placeholder if image not found
                     e.currentTarget.style.display = 'none';
@@ -151,7 +149,7 @@ const MortgagePartnership = () => {
 
                 {/* Overlay Badge */}
                 <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent p-6">
-                  <h3 className="font-sans text-3xl text-white mb-1 font-bold">{PARTNER_NAME}</h3>
+                  <h3 className="font-playfair text-3xl text-white mb-1 font-bold">{PARTNER_NAME}</h3>
                   <p className="text-gold text-sm uppercase tracking-widest font-extrabold">{PARTNER_TITLE}</p>
                 </div>
               </div>
@@ -221,7 +219,7 @@ const MortgagePartnership = () => {
 
         {/* Benefits Section */}
         <div className="bg-black p-6 sm:p-8 md:p-12 lg:p-16 shadow-premium">
-          <h3 className="font-sans text-3xl sm:text-4xl md:text-5xl text-white text-center mb-16 font-bold">
+          <h3 className="font-playfair text-3xl sm:text-4xl md:text-5xl text-white text-center mb-16 font-bold">
             Why Our Partnership <span className="text-gold">Works For You</span>
           </h3>
 

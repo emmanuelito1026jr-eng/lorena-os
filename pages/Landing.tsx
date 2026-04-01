@@ -1,19 +1,20 @@
-import React from 'react';
+import { PHONE_NUMBER } from '../constants';
 import ContactForm from '../components/ContactForm';
-import Footer from '../components/Footer';
 import { Star, CheckCircle } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { usePageTitle } from '../hooks/usePageTitle';
 
 const Landing  = () => {
+  usePageTitle('Free Home Valuation');
   return (
-    <div className="bg-blackmin-h-screen flex flex-col">
+    <div className="bg-black min-h-screen flex flex-col">
       {/* Minimal Header */}
       <div className="absolute top-0 w-full p-6 z-20 flex justify-between items-center max-w-7xl mx-auto left-0 right-0">
-        <Link to="/" className="font-sans text-xl font-bold text-white">
+        <Link to="/" className="font-playfair text-xl font-bold text-white">
            CASAS EN <span className="text-gold">EL PASO</span>
         </Link>
         <div className="text-white text-sm font-bold hidden sm:block">
-            Call: <a href="tel:9154875581" className="text-gold hover:underline">915-487-5581</a>
+            Call: <a href={`tel:${PHONE_NUMBER}`} className="text-gold hover:underline">{PHONE_NUMBER}</a>
         </div>
       </div>
 
@@ -21,7 +22,7 @@ const Landing  = () => {
       <section className="relative pt-32 pb-20 md:pt-40 md:pb-32 px-4 flex-grow">
         {/* Background */}
         <div className="absolute inset-0 z-0">
-          <img src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=1920&h=1080&fit=crop&q=80" alt="Luxury home in El Paso" className="w-full h-full object-cover opacity-30" loading="lazy" />
+          <img src="/images/hero/el-paso-cityscape.jpg" alt="Luxury home in El Paso" width={1920} height={1080} className="w-full h-full object-cover opacity-30" />
           <div className="absolute inset-0 bg-gradient-to-t from-dark via-dark/80 to-dark/60"></div>
         </div>
 
@@ -31,7 +32,7 @@ const Landing  = () => {
                 <div className="inline-block bg-gold/20 text-gold px-3 py-1 text-xs font-bold uppercase tracking-widest rounded-sm border border-gold/20">
                     Bilingual Real Estate Services
                 </div>
-                <h1 className="font-sans text-4xl md:text-5xl lg:text-6xl text-white leading-tight font-bold">
+                <h1 className="font-playfair text-4xl md:text-5xl lg:text-6xl text-white leading-tight font-bold">
                     Find Your Perfect El Paso Home <span className="text-gold italic">— Before Everyone Else.</span>
                 </h1>
                 <p className="text-xl text-white/80 leading-relaxed max-w-lg">
@@ -57,9 +58,9 @@ const Landing  = () => {
                 {/* Social Proof Strip */}
                 <div className="pt-8 flex items-center gap-4">
                     <div className="flex -space-x-3">
-                        <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=50&h=50&fit=crop&q=80" alt="Happy client testimonial" className="w-10 h-10 rounded-full border-2 border-dark" loading="lazy" />
-                        <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=50&h=50&fit=crop&q=80" alt="Happy client testimonial" className="w-10 h-10 rounded-full border-2 border-dark" loading="lazy" />
-                        <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=50&h=50&fit=crop&q=80" alt="Happy client testimonial" className="w-10 h-10 rounded-full border-2 border-dark" loading="lazy" />
+                        <div className="w-10 h-10 rounded-full border-2 border-dark bg-gold flex items-center justify-center text-white font-bold text-sm">F</div>
+                        <div className="w-10 h-10 rounded-full border-2 border-dark bg-gold/80 flex items-center justify-center text-white font-bold text-sm">M</div>
+                        <div className="w-10 h-10 rounded-full border-2 border-dark bg-gold/60 flex items-center justify-center text-white font-bold text-sm">E</div>
                     </div>
                     <div>
                         <div className="flex text-gold">
@@ -75,7 +76,7 @@ const Landing  = () => {
                 <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-gold text-dark font-bold text-xs uppercase px-4 py-1 tracking-widest whitespace-nowrap">
                     Limited Time Consultation
                 </div>
-                <h3 className="font-sans text-2xl text-center text-black mb-2">Get Exclusive Access</h3>
+                <h3 className="font-playfair text-2xl text-center text-black mb-2">Get Exclusive Access</h3>
                 <p className="text-black/60 text-center text-sm mb-6">Complete the form below to start your search.</p>
                 <ContactForm minimal={true} />
             </div>
@@ -92,10 +93,10 @@ const Landing  = () => {
 
       {/* Footer Minimal */}
       <footer className="bg-black py-8 text-center text-gray-600 text-xs">
-         <p className="mb-2">&copy; 2026 Casas En El Paso TX | Realty ONE Group</p>
+         <p className="mb-2">&copy; {new Date().getFullYear()} Casas En El Paso TX | Realty ONE Group</p>
          <div className="flex justify-center gap-4">
-             <a href="#" className="underline">TREC Consumer Protection Notice</a>
-             <a href="#" className="underline">TREC Information About Brokerage Services</a>
+             <a href="https://www.trec.texas.gov/forms/consumer-protection-notice" target="_blank" rel="noopener noreferrer" className="underline">TREC Consumer Protection Notice</a>
+             <a href="https://www.trec.texas.gov/forms/information-about-brokerage-services" target="_blank" rel="noopener noreferrer" className="underline">TREC Information About Brokerage Services</a>
          </div>
       </footer>
     </div>

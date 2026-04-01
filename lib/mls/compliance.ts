@@ -1,6 +1,9 @@
 import type { MLSListing } from './types';
 
-const DISPLAYABLE_STATUSES = ['Active', 'Pending', 'Closed'];
+// GEPAR Rule 18.3.12: Only Active and Pending may be shown on public IDX.
+// Closed/Expired/Withdrawn/Canceled are prohibited from public display.
+// Closed data is allowed ONLY in private dashboard (CMA tool, market stats).
+const DISPLAYABLE_STATUSES = ['Active', 'Pending'];
 
 export function isListingDisplayable(listing: MLSListing): boolean {
   if (!listing.InternetEntireListingDisplay) return false;
@@ -16,7 +19,7 @@ export function formatMLSDisclaimer(variant: 'full' | 'compact' = 'full'): strin
     return `${base} Information deemed reliable but not guaranteed.`;
   }
 
-  return `${base} IDX information is provided exclusively for consumers\u2019 personal, non-commercial use, and may not be used for any purpose other than to identify prospective properties consumers may be interested in purchasing. Information Is Believed To Be Accurate But Not Guaranteed. Copyright 2026 Greater El Paso Association of Realtors Multiple Listing Service. All Rights Reserved.`;
+  return `${base} IDX information is provided exclusively for consumers\u2019 personal, non-commercial use, and may not be used for any purpose other than to identify prospective properties consumers may be interested in purchasing. Information Is Believed To Be Accurate But Not Guaranteed. Copyright ${new Date().getFullYear()} Greater El Paso Association of Realtors Multiple Listing Service. All Rights Reserved.`;
 }
 
 export function getLastRefreshTimeFormatted(): string {

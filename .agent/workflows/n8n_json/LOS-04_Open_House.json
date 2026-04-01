@@ -1,0 +1,318 @@
+{
+  "name": "[LOS-04] Open House Lead Digitizer",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "open-house-checkin",
+        "options": {}
+      },
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        240,
+        300
+      ],
+      "webhookId": "b1b78833-43d7-41aa-b3de-237a2c1f8af0"
+    },
+    {
+      "parameters": {
+        "functionCode": "const body = items[0].json.body || items[0].json;\nconst name = body.name || '';\nconst parts = name.split(' ');\nreturn [{\n  json: {\n    firstName: parts[0] || 'Unknown',\n    lastName: parts.slice(1).join(' ') || '',\n    email: body.email || '',\n    phone: body.phone || '',\n    property: body.property_address || '',\n    notes: body.notes || '',\n    fullName: name\n  }\n}];"
+      },
+      "name": "Process Data",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [
+        460,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "row",
+        "operation": "create",
+        "tableId": "leads",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "first_name",
+              "fieldValue": "={{$json.firstName}}"
+            },
+            {
+              "fieldId": "last_name",
+              "fieldValue": "={{$json.lastName}}"
+            },
+            {
+              "fieldId": "email",
+              "fieldValue": "={{$json.email}}"
+            },
+            {
+              "fieldId": "phone",
+              "fieldValue": "={{$json.phone}}"
+            },
+            {
+              "fieldId": "source",
+              "fieldValue": "open_house"
+            },
+            {
+              "fieldId": "status",
+              "fieldValue": "new_lead"
+            },
+            {
+              "fieldId": "score",
+              "fieldValue": "20"
+            },
+            {
+              "fieldId": "notes",
+              "fieldValue": "={{$json.notes}}"
+            },
+            {
+              "fieldId": "agent_id",
+              "fieldValue": "6d51a7c2-271f-484a-bb11-5ee935f1358a"
+            }
+          ]
+        }
+      },
+      "name": "Create Lead",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 2,
+      "position": [
+        680,
+        300
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "37rJREccSDhKtIGi",
+          "name": "Supabase Service Role"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "row",
+        "operation": "create",
+        "tableId": "lead_activity",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "lead_id",
+              "fieldValue": "={{$node[\"Create Lead\"].json.id}}"
+            },
+            {
+              "fieldId": "action",
+              "fieldValue": "open_house_visit"
+            },
+            {
+              "fieldId": "points",
+              "fieldValue": "20"
+            },
+            {
+              "fieldId": "metadata",
+              "fieldValue": "={{ { property: $node[\"Process Data\"].json.property } }}"
+            }
+          ]
+        }
+      },
+      "name": "Log Activity",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 2,
+      "position": [
+        900,
+        300
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "37rJREccSDhKtIGi",
+          "name": "Supabase Service Role"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "row",
+        "operation": "create",
+        "tableId": "notifications",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "type",
+              "fieldValue": "new_lead"
+            },
+            {
+              "fieldId": "title",
+              "fieldValue": "\ud83c\udfe1 Open House Visitor"
+            },
+            {
+              "fieldId": "message",
+              "fieldValue": "={{$node[\"Process Data\"].json.fullName}} visited {{$node[\"Process Data\"].json.property}}"
+            },
+            {
+              "fieldId": "lead_id",
+              "fieldValue": "={{$node[\"Create Lead\"].json.id}}"
+            },
+            {
+              "fieldId": "agent_id",
+              "fieldValue": "6d51a7c2-271f-484a-bb11-5ee935f1358a"
+            }
+          ]
+        }
+      },
+      "name": "Notify",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 2,
+      "position": [
+        1120,
+        300
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "37rJREccSDhKtIGi",
+          "name": "Supabase Service Role"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "from": "={{$credentials.twilioApi.phoneNumber}}",
+        "to": "={{ $node[\"Process Data\"].json.phone }}",
+        "message": "={{ $node[\"Process Data\"].json.preferred_language === \"es\" ? \"\u00a1Hola \" + $node[\"Process Data\"].json.name + \"! Gracias por visitar la casa abierta en \" + $node[\"Process Data\"].json.property_address + \". Soy Lorena, su agente de bienes ra\u00edces en El Paso. \u00bfLe gustar\u00eda ver m\u00e1s propiedades similares?\" : ($node[\"Process Data\"].json.preferred_language === \"both\" ? \"Hi \" + $node[\"Process Data\"].json.name + \"! Thanks for visiting the open house at \" + $node[\"Process Data\"].json.property_address + \". I'm Lorena, your El Paso realtor!\\n\\n\u00a1Hola! Gracias por visitarnos. \u00bfLe interesa ver m\u00e1s casas?\" : \"Hi \" + $node[\"Process Data\"].json.name + \"! Thanks for visiting the open house at \" + $node[\"Process Data\"].json.property_address + \". I'm Lorena, your El Paso realtor. Would you like to see similar properties?\") }}"
+      },
+      "name": "Send Follow-Up SMS",
+      "type": "n8n-nodes-base.twilio",
+      "typeVersion": 1,
+      "position": [
+        800,
+        300
+      ],
+      "credentials": {
+        "twilioApi": {
+          "id": "PENDING",
+          "name": "Twilio - Lorena SMS"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "create",
+        "tableId": "messages",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "lead_id",
+              "fieldValue": "={{ $node['Create Lead'].json.id }}"
+            },
+            {
+              "fieldId": "agent_id",
+              "fieldValue": "6d51a7c2-271f-484a-bb11-5ee935f1358a"
+            },
+            {
+              "fieldId": "channel",
+              "fieldValue": "sms"
+            },
+            {
+              "fieldId": "direction",
+              "fieldValue": "outbound"
+            },
+            {
+              "fieldId": "content",
+              "fieldValue": "Open house follow-up SMS sent"
+            },
+            {
+              "fieldId": "is_ai",
+              "fieldValue": "false"
+            },
+            {
+              "fieldId": "automation_source",
+              "fieldValue": "open_house"
+            }
+          ]
+        }
+      },
+      "name": "Log SMS",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 2,
+      "position": [
+        1000,
+        300
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "37rJREccSDhKtIGi",
+          "name": "Supabase Service Role"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Process Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Process Data": {
+      "main": [
+        [
+          {
+            "node": "Create Lead",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Lead": {
+      "main": [
+        [
+          {
+            "node": "Log Activity",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Log Activity": {
+      "main": [
+        [
+          {
+            "node": "Send Follow-Up SMS",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Follow-Up SMS": {
+      "main": [
+        [
+          {
+            "node": "Log SMS",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Log SMS": {
+      "main": [
+        [
+          {
+            "node": "Notify",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  }
+}

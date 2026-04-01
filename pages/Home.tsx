@@ -1,18 +1,39 @@
-import React from 'react';
+import { usePageMeta } from '../hooks/usePageMeta';
 import Navbar from '../components/Navbar';
 import Hero from '../components/Hero';
-import AboutPreview from '../components/AboutPreview';
-import Services from '../components/Services';
-import MortgagePartnership from '../components/MortgagePartnership';
+import FeaturedListings from '../components/FeaturedListings';
+import WhyLorena from '../components/WhyLorena';
+import ServicesTabbed from '../components/ServicesTabbed';
 import NeighborhoodGuide from '../components/NeighborhoodGuide';
+import MarketSnapshot from '../components/MarketSnapshot';
 import Testimonials from '../components/Testimonials';
-import RateMyAgentReviews from '../components/RateMyAgentReviews';
-import ZillowReviews from '../components/ZillowReviews';
+import LeadCaptureSection from '../components/LeadCaptureSection';
 import CTABanner from '../components/CTABanner';
+import IDXCompliance from '../components/mls/IDXCompliance';
 import Footer from '../components/Footer';
-import ContactForm from '../components/ContactForm';
 
-const Home  = () => {
+const Home = () => {
+  usePageMeta({
+    title: 'El Paso Homes for Sale',
+    description: 'Find your dream home in El Paso with Lorena Ontiveros-Ortega. Bilingual real estate expert specializing in buying, selling, and military/VA home loans near Fort Bliss.',
+    canonicalUrl: 'https://casasenelpasotx.com/',
+    jsonLd: {
+      '@type': 'RealEstateAgent',
+      name: 'Lorena Ontiveros-Ortega',
+      url: 'https://casasenelpasotx.com',
+      telephone: '+1-915-487-5581',
+      address: {
+        '@type': 'PostalAddress',
+        streetAddress: '10420 Montwood Dr., Ste N-163',
+        addressLocality: 'El Paso',
+        addressRegion: 'TX',
+        postalCode: '79935',
+        addressCountry: 'US',
+      },
+      areaServed: 'El Paso, TX',
+      knowsLanguage: ['en', 'es'],
+    },
+  });
   return (
     <div className="bg-white min-h-screen">
       <a href="#main-content" className="skip-to-main">
@@ -21,30 +42,19 @@ const Home  = () => {
       <Navbar />
       <main id="main-content">
         <Hero />
-        <AboutPreview />
-        <Services />
-        <MortgagePartnership />
-        <NeighborhoodGuide />
-        <Testimonials />
-        <RateMyAgentReviews />
-        <ZillowReviews />
-
-      {/* Homepage Contact Section */}
-      <section id="contact" className="py-24 bg-gray-50">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6">
-          <div className="bg-white border border-gray-200 p-8 md:p-12 shadow-2xl relative overflow-hidden rounded-2xl">
-            <div className="absolute top-0 right-0 w-32 h-32 bg-gold/5 rounded-bl-full pointer-events-none"></div>
-            <div className="text-center mb-10">
-              <span className="text-gold text-xs uppercase tracking-[0.25em]">Let's Connect</span>
-              <h2 className="mt-2 font-sans text-3xl md:text-4xl text-gray-900">Start Your Journey</h2>
-            </div>
-            <ContactForm />
-          </div>
+        <div id="featured">
+          <FeaturedListings />
         </div>
-      </section>
-
+        <WhyLorena />
+        <ServicesTabbed />
+        <NeighborhoodGuide />
+        <MarketSnapshot />
+        <Testimonials />
+        <LeadCaptureSection />
         <CTABanner />
       </main>
+      {/* MLS Disclaimer - REQUIRED by GEPAR on pages showing listing data */}
+      <IDXCompliance variant="full" showLogo />
       <Footer />
     </div>
   );

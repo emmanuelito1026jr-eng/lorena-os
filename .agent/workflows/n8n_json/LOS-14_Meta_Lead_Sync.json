@@ -1,0 +1,324 @@
+{
+  "name": "[LOS-14] Meta/Facebook Ad Lead Sync",
+  "nodes": [
+    {
+      "parameters": {
+        "path": "meta-lead",
+        "httpMethod": "POST",
+        "responseMode": "onReceived"
+      },
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        200,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "functionCode": "const b = items[0].json.body || items[0].json;\nconst nameParts = (b.name || '').split(' ');\nitems[0].json.first_name = nameParts[0] || '';\nitems[0].json.last_name = nameParts.slice(1).join(' ') || '';\nitems[0].json.email = b.email || '';\nitems[0].json.phone = b.phone || '';\nitems[0].json.campaign = b.campaign_name || 'Meta Ads';\nitems[0].json.ad_set = b.ad_set_name || '';\nreturn items;"
+      },
+      "name": "Extract Data",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [
+        400,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "tableId": "leads",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "email",
+              "keyValue": "={{ $json.email }}"
+            }
+          ]
+        },
+        "limit": 1
+      },
+      "name": "Check Duplicate",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 2,
+      "position": [
+        600,
+        300
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "37rJREccSDhKtIGi",
+          "name": "Supabase Service Role"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{ $json.id }}",
+              "operation": "isEmpty"
+            }
+          ]
+        }
+      },
+      "name": "Is New?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        800,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "create",
+        "tableId": "leads",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "agent_id",
+              "fieldValue": "6d51a7c2-271f-484a-bb11-5ee935f1358a"
+            },
+            {
+              "fieldId": "first_name",
+              "fieldValue": "={{ $node['Extract Data'].json.first_name }}"
+            },
+            {
+              "fieldId": "last_name",
+              "fieldValue": "={{ $node['Extract Data'].json.last_name }}"
+            },
+            {
+              "fieldId": "email",
+              "fieldValue": "={{ $node['Extract Data'].json.email }}"
+            },
+            {
+              "fieldId": "phone",
+              "fieldValue": "={{ $node['Extract Data'].json.phone }}"
+            },
+            {
+              "fieldId": "source",
+              "fieldValue": "meta_ads"
+            },
+            {
+              "fieldId": "status",
+              "fieldValue": "new_lead"
+            },
+            {
+              "fieldId": "score",
+              "fieldValue": "10"
+            },
+            {
+              "fieldId": "temperature",
+              "fieldValue": "cool"
+            },
+            {
+              "fieldId": "tags",
+              "fieldValue": "={{ '{' + $node['Extract Data'].json.campaign + ',' + $node['Extract Data'].json.ad_set + '}' }}"
+            }
+          ]
+        }
+      },
+      "name": "Create Lead",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 2,
+      "position": [
+        1000,
+        200
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "37rJREccSDhKtIGi",
+          "name": "Supabase Service Role"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "create",
+        "tableId": "lead_activity",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "lead_id",
+              "fieldValue": "={{ $json.id }}"
+            },
+            {
+              "fieldId": "action",
+              "fieldValue": "meta_ad_lead"
+            },
+            {
+              "fieldId": "points",
+              "fieldValue": "10"
+            },
+            {
+              "fieldId": "source",
+              "fieldValue": "meta_ads"
+            }
+          ]
+        }
+      },
+      "name": "Log Activity",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 2,
+      "position": [
+        1200,
+        200
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "37rJREccSDhKtIGi",
+          "name": "Supabase Service Role"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "create",
+        "tableId": "notifications",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "agent_id",
+              "fieldValue": "6d51a7c2-271f-484a-bb11-5ee935f1358a"
+            },
+            {
+              "fieldId": "type",
+              "fieldValue": "new_lead"
+            },
+            {
+              "fieldId": "title",
+              "fieldValue": "={{ '\ud83d\udcf1 Meta Ad lead: ' + $node['Extract Data'].json.first_name }}"
+            },
+            {
+              "fieldId": "message",
+              "fieldValue": "={{ $node['Extract Data'].json.first_name + ' from campaign: ' + $node['Extract Data'].json.campaign }}"
+            },
+            {
+              "fieldId": "lead_id",
+              "fieldValue": "={{ $node['Create Lead'].json.id }}"
+            }
+          ]
+        }
+      },
+      "name": "Notify",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 2,
+      "position": [
+        1400,
+        200
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "37rJREccSDhKtIGi",
+          "name": "Supabase Service Role"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://n8n.srv957236.hstgr.cloud/webhook/speed-to-lead",
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "={{ JSON.stringify({lead_id: $node['Create Lead'].json.id, source: 'meta_ads'}) }}",
+        "options": {}
+      },
+      "name": "Trigger STL",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        1600,
+        200
+      ]
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Extract Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Data": {
+      "main": [
+        [
+          {
+            "node": "Check Duplicate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Duplicate": {
+      "main": [
+        [
+          {
+            "node": "Is New?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Is New?": {
+      "main": [
+        [
+          {
+            "node": "Create Lead",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "Create Lead": {
+      "main": [
+        [
+          {
+            "node": "Log Activity",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Log Activity": {
+      "main": [
+        [
+          {
+            "node": "Notify",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Notify": {
+      "main": [
+        [
+          {
+            "node": "Trigger STL",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  }
+}

@@ -1,0 +1,259 @@
+{
+  "name": "[LOS-19] Pre-Showing Property Brief",
+  "nodes": [
+    {
+      "parameters": {
+        "path": "pre-showing-brief",
+        "httpMethod": "POST",
+        "responseMode": "onReceived"
+      },
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        200,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "functionCode": "const b = items[0].json.body || items[0].json;\nitems[0].json = {lead_id: b.lead_id, property_address: b.property_address, showing_id: b.showing_id};\nreturn items;"
+      },
+      "name": "Extract",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [
+        400,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "tableId": "leads",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "id",
+              "keyValue": "={{ $json.lead_id }}"
+            }
+          ]
+        }
+      },
+      "name": "Get Lead",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 2,
+      "position": [
+        600,
+        300
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "37rJREccSDhKtIGi",
+          "name": "Supabase Service Role"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "functionCode": "const lead = items[0].json;\nconst addr = $node['Extract'].json.property_address;\nitems[0].json.claude_brief = JSON.stringify({\n  model: \"claude-sonnet-4-5-20250929\", max_tokens: 2000,\n  messages: [{role: \"user\", content: `Generate a pre-showing property brief for ${addr}, El Paso TX for agent Lorena. Include:\n1. Neighborhood overview (schools, walkability, nearby amenities)\n2. Market context (typical price range, days on market)\n3. Talking points for the showing\n4. Potential concerns to address proactively\n5. Questions to ask the buyer (${lead.first_name || 'lead'})\n\nBuyer profile: Budget ${lead.budget_min || '?'}-${lead.budget_max || '?'}, interested in ${(lead.preferred_areas || []).join(', ') || 'this area'}. ${lead.is_seller ? 'Also selling.' : ''}\n\nOutput ONLY valid JSON: {\"neighborhood\": \"...\", \"market_context\": \"...\", \"talking_points\": [\"...\"], \"concerns\": [\"...\"], \"buyer_questions\": [\"...\"], \"brief_html\": \"...(full HTML formatted brief)\"}`}]\n});\nreturn items;"
+      },
+      "name": "Build Brief Prompt",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [
+        800,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.anthropic.com/v1/messages",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-api-key",
+              "value": "={{$env.ANTHROPIC_API_KEY}}"
+            },
+            {
+              "name": "anthropic-version",
+              "value": "2023-06-01"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "={{ $json.claude_brief }}",
+        "options": {}
+      },
+      "name": "Claude Brief",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        1000,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "functionCode": "const c=items[0].json.content;let t=c&&Array.isArray(c)?c[0].text:'';\nlet brief={};\ntry{let cl=t.replace(/```json\\n?/g,'').replace(/```\\n?/g,'').trim();brief=JSON.parse(cl);}catch(e){brief={brief_html:t};}\nitems[0].json=brief;return items;"
+      },
+      "name": "Parse Brief",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [
+        1200,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "fromEmail": "lorena.realtor@icloud.com",
+        "toEmail": "lorena@casasenelpaso.com",
+        "subject": "={{ '\ud83d\udccb Pre-Showing Brief: ' + $node['Extract'].json.property_address }}",
+        "contentHtml": "={{ $json.brief_html || JSON.stringify($json) }}"
+      },
+      "name": "Email Brief",
+      "type": "n8n-nodes-base.sendGrid",
+      "typeVersion": 1,
+      "position": [
+        1400,
+        300
+      ],
+      "credentials": {
+        "sendGridApi": {
+          "id": "PENDING",
+          "name": "SendGrid - Lorena Email"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "create",
+        "tableId": "notifications",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "agent_id",
+              "fieldValue": "6d51a7c2-271f-484a-bb11-5ee935f1358a"
+            },
+            {
+              "fieldId": "type",
+              "fieldValue": "pre_showing_brief"
+            },
+            {
+              "fieldId": "title",
+              "fieldValue": "={{ '\ud83d\udccb Brief ready: ' + $node['Extract'].json.property_address }}"
+            },
+            {
+              "fieldId": "message",
+              "fieldValue": "Check your email for the pre-showing brief."
+            },
+            {
+              "fieldId": "lead_id",
+              "fieldValue": "={{ $node['Extract'].json.lead_id }}"
+            }
+          ]
+        }
+      },
+      "name": "Notify",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 2,
+      "position": [
+        1600,
+        300
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "37rJREccSDhKtIGi",
+          "name": "Supabase Service Role"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Extract",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract": {
+      "main": [
+        [
+          {
+            "node": "Get Lead",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Lead": {
+      "main": [
+        [
+          {
+            "node": "Build Brief Prompt",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Brief Prompt": {
+      "main": [
+        [
+          {
+            "node": "Claude Brief",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Claude Brief": {
+      "main": [
+        [
+          {
+            "node": "Parse Brief",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse Brief": {
+      "main": [
+        [
+          {
+            "node": "Email Brief",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Email Brief": {
+      "main": [
+        [
+          {
+            "node": "Notify",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  }
+}

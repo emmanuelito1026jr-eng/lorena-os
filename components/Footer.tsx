@@ -1,11 +1,13 @@
-import React from 'react';
 import { Link } from 'react-router-dom';
-import { COMPANY_NAME, REALTOR_NAME, ADDRESS, PHONE_NUMBER, EMAIL_ADDRESS, BROKERAGE } from '../constants';
-import { Instagram, Linkedin, Facebook, Video, MapPin, Phone, Mail } from 'lucide-react';
+import { REALTOR_NAME, ADDRESS, PHONE_NUMBER, EMAIL_ADDRESS, BROKERAGE } from '../constants';
+import { MapPin, Phone, Mail } from 'lucide-react';
 import { formatMLSDisclaimer } from '../lib/mls/compliance';
 import { formatLastRefresh } from '../lib/mls/dataRefresh';
+import { useTranslation } from '../lib/i18n';
 
 const Footer = () => {
+  const { t } = useTranslation();
+
   return (
     <footer className="bg-black text-white pt-24 md:pt-32 pb-10 border-t border-white/10" role="contentinfo">
       <div className="max-w-7xl mx-auto px-6 sm:px-12 lg:px-16">
@@ -20,45 +22,34 @@ const Footer = () => {
                 alt="The Right Move Real Estate Group"
                 className="h-16 w-auto"
                 loading="lazy"
+                width={160}
+                height={64}
               />
             </div>
 
             <p className="text-xs uppercase tracking-widest text-white/60 mb-4 font-lato font-medium">{REALTOR_NAME}</p>
 
             <p className="text-white/70 text-sm leading-relaxed mb-6 font-light">
-              Helping families on both sides of the border build wealth through real estate. Bilingual, professional, and dedicated to your future.
+              {t('footer.description')}
             </p>
-            <div className="flex space-x-2">
-              <a href="#" className="text-gold hover:text-white transition-premium p-2" aria-label="Follow us on Instagram">
-                <Instagram size={20} aria-hidden="true" />
-              </a>
-              <a href="#" className="text-gold hover:text-white transition-premium p-2" aria-label="Follow us on Facebook">
-                <Facebook size={20} aria-hidden="true" />
-              </a>
-              <a href="#" className="text-gold hover:text-white transition-premium p-2" aria-label="Connect on LinkedIn">
-                <Linkedin size={20} aria-hidden="true" />
-              </a>
-              <a href="#" className="text-gold hover:text-white transition-premium p-2" aria-label="Watch our videos">
-                <Video size={20} aria-hidden="true" />
-              </a>
-            </div>
           </div>
 
           {/* Quick Links */}
           <div>
-            <h3 className="text-gold text-xs uppercase tracking-widest font-extrabold mb-6">Navigation</h3>
+            <h3 className="text-gold text-xs uppercase tracking-widest font-extrabold mb-6 font-playfair">{t('footer.navigation')}</h3>
             <ul className="space-y-4 text-sm text-white/70 font-light">
-              <li><a href="/" className="hover:text-gold transition-premium">Home</a></li>
-              <li><a href="#about" className="hover:text-gold transition-premium">About Lorena</a></li>
-              <li><a href="#services" className="hover:text-gold transition-premium">Services</a></li>
-              <li><a href="#neighborhoods" className="hover:text-gold transition-premium">Neighborhood Guide</a></li>
-              <li><a href="#contact" className="hover:text-gold transition-premium">Contact</a></li>
+              <li><Link to="/" className="hover:text-gold transition-premium">{t('footer.home')}</Link></li>
+              <li><Link to="/about" className="hover:text-gold transition-premium">{t('footer.aboutLorena')}</Link></li>
+              <li><Link to="/properties" className="hover:text-gold transition-premium">{t('footer.searchHomes')}</Link></li>
+              <li><Link to="/neighborhoods" className="hover:text-gold transition-premium">{t('footer.neighborhoods')}</Link></li>
+              <li><Link to="/contact" className="hover:text-gold transition-premium">{t('footer.contact')}</Link></li>
+              <li><Link to="/blog" className="hover:text-gold transition-premium">{t('footer.blog')}</Link></li>
             </ul>
           </div>
 
           {/* Contact */}
           <div>
-            <h3 className="text-gold text-xs uppercase tracking-widest font-extrabold mb-6">Contact</h3>
+            <h3 className="text-gold text-xs uppercase tracking-widest font-extrabold mb-6 font-playfair">{t('footer.contact')}</h3>
             <ul className="space-y-4 text-sm text-white/70 font-light">
               <li className="flex items-start gap-3">
                 <MapPin size={16} className="text-gold mt-1 shrink-0" aria-hidden="true" />
@@ -77,10 +68,10 @@ const Footer = () => {
 
           {/* Legal / Brokerage */}
           <div>
-            <h3 className="text-gold text-xs uppercase tracking-widest font-extrabold mb-6 font-lato">Professional</h3>
+            <h3 className="text-gold text-xs uppercase tracking-widest font-extrabold mb-6 font-playfair">{t('footer.professional')}</h3>
             <div className="mb-4">
               <div className="text-white font-bold mb-2 font-lato">{BROKERAGE}</div>
-              <div className="text-white/70 text-sm font-lato font-light">Licensed Real Estate Professional</div>
+              <div className="text-white/70 text-sm font-lato font-light">{t('footer.licensedTexas')}</div>
             </div>
 
             {/* Equal Housing Logo */}
@@ -90,12 +81,14 @@ const Footer = () => {
                 alt="Equal Housing Opportunity"
                 className="h-16 w-16"
                 loading="lazy"
+                width={64}
+                height={64}
               />
             </div>
 
             <div className="text-xs text-white/50 space-y-2 font-lato font-light">
-              <p>Equal Housing Opportunity.</p>
-              <p>Each office is independently owned and operated.</p>
+              <p>{t('footer.equalHousing')}</p>
+              <p>{t('footer.eachOffice')}</p>
             </div>
           </div>
 
@@ -109,6 +102,8 @@ const Footer = () => {
               alt="Greater El Paso Association of REALTORS®"
               className="h-12 w-auto mb-4"
               loading="lazy"
+              width={120}
+              height={48}
             />
           </div>
           <p className="text-xs text-white/60 font-lato leading-relaxed">
@@ -122,9 +117,9 @@ const Footer = () => {
         {/* Legal Links */}
         <div className="border-t border-white/10 pt-6 mb-6">
           <div className="flex flex-wrap gap-x-4 gap-y-2 text-sm text-white/70 font-lato">
-            <Link to="/terms" className="hover:text-gold transition-premium py-1">Terms of Use</Link>
+            <Link to="/terms" className="hover:text-gold transition-premium py-1">{t('footer.termsOfUse')}</Link>
             <span className="text-white/30 hidden sm:inline">|</span>
-            <Link to="/privacy" className="hover:text-gold transition-premium py-1">Privacy Notice</Link>
+            <Link to="/privacy" className="hover:text-gold transition-premium py-1">{t('footer.privacyNotice')}</Link>
             <span className="text-white/30 hidden sm:inline">|</span>
             <Link to="/dmca" className="hover:text-gold transition-premium py-1">DMCA</Link>
             <span className="text-white/30 hidden sm:inline">|</span>
@@ -140,7 +135,7 @@ const Footer = () => {
 
         {/* Copyright */}
         <div className="border-t border-white/10 pt-6 text-center">
-          <p className="text-xs text-white/50 font-lato">&copy; 2026 The Right Move Real Estate Group. All rights reserved.</p>
+          <p className="text-xs text-white/50 font-lato">&copy; {new Date().getFullYear()} {t('footer.copyright')}</p>
           <p className="text-xs text-white/40 font-lato mt-2">Lorena Ontiveros-Ortega | 10420 Montwood Dr., Ste N-163, El Paso, TX 79935 | 915-487-5581</p>
         </div>
       </div>

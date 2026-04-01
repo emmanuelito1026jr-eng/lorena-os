@@ -1,0 +1,292 @@
+{
+  "name": "[LOS-22] Social Media Content Engine",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 7 * * 1,3,5"
+            }
+          ]
+        }
+      },
+      "name": "Cron MWF",
+      "type": "n8n-nodes-base.cron",
+      "typeVersion": 1,
+      "position": [
+        200,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "tableId": "leads",
+        "limit": 5,
+        "options": {
+          "sortByField": "updated_at",
+          "sortOrder": "DESC"
+        }
+      },
+      "name": "Get Recent",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 2,
+      "position": [
+        400,
+        300
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "37rJREccSDhKtIGi",
+          "name": "Supabase Service Role"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "functionCode": "const leads = items;\nconst trends = leads.map(l => l.json.preferred_areas || []).flat().filter(Boolean);\nconst topArea = trends[0] || 'El Paso';\nconst day = new Date().getDay();\nconst types = ['market_update', 'tip', 'listing_highlight', 'neighborhood', 'testimonial'];\nconst contentType = types[day % types.length];\n\nitems[0].json.claude_social = JSON.stringify({\n  model: \"claude-sonnet-4-5-20250929\", max_tokens: 1500,\n  messages: [{role: \"user\", content: `You are Lorena's social media content creator. She's an El Paso TX realtor.\nContent type: ${contentType}. Focus area: ${topArea}.\n\nWrite social media content for Instagram/Facebook. Include:\n1. A compelling caption (2-3 paragraphs, use emojis, include hashtags)\n2. Alt text for an accompanying image\n3. Best time suggestion for posting\n\nMake it bilingual (English first, then Spanish).\n\nOutput ONLY valid JSON: {\"caption\": \"...\", \"alt_text\": \"...\", \"post_time\": \"...\", \"content_type\": \"${contentType}\", \"hashtags\": [\"...\"] }`}]\n});\nreturn items;"
+      },
+      "name": "Build Content",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [
+        600,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.anthropic.com/v1/messages",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-api-key",
+              "value": "={{$env.ANTHROPIC_API_KEY}}"
+            },
+            {
+              "name": "anthropic-version",
+              "value": "2023-06-01"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "={{ $json.claude_social }}",
+        "options": {}
+      },
+      "name": "Claude Content",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        800,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "functionCode": "const c=items[0].json.content;let t=c&&Array.isArray(c)?c[0].text:'';\nlet content={};\ntry{let cl=t.replace(/```json\\n?/g,'').replace(/```\\n?/g,'').trim();content=JSON.parse(cl);}catch(e){content={caption:t,content_type:'unknown'};}\nitems[0].json=content;return items;"
+      },
+      "name": "Parse Content",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [
+        1000,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "create",
+        "tableId": "social_content",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "agent_id",
+              "fieldValue": "6d51a7c2-271f-484a-bb11-5ee935f1358a"
+            },
+            {
+              "fieldId": "content_type",
+              "fieldValue": "={{ $json.content_type }}"
+            },
+            {
+              "fieldId": "caption",
+              "fieldValue": "={{ $json.caption }}"
+            },
+            {
+              "fieldId": "status",
+              "fieldValue": "draft"
+            },
+            {
+              "fieldId": "platform",
+              "fieldValue": "instagram,facebook"
+            },
+            {
+              "fieldId": "scheduled_for",
+              "fieldValue": "={{ $json.post_time }}"
+            }
+          ]
+        }
+      },
+      "name": "Save Content",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 2,
+      "position": [
+        1200,
+        300
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "37rJREccSDhKtIGi",
+          "name": "Supabase Service Role"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fromEmail": "lorena.realtor@icloud.com",
+        "toEmail": "lorena@casasenelpaso.com",
+        "subject": "={{ '\ud83d\udcf1 Social Content Draft: ' + ($json.content_type || 'Post') }}",
+        "contentHtml": "={{ '<div style=\"font-family:Arial,sans-serif;max-width:600px;margin:0 auto;\"><h2>\ud83d\udcf1 New Social Content Draft</h2><p><strong>Type:</strong> ' + ($node['Parse Content'].json.content_type || '') + '</p><p><strong>Best Time:</strong> ' + ($node['Parse Content'].json.post_time || 'anytime') + '</p><hr><div style=\"white-space:pre-wrap;\">' + ($node['Parse Content'].json.caption || '') + '</div><hr><p><em>Alt text: ' + ($node['Parse Content'].json.alt_text || '') + '</em></p></div>' }}"
+      },
+      "name": "Email Draft",
+      "type": "n8n-nodes-base.sendGrid",
+      "typeVersion": 1,
+      "position": [
+        1400,
+        300
+      ],
+      "credentials": {
+        "sendGridApi": {
+          "id": "PENDING",
+          "name": "SendGrid - Lorena Email"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "create",
+        "tableId": "notifications",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "agent_id",
+              "fieldValue": "6d51a7c2-271f-484a-bb11-5ee935f1358a"
+            },
+            {
+              "fieldId": "type",
+              "fieldValue": "social_content"
+            },
+            {
+              "fieldId": "title",
+              "fieldValue": "\ud83d\udcf1 New social content draft ready"
+            },
+            {
+              "fieldId": "message",
+              "fieldValue": "={{ 'Check your email for ' + ($node['Parse Content'].json.content_type || 'social') + ' content draft. Review and post!' }}"
+            }
+          ]
+        }
+      },
+      "name": "Notify",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 2,
+      "position": [
+        1600,
+        300
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "37rJREccSDhKtIGi",
+          "name": "Supabase Service Role"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Cron MWF": {
+      "main": [
+        [
+          {
+            "node": "Get Recent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Recent": {
+      "main": [
+        [
+          {
+            "node": "Build Content",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Content": {
+      "main": [
+        [
+          {
+            "node": "Claude Content",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Claude Content": {
+      "main": [
+        [
+          {
+            "node": "Parse Content",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse Content": {
+      "main": [
+        [
+          {
+            "node": "Save Content",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Save Content": {
+      "main": [
+        [
+          {
+            "node": "Email Draft",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Email Draft": {
+      "main": [
+        [
+          {
+            "node": "Notify",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  }
+}

@@ -3,11 +3,6 @@ import { Star, ExternalLink, Shield } from 'lucide-react';
 
 const RATEMYAGENT_PROFILE = 'https://www.ratemyagent.com/real-estate-agent/lorena-ontiveros-ortega-b0zbn5/sales/overview';
 
-// TODO: Replace with RateMyAgent widget embed code from Lorena's dashboard
-// To get the widget code:
-// 1. Log into RateMyAgent dashboard
-// 2. Go to "Widget" in the left menu
-// 3. Click "Email Code" and paste the HTML here
 const WIDGET_EMBED_CODE = '';
 
 const RateMyAgentReviews = () => {
@@ -37,7 +32,7 @@ const RateMyAgentReviews = () => {
         {/* Section Header */}
         <div className="text-center mb-16">
           <span className="text-gold text-xs uppercase tracking-[0.25em] font-extrabold">Verified Reviews</span>
-          <h2 className="mt-3 font-sans text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-black font-bold">
+          <h2 className="mt-3 font-playfair text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-black font-bold">
             What My Clients <span className="gradient-text">Say</span>
           </h2>
           <p className="mt-4 text-black/60 max-w-2xl mx-auto font-light text-lg">
@@ -61,7 +56,7 @@ const RateMyAgentReviews = () => {
                   <Shield className="text-gold" size={24} />
                   <span className="text-white/80 text-sm uppercase tracking-widest font-bold">Verified Agent</span>
                 </div>
-                <h3 className="font-sans text-3xl sm:text-4xl text-white font-bold mb-2">
+                <h3 className="font-playfair text-3xl sm:text-4xl text-white font-bold mb-2">
                   Lorena Ontiveros-Ortega
                 </h3>
                 <p className="text-gold text-sm uppercase tracking-widest font-extrabold mb-6">
@@ -80,15 +75,15 @@ const RateMyAgentReviews = () => {
               {/* Stats Row */}
               <div className="grid grid-cols-3 border-b border-gray-200">
                 <div className="p-6 sm:p-8 text-center border-r border-gray-200">
-                  <p className="text-3xl sm:text-4xl font-sans font-bold text-gold mb-1">40+</p>
+                  <p className="text-3xl sm:text-4xl font-playfair font-bold text-gold mb-1">40+</p>
                   <p className="text-xs sm:text-sm text-black/60 uppercase tracking-wider font-medium">Sales</p>
                 </div>
                 <div className="p-6 sm:p-8 text-center border-r border-gray-200">
-                  <p className="text-3xl sm:text-4xl font-sans font-bold text-gold mb-1">5.0</p>
+                  <p className="text-3xl sm:text-4xl font-playfair font-bold text-gold mb-1">5.0</p>
                   <p className="text-xs sm:text-sm text-black/60 uppercase tracking-wider font-medium">Rating</p>
                 </div>
                 <div className="p-6 sm:p-8 text-center">
-                  <p className="text-3xl sm:text-4xl font-sans font-bold text-gold mb-1">100%</p>
+                  <p className="text-3xl sm:text-4xl font-playfair font-bold text-gold mb-1">100%</p>
                   <p className="text-xs sm:text-sm text-black/60 uppercase tracking-wider font-medium">Recommended</p>
                 </div>
               </div>

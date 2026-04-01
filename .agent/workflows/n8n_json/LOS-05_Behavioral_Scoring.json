@@ -1,0 +1,431 @@
+{
+  "name": "[LOS-05] Behavioral Lead Scoring Engine",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "lead-activity",
+        "options": {}
+      },
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        240,
+        300
+      ],
+      "webhookId": "1716e131-ebb7-4b55-841c-5503885e44a3"
+    },
+    {
+      "parameters": {
+        "keepOnlySet": true,
+        "values": {
+          "string": [
+            {
+              "name": "lead_id",
+              "value": "={{$json.body.lead_id}}"
+            },
+            {
+              "name": "event_type",
+              "value": "={{$json.body.event_type || $json.body.action || $json.event_type || $json.action || \"unknown\"}}"
+            },
+            {
+              "name": "metadata",
+              "value": "={{$json.body.metadata}}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "name": "Extract Data",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 1,
+      "position": [
+        460,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "functionCode": "const eventType = items[0].json.event_type;\nlet points = 1;\n\nswitch (eventType) {\n  case 'form_submission': points = 10; break;\n  case 'property_view': points = 2; break;\n  case 'property_save': points = 5; break;\n  case 'search_save': points = 5; break;\n  case 'showing_request': points = 15; break;\n  case 'sms_reply': points = 10; break;\n  case 'email_opened': points = 2; break;\n  case 'email_clicked': points = 5; break;\n  case 'mortgage_calc': points = 8; break;\n  case 'multiple_views_same_day': points = 5; break;\n  case 'return_visit_7d': points = 10; break;\n  case 'homepulse_cta': points = 12; break;\n  case 'ai_qualified': points = 20; break;\n  case 'open_house_visit': points = 20; break;\n  default: points = 1;\n}\n\nreturn [{ json: { points, event_type: eventType } }];"
+      },
+      "name": "Calculate Points",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [
+        680,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "tableId": "behavioral_events",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "lead_id",
+              "fieldValue": "={{$node[\"Extract Data\"].json[\"lead_id\"]}}"
+            },
+            {
+              "fieldId": "event_type",
+              "fieldValue": "={{$node[\"Extract Data\"].json[\"event_type\"]}}"
+            },
+            {
+              "fieldId": "metadata",
+              "fieldValue": "={{$node[\"Extract Data\"].json[\"metadata\"]}}"
+            }
+          ]
+        },
+        "operation": "create",
+        "resource": "row"
+      },
+      "name": "Insert Event",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 2,
+      "position": [
+        900,
+        200
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "37rJREccSDhKtIGi",
+          "name": "Supabase Service Role"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "tableId": "lead_activity",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "lead_id",
+              "fieldValue": "={{$node[\"Extract Data\"].json[\"lead_id\"]}}"
+            },
+            {
+              "fieldId": "action",
+              "fieldValue": "={{$node[\"Extract Data\"].json[\"event_type\"]}}"
+            },
+            {
+              "fieldId": "points",
+              "fieldValue": "={{$node[\"Calculate Points\"].json[\"points\"]}}"
+            },
+            {
+              "fieldId": "metadata",
+              "fieldValue": "={{$node[\"Extract Data\"].json[\"metadata\"]}}"
+            }
+          ]
+        },
+        "operation": "create",
+        "resource": "row"
+      },
+      "name": "Insert Activity",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 2,
+      "position": [
+        900,
+        400
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "37rJREccSDhKtIGi",
+          "name": "Supabase Service Role"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "tableId": "leads",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "id",
+              "keyValue": "={{$node[\"Extract Data\"].json.lead_id}}",
+              "condition": "eq"
+            }
+          ]
+        },
+        "filterType": "manual",
+        "matchType": "allFilters",
+        "resource": "row"
+      },
+      "name": "Get Lead",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 2,
+      "position": [
+        1120,
+        300
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "37rJREccSDhKtIGi",
+          "name": "Supabase Service Role"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "functionCode": "const oldScore = items[0].json.score || 0;\nconst points = $node[\"Calculate Points\"].json[\"points\"];\nconst newScore = Math.min(100, oldScore + points);\n\nlet newTemp = 'cold';\nif (newScore >= 80) newTemp = 'hot';\nelse if (newScore >= 50) newTemp = 'warm';\nelse if (newScore >= 20) newTemp = 'cool';\n\nconst oldTemp = items[0].json.temperature;\nconst tempChanged = oldTemp !== newTemp;\n\nreturn [{ json: { newScore, newTemp, oldTemp, tempChanged, leadName: items[0].json.first_name + ' ' + items[0].json.last_name } }];"
+      },
+      "name": "Update Score",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [
+        1340,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "upsert",
+        "tableId": "leads",
+        "updateKey": "id",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "id",
+              "fieldValue": "={{$node[\"Extract Data\"].json[\"lead_id\"]}}"
+            },
+            {
+              "fieldId": "score",
+              "fieldValue": "={{$node[\"Update Score\"].json[\"newScore\"]}}"
+            },
+            {
+              "fieldId": "temperature",
+              "fieldValue": "={{$node[\"Update Score\"].json[\"newTemp\"]}}"
+            }
+          ]
+        },
+        "resource": "row",
+        "matchingColumns": [
+          "id"
+        ]
+      },
+      "name": "Save Lead",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 2,
+      "position": [
+        1560,
+        300
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "37rJREccSDhKtIGi",
+          "name": "Supabase Service Role"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "boolean": [
+            {
+              "value1": "={{$node[\"Update Score\"].json[\"tempChanged\"]}}",
+              "value2": true
+            }
+          ]
+        }
+      },
+      "name": "Check Change",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        1780,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "tableId": "notifications",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "agent_id",
+              "fieldValue": "={{$node[\"Get Lead\"].json[\"agent_id\"]}}"
+            },
+            {
+              "fieldId": "type",
+              "fieldValue": "score_change"
+            },
+            {
+              "fieldId": "title",
+              "fieldValue": "={{$node[\"Update Score\"].json[\"newTemp\"] == 'hot' ? '\ud83d\udd25 Lead heating up!' : 'Lead Score Update'}}"
+            },
+            {
+              "fieldId": "message",
+              "fieldValue": "={{$node[\"Update Score\"].json[\"leadName\"]}} changed from {{$node[\"Update Score\"].json[\"oldTemp\"]}} to {{$node[\"Update Score\"].json[\"newTemp\"]}}"
+            },
+            {
+              "fieldId": "lead_id",
+              "fieldValue": "={{$node[\"Extract Data\"].json[\"lead_id\"]}}"
+            }
+          ]
+        },
+        "operation": "create",
+        "resource": "row"
+      },
+      "name": "Notify",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 2,
+      "position": [
+        2000,
+        200
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "37rJREccSDhKtIGi",
+          "name": "Supabase Service Role"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "from": "={{$credentials.twilioApi.phoneNumber}}",
+        "to": "={{$env.AGENT_PHONE}}",
+        "message": "=\ud83d\udd25 HOT LEAD: {{ $node[\"Get Lead\"].json.first_name }} {{ $node[\"Get Lead\"].json.last_name }} just hit score {{ $node[\"Update Score\"].json.newScore }}! Check your dashboard."
+      },
+      "name": "Hot Lead Alert SMS",
+      "type": "n8n-nodes-base.twilio",
+      "typeVersion": 1,
+      "position": [
+        1200,
+        500
+      ],
+      "credentials": {
+        "twilioApi": {
+          "id": "PENDING",
+          "name": "Twilio - Lorena SMS"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "number": [
+            {
+              "value1": "={{ $node['Update Score'].json.newScore }}",
+              "operation": "largerEqual",
+              "value2": 80
+            }
+          ]
+        }
+      },
+      "name": "Is Hot?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        1200,
+        300
+      ]
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Extract Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Data": {
+      "main": [
+        [
+          {
+            "node": "Calculate Points",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Calculate Points": {
+      "main": [
+        [
+          {
+            "node": "Insert Event",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Insert Activity",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Get Lead",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Lead": {
+      "main": [
+        [
+          {
+            "node": "Update Score",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Score": {
+      "main": [
+        [
+          {
+            "node": "Save Lead",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Save Lead": {
+      "main": [
+        [
+          {
+            "node": "Check Change",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Change": {
+      "main": [
+        [
+          {
+            "node": "Notify",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Is Hot?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Is Hot?": {
+      "main": [
+        [
+          {
+            "node": "Hot Lead Alert SMS",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  }
+}

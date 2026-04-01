@@ -1,0 +1,316 @@
+{
+  "name": "[LOS-17] Behavioral Auto-Message Triggers",
+  "nodes": [
+    {
+      "parameters": {
+        "path": "behavior-trigger",
+        "httpMethod": "POST",
+        "responseMode": "onReceived"
+      },
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        200,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "functionCode": "const b = items[0].json.body || items[0].json;\nitems[0].json.lead_id = b.lead_id;\nitems[0].json.event_type = b.event_type; // property_view, price_drop, new_listing, saved_search\nitems[0].json.event_data = b.event_data || {};\nreturn items;"
+      },
+      "name": "Extract Event",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [
+        400,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "tableId": "leads",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "id",
+              "keyValue": "={{ $json.lead_id }}"
+            }
+          ]
+        }
+      },
+      "name": "Get Lead",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 2,
+      "position": [
+        600,
+        300
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "37rJREccSDhKtIGi",
+          "name": "Supabase Service Role"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "functionCode": "const lead = items[0].json;\nconst event = $node['Extract Event'].json;\nconst lang = lead.preferred_language || 'en';\nconst name = lead.first_name || 'there';\n\nlet context = '';\nswitch(event.event_type) {\n  case 'property_view':\n    context = `${name} just viewed a property at ${event.event_data.address || 'an address'} (${event.event_data.price || '?'}). Send helpful info about that area.`;\n    break;\n  case 'price_drop':\n    context = `A property ${name} was interested in just dropped in price to ${event.event_data.new_price || '?'} at ${event.event_data.address || 'an area they like'}.`;\n    break;\n  case 'new_listing':\n    context = `A new listing matching ${name}'s criteria appeared: ${event.event_data.address || 'in their area'}, ${event.event_data.beds || '?'}bd/${event.event_data.baths || '?'}ba, ${event.event_data.price || '?'}.`;\n    break;\n  case 'saved_search':\n    context = `${name} saved a new search for properties in ${event.event_data.area || 'El Paso'}, ${event.event_data.price_range || 'any price'}.`;\n    break;\n  default:\n    context = `${name} took an action: ${event.event_type}`;\n}\n\nitems[0].json.claude_trigger = JSON.stringify({\n  model: \"claude-sonnet-4-5-20250929\", max_tokens: 500,\n  messages: [{role: \"user\", content: `You are Lorena's SMS assistant. Context: ${context}. Language: ${lang}. Write a helpful, non-pushy SMS that references their specific activity. Under 200 chars. Output ONLY valid JSON: {\"sms_text\": \"...\"}`}]\n});\nreturn items;"
+      },
+      "name": "Build Trigger SMS",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [
+        800,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.anthropic.com/v1/messages",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-api-key",
+              "value": "={{$env.ANTHROPIC_API_KEY}}"
+            },
+            {
+              "name": "anthropic-version",
+              "value": "2023-06-01"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "={{ $json.claude_trigger }}",
+        "options": {}
+      },
+      "name": "Claude Trigger",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        1000,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "functionCode": "const c=items[0].json.content;let t=c&&Array.isArray(c)?c[0].text:'';\ntry{let cl=t.replace(/```json\\n?/g,'').replace(/```\\n?/g,'').trim();t=JSON.parse(cl).sms_text||t;}catch(e){}\nitems[0].json.sms_text=t.substring(0,300);return items;"
+      },
+      "name": "Parse SMS",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [
+        1200,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "from": "={{$credentials.twilioApi.phoneNumber}}",
+        "to": "={{ $node['Get Lead'].json.phone }}",
+        "message": "={{ $json.sms_text }}"
+      },
+      "name": "Send SMS",
+      "type": "n8n-nodes-base.twilio",
+      "typeVersion": 1,
+      "position": [
+        1400,
+        300
+      ],
+      "credentials": {
+        "twilioApi": {
+          "id": "PENDING",
+          "name": "Twilio - Lorena SMS"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "create",
+        "tableId": "messages",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "lead_id",
+              "fieldValue": "={{ $node['Extract Event'].json.lead_id }}"
+            },
+            {
+              "fieldId": "agent_id",
+              "fieldValue": "6d51a7c2-271f-484a-bb11-5ee935f1358a"
+            },
+            {
+              "fieldId": "channel",
+              "fieldValue": "sms"
+            },
+            {
+              "fieldId": "direction",
+              "fieldValue": "outbound"
+            },
+            {
+              "fieldId": "content",
+              "fieldValue": "={{ $node['Parse SMS'].json.sms_text }}"
+            },
+            {
+              "fieldId": "is_ai",
+              "fieldValue": "true"
+            },
+            {
+              "fieldId": "automation_source",
+              "fieldValue": "behavior_trigger"
+            }
+          ]
+        }
+      },
+      "name": "Log SMS",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 2,
+      "position": [
+        1600,
+        300
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "37rJREccSDhKtIGi",
+          "name": "Supabase Service Role"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "create",
+        "tableId": "lead_activity",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "lead_id",
+              "fieldValue": "={{ $node['Extract Event'].json.lead_id }}"
+            },
+            {
+              "fieldId": "action",
+              "fieldValue": "={{ 'auto_msg_' + $node['Extract Event'].json.event_type }}"
+            },
+            {
+              "fieldId": "points",
+              "fieldValue": "5"
+            },
+            {
+              "fieldId": "source",
+              "fieldValue": "behavior_trigger"
+            }
+          ]
+        }
+      },
+      "name": "Log Activity",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 2,
+      "position": [
+        1800,
+        300
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "37rJREccSDhKtIGi",
+          "name": "Supabase Service Role"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Extract Event",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Event": {
+      "main": [
+        [
+          {
+            "node": "Get Lead",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Lead": {
+      "main": [
+        [
+          {
+            "node": "Build Trigger SMS",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Trigger SMS": {
+      "main": [
+        [
+          {
+            "node": "Claude Trigger",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Claude Trigger": {
+      "main": [
+        [
+          {
+            "node": "Parse SMS",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse SMS": {
+      "main": [
+        [
+          {
+            "node": "Send SMS",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send SMS": {
+      "main": [
+        [
+          {
+            "node": "Log SMS",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Log SMS": {
+      "main": [
+        [
+          {
+            "node": "Log Activity",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  }
+}

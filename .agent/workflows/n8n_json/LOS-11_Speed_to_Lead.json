@@ -1,0 +1,1997 @@
+{
+  "name": "[LOS-11] Speed-to-Lead AutoTrack Engine",
+  "nodes": [
+    {
+      "parameters": {
+        "path": "speed-to-lead",
+        "httpMethod": "POST",
+        "responseMode": "onReceived"
+      },
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        200,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "tableId": "leads",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "id",
+              "keyValue": "={{ $json.body.lead_id }}"
+            }
+          ]
+        }
+      },
+      "name": "Get Lead",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 2,
+      "position": [
+        400,
+        300
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "37rJREccSDhKtIGi",
+          "name": "Supabase Service Role"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "tableId": "profiles",
+        "limit": 1
+      },
+      "name": "Get Agent",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 2,
+      "position": [
+        600,
+        300
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "37rJREccSDhKtIGi",
+          "name": "Supabase Service Role"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "keepOnlySet": false,
+        "values": {
+          "string": [
+            {
+              "name": "lead_name",
+              "value": "={{ $node['Get Lead'].json.first_name || 'there' }}"
+            },
+            {
+              "name": "lead_phone",
+              "value": "={{ $node['Get Lead'].json.phone }}"
+            },
+            {
+              "name": "lead_email",
+              "value": "={{ $node['Get Lead'].json.email }}"
+            },
+            {
+              "name": "lead_id",
+              "value": "={{ $node['Get Lead'].json.id }}"
+            },
+            {
+              "name": "source",
+              "value": "={{ $json.body?.source || $node['Get Lead'].json.source || 'website' }}"
+            },
+            {
+              "name": "language",
+              "value": "={{ $node['Get Lead'].json.preferred_language || 'en' }}"
+            },
+            {
+              "name": "lead_type",
+              "value": "={{ $node['Get Lead'].json.is_seller ? 'seller' : 'buyer' }}"
+            },
+            {
+              "name": "interest",
+              "value": "={{ ($node['Get Lead'].json.preferred_areas || []).join(', ') || 'El Paso' }}"
+            },
+            {
+              "name": "budget",
+              "value": "={{ $node['Get Lead'].json.budget_min && $node['Get Lead'].json.budget_max ? '$' + $node['Get Lead'].json.budget_min + '-$' + $node['Get Lead'].json.budget_max : '' }}"
+            },
+            {
+              "name": "workflow_start",
+              "value": "={{ new Date().toISOString() }}"
+            },
+            {
+              "name": "agent_id",
+              "value": "6d51a7c2-271f-484a-bb11-5ee935f1358a"
+            }
+          ]
+        }
+      },
+      "name": "Set Context",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 1,
+      "position": [
+        800,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "functionCode": "const lead_name = items[0].json.lead_name;\nconst source = items[0].json.source;\nconst lead_type = items[0].json.lead_type;\nconst interest = items[0].json.interest;\nconst budget = items[0].json.budget;\nconst language = items[0].json.language;\n\nconst langInstr = language === 'es' ? 'Write in Spanish.' : (language === 'both' ? 'Write in English first, then Spanish on a new line.' : 'Write in English.');\n\nitems[0].json.claude_body_1 = JSON.stringify({\n  model: \"claude-sonnet-4-5-20250929\",\n  max_tokens: 500,\n  messages: [{\n    role: \"user\",\n    content: `You are Lorena's assistant. Write a first-contact SMS for a ${lead_type} lead in El Paso TX.\nLead: ${lead_name}, Source: ${source}, Interest: ${interest}${budget ? ', Budget: ' + budget : ''}.\n${langInstr} Keep under 160 chars. Warm, NOT salesy. Reference their specific interest. Ask ONE question.\nOutput ONLY valid JSON: {\"sms_text\": \"...\"}`\n  }]\n});\nreturn items;"
+      },
+      "name": "Build SMS 1 Body",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [
+        1000,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.anthropic.com/v1/messages",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-api-key",
+              "value": "={{$env.ANTHROPIC_API_KEY}}"
+            },
+            {
+              "name": "anthropic-version",
+              "value": "2023-06-01"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "={{ $json.claude_body_1 }}",
+        "options": {}
+      },
+      "name": "Claude SMS 1",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        1200,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "functionCode": "const content = items[0].json.content;\nlet text = '';\nif (content && Array.isArray(content)) {\n  text = content[0].text || '';\n}\n// Try to parse JSON from Claude's response\nlet sms_text = text;\ntry {\n  // Remove markdown code blocks if present\n  let cleaned = text.replace(/```json\\n?/g, '').replace(/```\\n?/g, '').trim();\n  const parsed = JSON.parse(cleaned);\n  sms_text = parsed.sms_text || text;\n} catch(e) {\n  // If not valid JSON, use raw text (trim to 300 chars)\n  sms_text = text.substring(0, 300);\n}\nitems[0].json.sms_text = sms_text;\nreturn items;"
+      },
+      "name": "Parse SMS 1",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [
+        1400,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "from": "={{$credentials.twilioApi.phoneNumber}}",
+        "to": "={{ $node['Set Context'].json.lead_phone }}",
+        "message": "={{ $json.sms_text }}"
+      },
+      "name": "Send SMS 1",
+      "type": "n8n-nodes-base.twilio",
+      "typeVersion": 1,
+      "position": [
+        1600,
+        300
+      ],
+      "credentials": {
+        "twilioApi": {
+          "id": "PENDING",
+          "name": "Twilio - Lorena SMS"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "create",
+        "tableId": "messages",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "lead_id",
+              "fieldValue": "={{ $node['Set Context'].json.lead_id }}"
+            },
+            {
+              "fieldId": "agent_id",
+              "fieldValue": "6d51a7c2-271f-484a-bb11-5ee935f1358a"
+            },
+            {
+              "fieldId": "channel",
+              "fieldValue": "sms"
+            },
+            {
+              "fieldId": "direction",
+              "fieldValue": "outbound"
+            },
+            {
+              "fieldId": "content",
+              "fieldValue": "={{ $node['Parse SMS 1'].json.sms_text }}"
+            },
+            {
+              "fieldId": "is_ai",
+              "fieldValue": "true"
+            },
+            {
+              "fieldId": "automation_source",
+              "fieldValue": "speed_to_lead"
+            }
+          ]
+        }
+      },
+      "name": "Log SMS 1",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 2,
+      "position": [
+        1800,
+        300
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "37rJREccSDhKtIGi",
+          "name": "Supabase Service Role"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "create",
+        "tableId": "lead_activity",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "lead_id",
+              "fieldValue": "={{ $node['Set Context'].json.lead_id }}"
+            },
+            {
+              "fieldId": "action",
+              "fieldValue": "speed_to_lead_sms_1"
+            },
+            {
+              "fieldId": "points",
+              "fieldValue": "0"
+            },
+            {
+              "fieldId": "source",
+              "fieldValue": "automation"
+            }
+          ]
+        }
+      },
+      "name": "Log Activity 1",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 2,
+      "position": [
+        2000,
+        300
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "37rJREccSDhKtIGi",
+          "name": "Supabase Service Role"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "amount": 15,
+        "unit": "minutes"
+      },
+      "name": "Wait 15m",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1,
+      "position": [
+        2200,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "tableId": "messages",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "lead_id",
+              "keyValue": "={{ $node['Set Context'].json.lead_id }}"
+            },
+            {
+              "keyName": "direction",
+              "keyValue": "inbound"
+            }
+          ]
+        },
+        "limit": 1
+      },
+      "name": "Check Response 2",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 2,
+      "position": [
+        2400,
+        300
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "37rJREccSDhKtIGi",
+          "name": "Supabase Service Role"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "number": [
+            {
+              "value1": "={{ $json.id ? 1 : 0 }}",
+              "operation": "equal",
+              "value2": 0
+            }
+          ]
+        }
+      },
+      "name": "No Response 2?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        2600,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "functionCode": "const ctx = $node['Set Context'].json;\nitems[0].json.claude_email_body = JSON.stringify({\n  model: \"claude-sonnet-4-5-20250929\",\n  max_tokens: 1000,\n  messages: [{\n    role: \"user\",\n    content: `Write a follow-up email to ${ctx.lead_name} who didn't respond to SMS.\nInclude: who you are (Lorena, El Paso realtor), what you can help with, ONE specific value prop.\nLanguage: ${ctx.language}. They are a ${ctx.lead_type} interested in ${ctx.interest}.\nOutput ONLY valid JSON: {\"subject\": \"...\", \"body\": \"...(HTML allowed)\"}`\n  }]\n});\nreturn items;"
+      },
+      "name": "Build Email 2 Body",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [
+        2800,
+        200
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.anthropic.com/v1/messages",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-api-key",
+              "value": "={{$env.ANTHROPIC_API_KEY}}"
+            },
+            {
+              "name": "anthropic-version",
+              "value": "2023-06-01"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "={{ $json.claude_email_body }}",
+        "options": {}
+      },
+      "name": "Claude Email 2",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        3000,
+        200
+      ]
+    },
+    {
+      "parameters": {
+        "functionCode": "const content = items[0].json.content;\nlet text = content && Array.isArray(content) ? content[0].text : '';\nlet subject = 'Following up on your real estate inquiry';\nlet body = text;\ntry {\n  let cleaned = text.replace(/```json\\n?/g, '').replace(/```\\n?/g, '').trim();\n  const parsed = JSON.parse(cleaned);\n  subject = parsed.subject || subject;\n  body = parsed.body || body;\n} catch(e) {}\nitems[0].json.email_subject = subject;\nitems[0].json.email_body = body;\nreturn items;"
+      },
+      "name": "Parse Email 2",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [
+        3200,
+        200
+      ]
+    },
+    {
+      "parameters": {
+        "fromEmail": "lorena.realtor@icloud.com",
+        "toEmail": "={{ $node['Set Context'].json.lead_email }}",
+        "subject": "={{ $json.email_subject }}",
+        "contentHtml": "={{ $json.email_body }}"
+      },
+      "name": "Send Email 2",
+      "type": "n8n-nodes-base.sendGrid",
+      "typeVersion": 1,
+      "position": [
+        3400,
+        200
+      ],
+      "credentials": {
+        "sendGridApi": {
+          "id": "PENDING",
+          "name": "SendGrid - Lorena Email"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "create",
+        "tableId": "messages",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "lead_id",
+              "fieldValue": "={{ $node['Set Context'].json.lead_id }}"
+            },
+            {
+              "fieldId": "agent_id",
+              "fieldValue": "6d51a7c2-271f-484a-bb11-5ee935f1358a"
+            },
+            {
+              "fieldId": "channel",
+              "fieldValue": "email"
+            },
+            {
+              "fieldId": "direction",
+              "fieldValue": "outbound"
+            },
+            {
+              "fieldId": "content",
+              "fieldValue": "={{ $node['Parse Email 2'].json.email_body }}"
+            },
+            {
+              "fieldId": "is_ai",
+              "fieldValue": "true"
+            },
+            {
+              "fieldId": "automation_source",
+              "fieldValue": "speed_to_lead"
+            }
+          ]
+        }
+      },
+      "name": "Log Email 2",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 2,
+      "position": [
+        3600,
+        200
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "37rJREccSDhKtIGi",
+          "name": "Supabase Service Role"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "amount": 45,
+        "unit": "minutes"
+      },
+      "name": "Wait 45m",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1,
+      "position": [
+        3800,
+        200
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "tableId": "messages",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "lead_id",
+              "keyValue": "={{ $node['Set Context'].json.lead_id }}"
+            },
+            {
+              "keyName": "direction",
+              "keyValue": "inbound"
+            }
+          ]
+        },
+        "limit": 1
+      },
+      "name": "Check Response 3",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 2,
+      "position": [
+        4000,
+        200
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "37rJREccSDhKtIGi",
+          "name": "Supabase Service Role"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "number": [
+            {
+              "value1": "={{ $json.id ? 1 : 0 }}",
+              "operation": "equal",
+              "value2": 0
+            }
+          ]
+        }
+      },
+      "name": "No Response 3?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        4200,
+        200
+      ]
+    },
+    {
+      "parameters": {
+        "functionCode": "const ctx = $node['Set Context'].json;\nitems[0].json.claude_sms2 = JSON.stringify({\n  model: \"claude-sonnet-4-5-20250929\", max_tokens: 500,\n  messages: [{role: \"user\", content: `Write a 2nd follow-up SMS (different angle from first) for ${ctx.lead_name}, a ${ctx.lead_type} in El Paso. Offer a different value prop. Language: ${ctx.language}. Keep under 200 chars. Output ONLY valid JSON: {\"sms_text\": \"...\"}`}]\n});\nreturn items;"
+      },
+      "name": "Build SMS 3 Body",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [
+        4400,
+        100
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.anthropic.com/v1/messages",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-api-key",
+              "value": "={{$env.ANTHROPIC_API_KEY}}"
+            },
+            {
+              "name": "anthropic-version",
+              "value": "2023-06-01"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "={{ $json.claude_sms2 }}",
+        "options": {}
+      },
+      "name": "Claude SMS 3",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        4600,
+        100
+      ]
+    },
+    {
+      "parameters": {
+        "functionCode": "const c = items[0].json.content;\nlet t = c && Array.isArray(c) ? c[0].text : '';\ntry { let cl = t.replace(/```json\\n?/g,'').replace(/```\\n?/g,'').trim(); t = JSON.parse(cl).sms_text || t; } catch(e) {}\nitems[0].json.sms_text = t.substring(0,300);\nreturn items;"
+      },
+      "name": "Parse SMS 3",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [
+        4800,
+        100
+      ]
+    },
+    {
+      "parameters": {
+        "from": "={{$credentials.twilioApi.phoneNumber}}",
+        "to": "={{ $node['Set Context'].json.lead_phone }}",
+        "message": "={{ $json.sms_text }}"
+      },
+      "name": "Send SMS 3",
+      "type": "n8n-nodes-base.twilio",
+      "typeVersion": 1,
+      "position": [
+        5000,
+        100
+      ],
+      "credentials": {
+        "twilioApi": {
+          "id": "PENDING",
+          "name": "Twilio - Lorena SMS"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "create",
+        "tableId": "messages",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "lead_id",
+              "fieldValue": "={{ $node['Set Context'].json.lead_id }}"
+            },
+            {
+              "fieldId": "agent_id",
+              "fieldValue": "6d51a7c2-271f-484a-bb11-5ee935f1358a"
+            },
+            {
+              "fieldId": "channel",
+              "fieldValue": "sms"
+            },
+            {
+              "fieldId": "direction",
+              "fieldValue": "outbound"
+            },
+            {
+              "fieldId": "content",
+              "fieldValue": "={{ $node['Parse SMS 3'].json.sms_text }}"
+            },
+            {
+              "fieldId": "is_ai",
+              "fieldValue": "true"
+            },
+            {
+              "fieldId": "automation_source",
+              "fieldValue": "speed_to_lead"
+            }
+          ]
+        }
+      },
+      "name": "Log SMS 3",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 2,
+      "position": [
+        5200,
+        100
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "37rJREccSDhKtIGi",
+          "name": "Supabase Service Role"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "amount": 3,
+        "unit": "hours"
+      },
+      "name": "Wait 3h",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1,
+      "position": [
+        5400,
+        100
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "tableId": "messages",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "lead_id",
+              "keyValue": "={{ $node['Set Context'].json.lead_id }}"
+            },
+            {
+              "keyName": "direction",
+              "keyValue": "inbound"
+            }
+          ]
+        },
+        "limit": 1
+      },
+      "name": "Check Response 4",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 2,
+      "position": [
+        5600,
+        100
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "37rJREccSDhKtIGi",
+          "name": "Supabase Service Role"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "number": [
+            {
+              "value1": "={{ $json.id ? 1 : 0 }}",
+              "operation": "equal",
+              "value2": 0
+            }
+          ]
+        }
+      },
+      "name": "No Response 4?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        5800,
+        100
+      ]
+    },
+    {
+      "parameters": {
+        "functionCode": "const ctx = $node['Set Context'].json;\nitems[0].json.claude_email4 = JSON.stringify({model:\"claude-sonnet-4-5-20250929\",max_tokens:1000,messages:[{role:\"user\",content:`Write an email with property recommendations or market insight for ${ctx.lead_name}, a ${ctx.lead_type} in ${ctx.interest}, El Paso. Language: ${ctx.language}. Include 1-2 specific neighborhood facts. Output ONLY valid JSON: {\"subject\":\"...\",\"body\":\"...(HTML allowed)\"}`}]});\nreturn items;"
+      },
+      "name": "Build Email 4 Body",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [
+        6000,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.anthropic.com/v1/messages",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-api-key",
+              "value": "={{$env.ANTHROPIC_API_KEY}}"
+            },
+            {
+              "name": "anthropic-version",
+              "value": "2023-06-01"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "={{ $json.claude_email4 }}",
+        "options": {}
+      },
+      "name": "Claude Email 4",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        6200,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "functionCode": "const c=items[0].json.content;let t=c&&Array.isArray(c)?c[0].text:'';let s='El Paso market insights',b=t;try{let cl=t.replace(/```json\\n?/g,'').replace(/```\\n?/g,'').trim();const p=JSON.parse(cl);s=p.subject||s;b=p.body||b;}catch(e){}items[0].json.email_subject=s;items[0].json.email_body=b;return items;"
+      },
+      "name": "Parse Email 4",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [
+        6400,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "fromEmail": "lorena.realtor@icloud.com",
+        "toEmail": "={{ $node['Set Context'].json.lead_email }}",
+        "subject": "={{ $json.email_subject }}",
+        "contentHtml": "={{ $json.email_body }}"
+      },
+      "name": "Send Email 4",
+      "type": "n8n-nodes-base.sendGrid",
+      "typeVersion": 1,
+      "position": [
+        6600,
+        0
+      ],
+      "credentials": {
+        "sendGridApi": {
+          "id": "PENDING",
+          "name": "SendGrid - Lorena Email"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "create",
+        "tableId": "messages",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "lead_id",
+              "fieldValue": "={{ $node['Set Context'].json.lead_id }}"
+            },
+            {
+              "fieldId": "agent_id",
+              "fieldValue": "6d51a7c2-271f-484a-bb11-5ee935f1358a"
+            },
+            {
+              "fieldId": "channel",
+              "fieldValue": "email"
+            },
+            {
+              "fieldId": "direction",
+              "fieldValue": "outbound"
+            },
+            {
+              "fieldId": "content",
+              "fieldValue": "={{ $node['Parse Email 4'].json.email_body }}"
+            },
+            {
+              "fieldId": "is_ai",
+              "fieldValue": "true"
+            },
+            {
+              "fieldId": "automation_source",
+              "fieldValue": "speed_to_lead"
+            }
+          ]
+        }
+      },
+      "name": "Log Email 4",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 2,
+      "position": [
+        6800,
+        0
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "37rJREccSDhKtIGi",
+          "name": "Supabase Service Role"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "amount": 12,
+        "unit": "hours"
+      },
+      "name": "Wait Morning",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1,
+      "position": [
+        7000,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "tableId": "messages",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "lead_id",
+              "keyValue": "={{ $node['Set Context'].json.lead_id }}"
+            },
+            {
+              "keyName": "direction",
+              "keyValue": "inbound"
+            }
+          ]
+        },
+        "limit": 1
+      },
+      "name": "Check Response 5",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 2,
+      "position": [
+        7200,
+        0
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "37rJREccSDhKtIGi",
+          "name": "Supabase Service Role"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "number": [
+            {
+              "value1": "={{ $json.id ? 1 : 0 }}",
+              "operation": "equal",
+              "value2": 0
+            }
+          ]
+        }
+      },
+      "name": "No Response 5?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        7400,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "functionCode": "const ctx=$node['Set Context'].json;\nitems[0].json.claude_sms5=JSON.stringify({model:\"claude-sonnet-4-5-20250929\",max_tokens:500,messages:[{role:\"user\",content:`Write a casual morning follow-up SMS for ${ctx.lead_name} in El Paso. They haven't replied. Be casual, mention you were thinking about their ${ctx.lead_type === 'seller' ? 'home selling goals' : 'home search'}. Language: ${ctx.language}. Under 160 chars. Output ONLY valid JSON: {\"sms_text\":\"...\"}`}]});\nreturn items;"
+      },
+      "name": "Build SMS 5 Body",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [
+        7600,
+        -100
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.anthropic.com/v1/messages",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-api-key",
+              "value": "={{$env.ANTHROPIC_API_KEY}}"
+            },
+            {
+              "name": "anthropic-version",
+              "value": "2023-06-01"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "={{ $json.claude_sms5 }}",
+        "options": {}
+      },
+      "name": "Claude SMS 5",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        7800,
+        -100
+      ]
+    },
+    {
+      "parameters": {
+        "functionCode": "const c=items[0].json.content;let t=c&&Array.isArray(c)?c[0].text:'';try{let cl=t.replace(/```json\\n?/g,'').replace(/```\\n?/g,'').trim();t=JSON.parse(cl).sms_text||t;}catch(e){}items[0].json.sms_text=t.substring(0,300);return items;"
+      },
+      "name": "Parse SMS 5",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [
+        8000,
+        -100
+      ]
+    },
+    {
+      "parameters": {
+        "from": "={{$credentials.twilioApi.phoneNumber}}",
+        "to": "={{ $node['Set Context'].json.lead_phone }}",
+        "message": "={{ $json.sms_text }}"
+      },
+      "name": "Send SMS 5",
+      "type": "n8n-nodes-base.twilio",
+      "typeVersion": 1,
+      "position": [
+        8200,
+        -100
+      ],
+      "credentials": {
+        "twilioApi": {
+          "id": "PENDING",
+          "name": "Twilio - Lorena SMS"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "create",
+        "tableId": "messages",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "lead_id",
+              "fieldValue": "={{ $node['Set Context'].json.lead_id }}"
+            },
+            {
+              "fieldId": "agent_id",
+              "fieldValue": "6d51a7c2-271f-484a-bb11-5ee935f1358a"
+            },
+            {
+              "fieldId": "channel",
+              "fieldValue": "sms"
+            },
+            {
+              "fieldId": "direction",
+              "fieldValue": "outbound"
+            },
+            {
+              "fieldId": "content",
+              "fieldValue": "={{ $node['Parse SMS 5'].json.sms_text }}"
+            },
+            {
+              "fieldId": "is_ai",
+              "fieldValue": "true"
+            },
+            {
+              "fieldId": "automation_source",
+              "fieldValue": "speed_to_lead"
+            }
+          ]
+        }
+      },
+      "name": "Log SMS 5",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 2,
+      "position": [
+        8400,
+        -100
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "37rJREccSDhKtIGi",
+          "name": "Supabase Service Role"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "amount": 48,
+        "unit": "hours"
+      },
+      "name": "Wait 2 Days",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1,
+      "position": [
+        8600,
+        -100
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "tableId": "messages",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "lead_id",
+              "keyValue": "={{ $node['Set Context'].json.lead_id }}"
+            },
+            {
+              "keyName": "direction",
+              "keyValue": "inbound"
+            }
+          ]
+        },
+        "limit": 1
+      },
+      "name": "Check Response 6",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 2,
+      "position": [
+        8800,
+        -100
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "37rJREccSDhKtIGi",
+          "name": "Supabase Service Role"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "number": [
+            {
+              "value1": "={{ $json.id ? 1 : 0 }}",
+              "operation": "equal",
+              "value2": 0
+            }
+          ]
+        }
+      },
+      "name": "No Response 6?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        9000,
+        -100
+      ]
+    },
+    {
+      "parameters": {
+        "functionCode": "const ctx=$node['Set Context'].json;\nitems[0].json.claude_email6=JSON.stringify({model:\"claude-sonnet-4-5-20250929\",max_tokens:1000,messages:[{role:\"user\",content:`Write an email with social proof for ${ctx.lead_name}, a ${ctx.lead_type} in El Paso. Include a brief testimonial angle (mention helping families find homes). Language: ${ctx.language}. Output ONLY valid JSON: {\"subject\":\"...\",\"body\":\"...(HTML)\"}`}]});\nreturn items;"
+      },
+      "name": "Build Email 6 Body",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [
+        9200,
+        -200
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.anthropic.com/v1/messages",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-api-key",
+              "value": "={{$env.ANTHROPIC_API_KEY}}"
+            },
+            {
+              "name": "anthropic-version",
+              "value": "2023-06-01"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "={{ $json.claude_email6 }}",
+        "options": {}
+      },
+      "name": "Claude Email 6",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        9400,
+        -200
+      ]
+    },
+    {
+      "parameters": {
+        "functionCode": "const c=items[0].json.content;let t=c&&Array.isArray(c)?c[0].text:'';let s='A neighbor who found their dream home',b=t;try{let cl=t.replace(/```json\\n?/g,'').replace(/```\\n?/g,'').trim();const p=JSON.parse(cl);s=p.subject||s;b=p.body||b;}catch(e){}items[0].json.email_subject=s;items[0].json.email_body=b;return items;"
+      },
+      "name": "Parse Email 6",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [
+        9600,
+        -200
+      ]
+    },
+    {
+      "parameters": {
+        "fromEmail": "lorena.realtor@icloud.com",
+        "toEmail": "={{ $node['Set Context'].json.lead_email }}",
+        "subject": "={{ $json.email_subject }}",
+        "contentHtml": "={{ $json.email_body }}"
+      },
+      "name": "Send Email 6",
+      "type": "n8n-nodes-base.sendGrid",
+      "typeVersion": 1,
+      "position": [
+        9800,
+        -200
+      ],
+      "credentials": {
+        "sendGridApi": {
+          "id": "PENDING",
+          "name": "SendGrid - Lorena Email"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "create",
+        "tableId": "messages",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "lead_id",
+              "fieldValue": "={{ $node['Set Context'].json.lead_id }}"
+            },
+            {
+              "fieldId": "agent_id",
+              "fieldValue": "6d51a7c2-271f-484a-bb11-5ee935f1358a"
+            },
+            {
+              "fieldId": "channel",
+              "fieldValue": "email"
+            },
+            {
+              "fieldId": "direction",
+              "fieldValue": "outbound"
+            },
+            {
+              "fieldId": "content",
+              "fieldValue": "={{ $node['Parse Email 6'].json.email_body }}"
+            },
+            {
+              "fieldId": "is_ai",
+              "fieldValue": "true"
+            },
+            {
+              "fieldId": "automation_source",
+              "fieldValue": "speed_to_lead"
+            }
+          ]
+        }
+      },
+      "name": "Log Email 6",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 2,
+      "position": [
+        10000,
+        -200
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "37rJREccSDhKtIGi",
+          "name": "Supabase Service Role"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "amount": 96,
+        "unit": "hours"
+      },
+      "name": "Wait 4 Days",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1,
+      "position": [
+        10200,
+        -200
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "tableId": "messages",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "lead_id",
+              "keyValue": "={{ $node['Set Context'].json.lead_id }}"
+            },
+            {
+              "keyName": "direction",
+              "keyValue": "inbound"
+            }
+          ]
+        },
+        "limit": 1
+      },
+      "name": "Check Response 7",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 2,
+      "position": [
+        10400,
+        -200
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "37rJREccSDhKtIGi",
+          "name": "Supabase Service Role"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "number": [
+            {
+              "value1": "={{ $json.id ? 1 : 0 }}",
+              "operation": "equal",
+              "value2": 0
+            }
+          ]
+        }
+      },
+      "name": "No Response 7?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        10600,
+        -200
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "tableId": "leads",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "id",
+              "keyValue": "={{ $node['Set Context'].json.lead_id }}"
+            }
+          ]
+        },
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "temperature",
+              "fieldValue": "cool"
+            }
+          ]
+        }
+      },
+      "name": "Mark Cool",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 2,
+      "position": [
+        10800,
+        -300
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "37rJREccSDhKtIGi",
+          "name": "Supabase Service Role"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "create",
+        "tableId": "notifications",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "agent_id",
+              "fieldValue": "6d51a7c2-271f-484a-bb11-5ee935f1358a"
+            },
+            {
+              "fieldId": "type",
+              "fieldValue": "speed_to_lead_complete"
+            },
+            {
+              "fieldId": "title",
+              "fieldValue": "Speed-to-Lead sequence complete"
+            },
+            {
+              "fieldId": "message",
+              "fieldValue": "={{ $node['Set Context'].json.lead_name + ' did not respond after 7 days. Moved to long-term drip.' }}"
+            },
+            {
+              "fieldId": "lead_id",
+              "fieldValue": "={{ $node['Set Context'].json.lead_id }}"
+            }
+          ]
+        }
+      },
+      "name": "Notify Complete",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 2,
+      "position": [
+        11000,
+        -300
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "37rJREccSDhKtIGi",
+          "name": "Supabase Service Role"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Get Lead",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Lead": {
+      "main": [
+        [
+          {
+            "node": "Get Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Agent": {
+      "main": [
+        [
+          {
+            "node": "Set Context",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Context": {
+      "main": [
+        [
+          {
+            "node": "Build SMS 1 Body",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build SMS 1 Body": {
+      "main": [
+        [
+          {
+            "node": "Claude SMS 1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Claude SMS 1": {
+      "main": [
+        [
+          {
+            "node": "Parse SMS 1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse SMS 1": {
+      "main": [
+        [
+          {
+            "node": "Send SMS 1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send SMS 1": {
+      "main": [
+        [
+          {
+            "node": "Log SMS 1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Log SMS 1": {
+      "main": [
+        [
+          {
+            "node": "Log Activity 1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Log Activity 1": {
+      "main": [
+        [
+          {
+            "node": "Wait 15m",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait 15m": {
+      "main": [
+        [
+          {
+            "node": "Check Response 2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Response 2": {
+      "main": [
+        [
+          {
+            "node": "No Response 2?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "No Response 2?": {
+      "main": [
+        [
+          {
+            "node": "Build Email 2 Body",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "Build Email 2 Body": {
+      "main": [
+        [
+          {
+            "node": "Claude Email 2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Claude Email 2": {
+      "main": [
+        [
+          {
+            "node": "Parse Email 2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse Email 2": {
+      "main": [
+        [
+          {
+            "node": "Send Email 2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Email 2": {
+      "main": [
+        [
+          {
+            "node": "Log Email 2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Log Email 2": {
+      "main": [
+        [
+          {
+            "node": "Wait 45m",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait 45m": {
+      "main": [
+        [
+          {
+            "node": "Check Response 3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Response 3": {
+      "main": [
+        [
+          {
+            "node": "No Response 3?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "No Response 3?": {
+      "main": [
+        [
+          {
+            "node": "Build SMS 3 Body",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "Build SMS 3 Body": {
+      "main": [
+        [
+          {
+            "node": "Claude SMS 3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Claude SMS 3": {
+      "main": [
+        [
+          {
+            "node": "Parse SMS 3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse SMS 3": {
+      "main": [
+        [
+          {
+            "node": "Send SMS 3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send SMS 3": {
+      "main": [
+        [
+          {
+            "node": "Log SMS 3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Log SMS 3": {
+      "main": [
+        [
+          {
+            "node": "Wait 3h",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait 3h": {
+      "main": [
+        [
+          {
+            "node": "Check Response 4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Response 4": {
+      "main": [
+        [
+          {
+            "node": "No Response 4?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "No Response 4?": {
+      "main": [
+        [
+          {
+            "node": "Build Email 4 Body",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "Build Email 4 Body": {
+      "main": [
+        [
+          {
+            "node": "Claude Email 4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Claude Email 4": {
+      "main": [
+        [
+          {
+            "node": "Parse Email 4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse Email 4": {
+      "main": [
+        [
+          {
+            "node": "Send Email 4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Email 4": {
+      "main": [
+        [
+          {
+            "node": "Log Email 4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Log Email 4": {
+      "main": [
+        [
+          {
+            "node": "Wait Morning",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait Morning": {
+      "main": [
+        [
+          {
+            "node": "Check Response 5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Response 5": {
+      "main": [
+        [
+          {
+            "node": "No Response 5?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "No Response 5?": {
+      "main": [
+        [
+          {
+            "node": "Build SMS 5 Body",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "Build SMS 5 Body": {
+      "main": [
+        [
+          {
+            "node": "Claude SMS 5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Claude SMS 5": {
+      "main": [
+        [
+          {
+            "node": "Parse SMS 5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse SMS 5": {
+      "main": [
+        [
+          {
+            "node": "Send SMS 5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send SMS 5": {
+      "main": [
+        [
+          {
+            "node": "Log SMS 5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Log SMS 5": {
+      "main": [
+        [
+          {
+            "node": "Wait 2 Days",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait 2 Days": {
+      "main": [
+        [
+          {
+            "node": "Check Response 6",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Response 6": {
+      "main": [
+        [
+          {
+            "node": "No Response 6?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "No Response 6?": {
+      "main": [
+        [
+          {
+            "node": "Build Email 6 Body",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "Build Email 6 Body": {
+      "main": [
+        [
+          {
+            "node": "Claude Email 6",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Claude Email 6": {
+      "main": [
+        [
+          {
+            "node": "Parse Email 6",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse Email 6": {
+      "main": [
+        [
+          {
+            "node": "Send Email 6",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Email 6": {
+      "main": [
+        [
+          {
+            "node": "Log Email 6",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Log Email 6": {
+      "main": [
+        [
+          {
+            "node": "Wait 4 Days",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait 4 Days": {
+      "main": [
+        [
+          {
+            "node": "Check Response 7",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Response 7": {
+      "main": [
+        [
+          {
+            "node": "No Response 7?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "No Response 7?": {
+      "main": [
+        [
+          {
+            "node": "Mark Cool",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "Mark Cool": {
+      "main": [
+        [
+          {
+            "node": "Notify Complete",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  }
+}

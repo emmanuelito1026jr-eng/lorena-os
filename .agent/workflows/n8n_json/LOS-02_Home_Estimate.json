@@ -1,0 +1,324 @@
+{
+  "name": "[LOS-02] Home Estimate \u2192 Seller Lead Capture",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "home-estimate",
+        "options": {}
+      },
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        240,
+        300
+      ],
+      "webhookId": "ebf3adb0-ca85-4e15-8ab1-83251c0f88a8"
+    },
+    {
+      "parameters": {
+        "functionCode": "const body = items[0].json.body || items[0].json;\nconst name = body.name || '';\nconst parts = name.split(' ');\nreturn [{\n  json: {\n    firstName: parts[0] || 'Unknown',\n    lastName: parts.slice(1).join(' ') || '',\n    email: body.email || '',\n    phone: body.phone || '',\n    address: body.address || '',\n    bedrooms: body.bedrooms || '',\n    bathrooms: body.bathrooms || '',\n    sqft: body.squareFeet || '',\n    year: body.yearBuilt || '',\n    condition: body.condition || '',\n    fullName: name\n  }\n}];"
+      },
+      "name": "Process Data",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [
+        460,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "row",
+        "operation": "create",
+        "tableId": "leads",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "first_name",
+              "fieldValue": "={{$json.firstName}}"
+            },
+            {
+              "fieldId": "last_name",
+              "fieldValue": "={{$json.lastName}}"
+            },
+            {
+              "fieldId": "email",
+              "fieldValue": "={{$json.email}}"
+            },
+            {
+              "fieldId": "phone",
+              "fieldValue": "={{$json.phone}}"
+            },
+            {
+              "fieldId": "source",
+              "fieldValue": "website"
+            },
+            {
+              "fieldId": "status",
+              "fieldValue": "new_lead"
+            },
+            {
+              "fieldId": "deal_type",
+              "fieldValue": "seller"
+            },
+            {
+              "fieldId": "score",
+              "fieldValue": "15"
+            },
+            {
+              "fieldId": "agent_id",
+              "fieldValue": "6d51a7c2-271f-484a-bb11-5ee935f1358a"
+            }
+          ]
+        }
+      },
+      "name": "Create Lead",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 2,
+      "position": [
+        680,
+        300
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "37rJREccSDhKtIGi",
+          "name": "Supabase Service Role"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "row",
+        "operation": "create",
+        "tableId": "homepulse_reports",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "lead_id",
+              "fieldValue": "={{$node[\"Create Lead\"].json.id}}"
+            },
+            {
+              "fieldId": "address",
+              "fieldValue": "={{$node[\"Process Data\"].json.address}}"
+            },
+            {
+              "fieldId": "estimated_value",
+              "fieldValue": "0"
+            },
+            {
+              "fieldId": "report_data",
+              "fieldValue": "={{ { bedrooms: $node[\"Process Data\"].json.bedrooms, bathrooms: $node[\"Process Data\"].json.bathrooms, sqft: $node[\"Process Data\"].json.sqft, year: $node[\"Process Data\"].json.year, condition: $node[\"Process Data\"].json.condition, status: 'pending_estimate' } }}"
+            },
+            {
+              "fieldId": "agent_id",
+              "fieldValue": "6d51a7c2-271f-484a-bb11-5ee935f1358a"
+            }
+          ]
+        }
+      },
+      "name": "Save Report",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 2,
+      "position": [
+        900,
+        300
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "37rJREccSDhKtIGi",
+          "name": "Supabase Service Role"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "row",
+        "operation": "create",
+        "tableId": "notifications",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "type",
+              "fieldValue": "seller_lead"
+            },
+            {
+              "fieldId": "title",
+              "fieldValue": "\ud83c\udfe0 New Seller Lead"
+            },
+            {
+              "fieldId": "message",
+              "fieldValue": "={{$node[\"Process Data\"].json.fullName}} requested estimate for {{$node[\"Process Data\"].json.address}}"
+            },
+            {
+              "fieldId": "lead_id",
+              "fieldValue": "={{$node[\"Create Lead\"].json.id}}"
+            },
+            {
+              "fieldId": "agent_id",
+              "fieldValue": "6d51a7c2-271f-484a-bb11-5ee935f1358a"
+            }
+          ]
+        }
+      },
+      "name": "Notify Agent",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 2,
+      "position": [
+        1120,
+        300
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "37rJREccSDhKtIGi",
+          "name": "Supabase Service Role"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fromEmail": "lorena.realtor@icloud.com",
+        "toEmail": "={{ $node[\"Process Data\"].json.email }}",
+        "subject": "=Your El Paso Home Value Estimate is Ready!",
+        "contentHtml": "=<div style=\"font-family:Arial,sans-serif;max-width:600px;margin:0 auto;\"><h2 style=\"color:#2D5A27;\">Your Home Value Estimate</h2><p>Hi {{ $node[\"Process Data\"].json.name }},</p><p>Thank you for requesting a home value estimate for <strong>{{ $node[\"Process Data\"].json.address }}</strong>.</p><p>Your preliminary estimate is being finalized. I'll provide a detailed Comparative Market Analysis (CMA) with comparable sales in your area soon.</p><p>In the meantime, here are some details about your property:</p><ul><li>\ud83c\udfe0 {{ $node[\"Process Data\"].json.bedrooms }} bed / {{ $node[\"Process Data\"].json.bathrooms }} bath</li><li>\ud83d\udcd0 {{ $node[\"Process Data\"].json.sqft }} sq ft</li><li>\ud83d\udcc5 Built {{ $node[\"Process Data\"].json.yearBuilt }}</li></ul><p>I'd love to discuss your options. Reply to this email or call me anytime!</p><p>- Lorena</p></div>",
+        "contentType": "text/html"
+      },
+      "name": "Send Estimate Email",
+      "type": "n8n-nodes-base.sendGrid",
+      "typeVersion": 1,
+      "position": [
+        1000,
+        300
+      ],
+      "credentials": {
+        "sendGridApi": {
+          "id": "PENDING",
+          "name": "SendGrid - Lorena Email"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "create",
+        "tableId": "messages",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "lead_id",
+              "fieldValue": "={{ $node['Create Lead'].json.id }}"
+            },
+            {
+              "fieldId": "agent_id",
+              "fieldValue": "6d51a7c2-271f-484a-bb11-5ee935f1358a"
+            },
+            {
+              "fieldId": "channel",
+              "fieldValue": "email"
+            },
+            {
+              "fieldId": "direction",
+              "fieldValue": "outbound"
+            },
+            {
+              "fieldId": "content",
+              "fieldValue": "Home estimate email sent"
+            },
+            {
+              "fieldId": "is_ai",
+              "fieldValue": "false"
+            },
+            {
+              "fieldId": "automation_source",
+              "fieldValue": "home_estimate"
+            }
+          ]
+        }
+      },
+      "name": "Log Estimate Email",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 2,
+      "position": [
+        1200,
+        300
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "37rJREccSDhKtIGi",
+          "name": "Supabase Service Role"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Process Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Process Data": {
+      "main": [
+        [
+          {
+            "node": "Create Lead",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Lead": {
+      "main": [
+        [
+          {
+            "node": "Save Report",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Save Report": {
+      "main": [
+        [
+          {
+            "node": "Send Estimate Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Estimate Email": {
+      "main": [
+        [
+          {
+            "node": "Log Estimate Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Log Estimate Email": {
+      "main": [
+        [
+          {
+            "node": "Notify Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  }
+}

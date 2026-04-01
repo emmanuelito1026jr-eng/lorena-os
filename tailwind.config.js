@@ -7,15 +7,17 @@ export default {
     "./components/**/*.{js,ts,jsx,tsx}",
     "./pages/**/*.{js,ts,jsx,tsx}",
     "./utils/**/*.{js,ts,jsx,tsx}",
+    "./lib/**/*.{ts,tsx}",
+    "./hooks/**/*.{ts,tsx}",
   ],
   theme: {
     extend: {
       colors: {
         gold: {
-          DEFAULT: '#C5A95E',
-          dark: '#B8973A',
-          light: '#E0C67B',
-          50: '#FBF7ED',
+          DEFAULT: '#C9A84C',
+          dark: '#B49A3A',
+          light: '#D4B96A',
+          50: '#FBF7EC',
         },
         dark: {
           DEFAULT: '#0A0A0A',
@@ -25,6 +27,30 @@ export default {
         warm: {
           white: '#FAFAF5',
           ivory: '#F5F0E8',
+        },
+        // Dashboard design system colors
+        dashboard: {
+          gold: '#C9A84C',
+          black: '#0A0A0A',
+          offwhite: '#FAFAF5',
+          body: '#333333',
+          secondary: '#888888',
+          surface: '#F5F5F0',
+          border: '#E5E5E0',
+          teal: '#0D9488',
+          'teal-light': '#CCFBF1',
+          accent: '#F59E0B',
+        },
+        score: {
+          hot: '#DC2626',
+          warm: '#EA580C',
+          cool: '#2563EB',
+          cold: '#9CA3AF',
+        },
+        status: {
+          success: '#16A34A',
+          error: '#DC2626',
+          warning: '#F59E0B',
         },
       },
       fontFamily: {
@@ -60,8 +86,8 @@ export default {
       boxShadow: {
         'premium': '0 4px 24px rgba(0, 0, 0, 0.08)',
         'premium-lg': '0 8px 40px rgba(0, 0, 0, 0.12)',
-        'gold-glow': '0 8px 32px rgba(197, 169, 94, 0.25)',
-        'gold-glow-lg': '0 16px 48px rgba(197, 169, 94, 0.35)',
+        'gold-glow': '0 8px 32px rgba(201, 168, 76, 0.25)',
+        'gold-glow-lg': '0 16px 48px rgba(201, 168, 76, 0.35)',
       },
     },
   },

@@ -5,6 +5,7 @@ export const REALTOR_NAME = "Lorena Ontiveros-Ortega";
 export const PHONE_NUMBER = "915-487-5581";
 export const OFFICE_NUMBER = "915-615-2653";
 export const EMAIL_ADDRESS = "lorena.realtor@icloud.com";
+export const BUSINESS_EMAIL = "lorena@casasenelpasotx.com";
 export const WEBSITE = "www.lorenaontiveros.com";
 export const ADDRESS = "10420 Montwood Dr., Ste N-163, El Paso, TX 79935";
 export const BROKERAGE = "The Right Move Real Estate Group";
@@ -20,11 +21,11 @@ export const PARTNER_NMLS = "NMLS #833420";
 export const PARTNER_ADDRESS = "221 N Kansas St., Ste. 726, El Paso, TX 79901";
 
 export const NAV_LINKS: NavLink[] = [
-  { label: 'Search Homes', href: '#/properties' },
-  { label: 'Neighborhoods', href: '#neighborhoods' },
-  { label: 'About', href: '#/about' },
-  { label: 'Home Estimate', href: '#/estimate' },
-  { label: 'Mortgage', href: '#/mortgage' },
+  { label: 'Search Homes', to: '/properties' },
+  { label: 'Neighborhoods', to: '/neighborhoods' },
+  { label: 'About', to: '/about' },
+  { label: 'Home Estimate', to: '/estimate' },
+  { label: 'Contact', to: '/contact' },
 ];
 
 export const SERVICES: Service[] = [
@@ -33,21 +34,21 @@ export const SERVICES: Service[] = [
     subtitle: "Buyers",
     description: "From mortgage readiness to closing day, I guide you through every step with the financial expertise most realtors don't have.",
     iconName: "Home",
-    image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800&h=500&fit=crop&q=80"
+    image: "/images/services/buying.jpg"
   },
   {
     title: "Vendedores",
     subtitle: "Sellers",
     description: "Strategic pricing, professional marketing, and skilled negotiation to maximize your home's value in any market.",
     iconName: "TrendingUp",
-    image: "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=800&h=500&fit=crop&q=80"
+    image: "/images/services/selling.jpg"
   },
   {
     title: "Inversiones",
     subtitle: "Investments",
     description: "Leverage the El Paso-Juárez bilateral market for smart investment opportunities on both sides of the border.",
     iconName: "Building",
-    image: "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800&h=500&fit=crop&q=80"
+    image: "/images/services/valuation.jpg"
   }
 ];
 
@@ -55,22 +56,32 @@ export const NEIGHBORHOODS: Neighborhood[] = [
   {
     name: "Westside",
     description: "Luxury living with mountain views and top-rated schools.",
-    image: "https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=800&h=600&fit=crop&q=80"
+    image: "/images/neighborhoods/westside.jpg"
   },
   {
     name: "Upper Valley",
     description: "Lush green landscapes, river proximity, and spacious estates.",
-    image: "https://images.unsplash.com/photo-1580587771525-78b9dba3b914?w=800&h=600&fit=crop&q=80"
+    image: "/images/neighborhoods/upper-valley.jpg"
+  },
+  {
+    name: "Northeast",
+    description: "Established neighborhoods near Fort Bliss with great value.",
+    image: "/images/neighborhoods/northeast.jpg"
   },
   {
     name: "Horizon City",
     description: "Rapidly growing community perfect for new families.",
-    image: "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=800&h=600&fit=crop&q=80"
+    image: "/images/neighborhoods/horizon-city.jpg"
   },
   {
-    name: "Cimarron",
-    description: "Modern master-planned community with exclusive amenities.",
-    image: "https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde?w=800&h=600&fit=crop&q=80"
+    name: "Central",
+    description: "Historic charm meets urban living in the heart of El Paso.",
+    image: "/images/neighborhoods/central.jpg"
+  },
+  {
+    name: "Eastlake",
+    description: "Family-friendly master-planned community with modern amenities.",
+    image: "/images/neighborhoods/eastlake.jpg"
   }
 ];
 
@@ -107,7 +118,7 @@ export const NEIGHBORHOODS_DETAIL: NeighborhoodDetail[] = [
     id: 'westside',
     name: 'Westside',
     description: 'Luxury living with mountain views and top-rated schools.',
-    image: 'https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=600&h=400&fit=crop&q=80',
+    image: '/images/neighborhoods/westside.jpg',
     medianPrice: 450000,
     priceRange: [250000, 1200000],
     coordinates: [31.8456, -106.6055],
@@ -127,7 +138,7 @@ export const NEIGHBORHOODS_DETAIL: NeighborhoodDetail[] = [
     id: 'upper-valley',
     name: 'Upper Valley',
     description: 'Lush green landscapes, river proximity, and spacious estates.',
-    image: 'https://images.unsplash.com/photo-1580587771525-78b9dba3b914?w=600&h=400&fit=crop&q=80',
+    image: '/images/neighborhoods/upper-valley.jpg',
     medianPrice: 380000,
     priceRange: [200000, 850000],
     coordinates: [31.8762, -106.5821],
@@ -143,10 +154,30 @@ export const NEIGHBORHOODS_DETAIL: NeighborhoodDetail[] = [
     }
   },
   {
+    id: 'northeast',
+    name: 'Northeast',
+    description: 'Established neighborhoods near Fort Bliss with great value.',
+    image: '/images/neighborhoods/northeast.jpg',
+    medianPrice: 245000,
+    priceRange: [150000, 400000],
+    coordinates: [31.8541, -106.3890],
+    schools: [
+      { name: 'Montwood High School', type: 'High School', rating: 7, distance: 2.5 },
+      { name: 'Pebble Hills Elementary', type: 'Elementary', rating: 8, distance: 1.2 },
+    ],
+    amenities: ['Fort Bliss Access', 'Parks', 'Shopping Centers', 'Family Restaurants', 'Movie Theaters'],
+    demographics: {
+      population: 120000,
+      medianAge: 30,
+      medianIncome: 52000,
+      homeownership: 55
+    }
+  },
+  {
     id: 'horizon-city',
     name: 'Horizon City',
     description: 'Rapidly growing community perfect for new families.',
-    image: 'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=600&h=400&fit=crop&q=80',
+    image: '/images/neighborhoods/horizon-city.jpg',
     medianPrice: 295000,
     priceRange: [180000, 500000],
     coordinates: [31.6943, -106.2050],
@@ -162,22 +193,43 @@ export const NEIGHBORHOODS_DETAIL: NeighborhoodDetail[] = [
     }
   },
   {
-    id: 'cimarron',
-    name: 'Cimarron',
-    description: 'Modern master-planned community with exclusive amenities.',
-    image: 'https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde?w=600&h=400&fit=crop&q=80',
-    medianPrice: 520000,
-    priceRange: [350000, 1500000],
-    coordinates: [31.9123, -106.6234],
+    id: 'central',
+    name: 'Central',
+    description: 'Historic charm meets urban living in the heart of El Paso.',
+    image: '/images/neighborhoods/central.jpg',
+    medianPrice: 185000,
+    priceRange: [120000, 350000],
+    coordinates: [31.7587, -106.4870],
     schools: [
-      { name: 'Franklin High School', type: 'High School', rating: 9, distance: 1.8 },
+      { name: 'El Paso High School', type: 'High School', rating: 6, distance: 1.8 },
+      { name: 'Mesita Elementary', type: 'Elementary', rating: 7, distance: 0.9 },
     ],
-    amenities: ['Golf Course', 'Country Club', 'Tennis Courts', 'Swimming Pools', 'Fitness Center'],
+    amenities: ['Downtown Dining', 'Museums', 'Art Galleries', 'UTEP Campus', 'Historic Architecture', 'Public Transit'],
     demographics: {
-      population: 12000,
-      medianAge: 42,
-      medianIncome: 95000,
-      homeownership: 82
+      population: 65000,
+      medianAge: 34,
+      medianIncome: 38000,
+      homeownership: 45
+    }
+  },
+  {
+    id: 'eastlake',
+    name: 'Eastlake',
+    description: 'Family-friendly master-planned community with modern amenities.',
+    image: '/images/neighborhoods/eastlake.jpg',
+    medianPrice: 310000,
+    priceRange: [220000, 480000],
+    coordinates: [31.6800, -106.2700],
+    schools: [
+      { name: 'Eastlake High School', type: 'High School', rating: 8, distance: 1.5 },
+      { name: 'Lujan-Chavez Elementary', type: 'Elementary', rating: 8, distance: 1.0 },
+    ],
+    amenities: ['Community Pools', 'Splash Pads', 'Walking Trails', 'Sports Fields', 'New Construction', 'Shopping'],
+    demographics: {
+      population: 35000,
+      medianAge: 29,
+      medianIncome: 62000,
+      homeownership: 70
     }
   }
 ];

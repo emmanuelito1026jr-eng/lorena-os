@@ -1,0 +1,297 @@
+{
+  "name": "[LOS-08] 60-Second CMA Generator",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "generate-cma",
+        "options": {}
+      },
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        240,
+        300
+      ],
+      "webhookId": "8f18018b-6fc2-4d58-a84c-91092fc4d4dd"
+    },
+    {
+      "parameters": {
+        "keepOnlySet": true,
+        "values": {
+          "string": [
+            {
+              "name": "address",
+              "value": "={{$json.body.address}}"
+            },
+            {
+              "name": "lead_id",
+              "value": "={{$json.body.lead_id}}"
+            },
+            {
+              "name": "agent_id",
+              "value": "={{$json.body.agent_id}}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "name": "Extract Data",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 1,
+      "position": [
+        460,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.anthropic.com/v1/messages",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-api-key",
+              "value": "={{$env.ANTHROPIC_API_KEY}}"
+            },
+            {
+              "name": "anthropic-version",
+              "value": "2023-06-01"
+            }
+          ]
+        },
+        "sendBody": true,
+        "options": {},
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "={{ $json.requestBody }}"
+      },
+      "name": "Claude CMA",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        680,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "functionCode": "const content = items[0].json.content[0].text;\nreturn [{ json: JSON.parse(content) }];"
+      },
+      "name": "Parse CMA",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [
+        900,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "tableId": "cma_reports",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "agent_id",
+              "fieldValue": "6d51a7c2-271f-484a-bb11-5ee935f1358a"
+            },
+            {
+              "fieldId": "lead_id",
+              "fieldValue": "={{$node[\"Extract Data\"].json[\"lead_id\"]}}"
+            },
+            {
+              "fieldId": "address",
+              "fieldValue": "={{$node[\"Extract Data\"].json[\"address\"]}}"
+            },
+            {
+              "fieldId": "report_data",
+              "fieldValue": "={{$node[\"Parse CMA\"].json}}"
+            },
+            {
+              "fieldId": "status",
+              "fieldValue": "complete"
+            }
+          ]
+        },
+        "operation": "create",
+        "resource": "row"
+      },
+      "name": "Save CMA",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 2,
+      "position": [
+        1120,
+        300
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "37rJREccSDhKtIGi",
+          "name": "Supabase Service Role"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "tableId": "notifications",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "type",
+              "fieldValue": "cma_ready"
+            },
+            {
+              "fieldId": "title",
+              "fieldValue": "\ud83d\udccb CMA Ready"
+            },
+            {
+              "fieldId": "message",
+              "fieldValue": "CMA for {{$node[\"Extract Data\"].json[\"address\"]}} is ready. Val: ${{$node[\"Parse CMA\"].json[\"subject_property\"][\"estimated_value_mid\"]}}"
+            },
+            {
+              "fieldId": "lead_id",
+              "fieldValue": "={{$node[\"Extract Data\"].json[\"lead_id\"]}}"
+            },
+            {
+              "fieldId": "agent_id",
+              "fieldValue": "6d51a7c2-271f-484a-bb11-5ee935f1358a"
+            }
+          ]
+        },
+        "operation": "create",
+        "resource": "row"
+      },
+      "name": "Notify",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 2,
+      "position": [
+        1340,
+        300
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "37rJREccSDhKtIGi",
+          "name": "Supabase Service Role"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "functionCode": "const address = items[0].json.address || 'El Paso TX';\nconst prompt = `You are a real estate CMA expert for El Paso, TX. Generate a realistic Comparative Market Analysis (CMA) for the property at ${address}. You MUST respond with ONLY valid JSON. No markdown code blocks, no explanation, no text before or after. Just raw JSON with these exact keys: subject_property (object: address, beds, baths, sqft, lot_size, year_built), comparable_sales (array of 3 objects: address, sale_price, sale_date, sqft, price_per_sqft), market_trends (object: median_price, avg_days_on_market, inventory_level, price_trend), pricing_recommendation (object: suggested_list_price, price_range_low, price_range_high, rationale). Use realistic El Paso market data.`;\n\nitems[0].json.requestBody = JSON.stringify({\n  model: \"claude-sonnet-4-5-20250929\",\n  max_tokens: 3000,\n  messages: [{role: \"user\", content: prompt}]\n});\nitems[0].json.address = address;\nreturn items;"
+      },
+      "name": "Build Body",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [
+        640,
+        300
+      ],
+      "id": "build-body-node"
+    },
+    {
+      "parameters": {
+        "fromEmail": "lorena.realtor@icloud.com",
+        "toEmail": "={{ $node[\"Extract Data\"].json.email || \"\" }}",
+        "subject": "=Your Comparative Market Analysis for {{ $node[\"Extract Data\"].json.address }}",
+        "contentHtml": "=<div style=\"font-family:Arial,sans-serif;max-width:600px;margin:0 auto;\"><h2 style=\"color:#2D5A27;\">Your CMA Report</h2><p>Hi there!</p><p>Here is your Comparative Market Analysis for <strong>{{ $node[\"Extract Data\"].json.address }}</strong>.</p><p>Based on recent comparable sales in your area, here are the highlights:</p><p><strong>Suggested List Price:</strong> ${{ $node[\"Parse CMA\"].json.pricing_recommendation?.suggested_list_price || \"Contact me for details\" }}</p><p>I'd love to discuss these numbers in detail. Call me anytime!</p><p>- Lorena</p></div>",
+        "contentType": "text/html"
+      },
+      "name": "Email CMA",
+      "type": "n8n-nodes-base.sendGrid",
+      "typeVersion": 1,
+      "position": [
+        1200,
+        300
+      ],
+      "credentials": {
+        "sendGridApi": {
+          "id": "PENDING",
+          "name": "SendGrid - Lorena Email"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Extract Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Data": {
+      "main": [
+        [
+          {
+            "node": "Build Body",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Claude CMA": {
+      "main": [
+        [
+          {
+            "node": "Parse CMA",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse CMA": {
+      "main": [
+        [
+          {
+            "node": "Save CMA",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Save CMA": {
+      "main": [
+        [
+          {
+            "node": "Notify",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Body": {
+      "main": [
+        [
+          {
+            "node": "Claude CMA",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Notify": {
+      "main": [
+        [
+          {
+            "node": "Email CMA",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  }
+}

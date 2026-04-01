@@ -1,0 +1,269 @@
+{
+  "name": "[LOS-01] Contact Form \u2192 Lead Capture",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "contact-form",
+        "options": {}
+      },
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        240,
+        300
+      ],
+      "webhookId": "923e6586-7688-46fa-966f-846ffc9c0341"
+    },
+    {
+      "parameters": {
+        "functionCode": "const body = items[0].json.body || items[0].json;\nconst name = body.name || '';\nconst parts = name.split(' ');\nconst firstName = parts[0] || 'Unknown';\nconst lastName = parts.slice(1).join(' ') || '';\nconst email = body.email || '';\nconst phone = body.phone || '';\nconst type = body.type || 'buyer';\nconst source = body.source || 'website';\n\nlet score = 10;\nif (type === 'buyer') score += 5;\nif (type === 'seller') score += 5;\nlet temp = 'cold';\nif (score >= 15) temp = 'cool';\n\nreturn [{\n  json: {\n    firstName, lastName, email, phone,\n    source, type,\n    score, temp,\n    dealType: type === 'seller' ? 'seller' : 'buyer',\n    fullName: name\n  }\n}];"
+      },
+      "name": "Process Lead",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [
+        460,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "row",
+        "operation": "create",
+        "tableId": "leads",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "first_name",
+              "fieldValue": "={{$json.firstName}}"
+            },
+            {
+              "fieldId": "last_name",
+              "fieldValue": "={{$json.lastName}}"
+            },
+            {
+              "fieldId": "email",
+              "fieldValue": "={{$json.email}}"
+            },
+            {
+              "fieldId": "phone",
+              "fieldValue": "={{$json.phone}}"
+            },
+            {
+              "fieldId": "source",
+              "fieldValue": "={{$json.source}}"
+            },
+            {
+              "fieldId": "status",
+              "fieldValue": "new_lead"
+            },
+            {
+              "fieldId": "score",
+              "fieldValue": "={{$json.score}}"
+            },
+            {
+              "fieldId": "deal_type",
+              "fieldValue": "={{$json.dealType}}"
+            },
+            {
+              "fieldId": "agent_id",
+              "fieldValue": "6d51a7c2-271f-484a-bb11-5ee935f1358a"
+            }
+          ]
+        }
+      },
+      "name": "Create Lead",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 2,
+      "position": [
+        680,
+        300
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "37rJREccSDhKtIGi",
+          "name": "Supabase Service Role"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "row",
+        "operation": "create",
+        "tableId": "notifications",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "type",
+              "fieldValue": "new_lead"
+            },
+            {
+              "fieldId": "title",
+              "fieldValue": "\ud83c\udd95 New Website Lead"
+            },
+            {
+              "fieldId": "message",
+              "fieldValue": "={{$node[\"Process Lead\"].json.fullName}} submitted the contact form."
+            },
+            {
+              "fieldId": "lead_id",
+              "fieldValue": "={{$node[\"Create Lead\"].json.id}}"
+            },
+            {
+              "fieldId": "agent_id",
+              "fieldValue": "6d51a7c2-271f-484a-bb11-5ee935f1358a"
+            }
+          ]
+        }
+      },
+      "name": "Notify Agent",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 2,
+      "position": [
+        900,
+        300
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "37rJREccSDhKtIGi",
+          "name": "Supabase Service Role"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fromEmail": "lorena.realtor@icloud.com",
+        "toEmail": "={{ $json.email }}",
+        "subject": "=Hi {{ $json.first_name }}, thank you for reaching out!",
+        "contentHtml": "=<div style=\"font-family:Arial,sans-serif;max-width:600px;margin:0 auto;\"><h2 style=\"color:#2D5A27;\">\u00a1Hola {{ $json.first_name }}!</h2><p>Thank you for reaching out! I'm Lorena, your El Paso real estate expert.</p><p>I noticed you're interested in <strong>{{ $json.source }}</strong>. I'd love to help you find the perfect home in El Paso.</p><p>I'll be in touch within the hour to learn more about what you're looking for.</p><p style=\"margin-top:20px;\">Warmly,<br><strong>Lorena</strong><br>Your El Paso Real Estate Expert<br>\ud83d\udcf1 Call/Text anytime</p></div>",
+        "contentType": "text/html"
+      },
+      "name": "Send Welcome Email",
+      "type": "n8n-nodes-base.sendGrid",
+      "typeVersion": 1,
+      "position": [
+        800,
+        300
+      ],
+      "credentials": {
+        "sendGridApi": {
+          "id": "PENDING",
+          "name": "SendGrid - Lorena Email"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "create",
+        "tableId": "messages",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "lead_id",
+              "fieldValue": "={{ $node['Create Lead'].json.id }}"
+            },
+            {
+              "fieldId": "agent_id",
+              "fieldValue": "6d51a7c2-271f-484a-bb11-5ee935f1358a"
+            },
+            {
+              "fieldId": "channel",
+              "fieldValue": "email"
+            },
+            {
+              "fieldId": "direction",
+              "fieldValue": "outbound"
+            },
+            {
+              "fieldId": "content",
+              "fieldValue": "Welcome email sent to new lead"
+            },
+            {
+              "fieldId": "is_ai",
+              "fieldValue": "false"
+            },
+            {
+              "fieldId": "automation_source",
+              "fieldValue": "contact_form"
+            }
+          ]
+        }
+      },
+      "name": "Log Email",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 2,
+      "position": [
+        1000,
+        300
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "37rJREccSDhKtIGi",
+          "name": "Supabase Service Role"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Process Lead",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Process Lead": {
+      "main": [
+        [
+          {
+            "node": "Create Lead",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Lead": {
+      "main": [
+        [
+          {
+            "node": "Send Welcome Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Welcome Email": {
+      "main": [
+        [
+          {
+            "node": "Log Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Log Email": {
+      "main": [
+        [
+          {
+            "node": "Notify Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  }
+}

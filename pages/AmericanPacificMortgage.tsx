@@ -1,11 +1,10 @@
-import { useEffect } from 'react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
+import { usePageTitle } from '../hooks/usePageTitle';
 import ContactForm from '../components/ContactForm';
 import {
   PARTNER_NAME,
   PARTNER_TITLE,
-  PARTNER_COMPANY,
   PARTNER_PHONE,
   PARTNER_EMAIL,
   PARTNER_WEBSITE,
@@ -13,13 +12,9 @@ import {
   PARTNER_ADDRESS
 } from '../constants';
 import { Phone, Mail, Globe, MapPin, Award, TrendingUp, Shield, Home } from 'lucide-react';
-import { staggerReveal } from '../utils/animations';
 
 const AmericanPacificMortgage = () => {
-  useEffect(() => {
-    staggerReveal('.service-card', 0.15);
-  }, []);
-
+  usePageTitle('American Pacific Mortgage');
   return (
     <div className="bg-white min-h-screen">
       <Navbar />
@@ -60,6 +55,9 @@ const AmericanPacificMortgage = () => {
                 src="/images/emmanuel-professional.jpg"
                 alt={`${PARTNER_NAME}, ${PARTNER_TITLE}`}
                 className="w-full h-full object-contain"
+                width={400}
+                height={400}
+                loading="lazy"
               />
             </div>
 
@@ -121,7 +119,7 @@ const AmericanPacificMortgage = () => {
               { icon: Award, title: 'VA & FHA Loans', description: 'Specialized programs for veterans and first-time buyers' },
               { icon: Shield, title: 'Pre-Approval', description: 'Get approved before you start shopping' }
             ].map((service, index) => (
-              <div key={index} className="service-card bg-white p-8 rounded-lg shadow-premium hover:shadow-gold-glow transition-premium">
+              <div key={index} className="service-card bg-white p-8 rounded-lg shadow-premium hover:shadow-gold-glow transition-premium animate-fade-in-up" style={{ animationDelay: `${index * 150}ms` }}>
                 <service.icon className="text-gold mb-4" size={40} />
                 <h3 className="font-playfair text-xl text-dark mb-3">{service.title}</h3>
                 <p className="font-lato text-dark/70 text-sm">{service.description}</p>
