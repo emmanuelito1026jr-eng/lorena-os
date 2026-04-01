@@ -16,7 +16,8 @@ export function usePipelineStats() {
     queryFn: async (): Promise<PipelineStats[]> => {
       const { data, error } = await supabase
         .from('leads')
-        .select('status');
+        .select('status')
+        .range(0, 4999);
       if (error) throw error;
 
       const statusMap: Record<string, { label: string; color: string }> = {
@@ -295,7 +296,7 @@ export function usePerformanceMetrics() {
       const monthStart = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-01`;
 
       const [leads, closedDeals, enrollments, outboundMsgs] = await Promise.all([
-        supabase.from('leads').select('score'),
+        supabase.from('leads').select('score').range(0, 4999),
         supabase
           .from('deals')
           .select('sale_price, list_price')

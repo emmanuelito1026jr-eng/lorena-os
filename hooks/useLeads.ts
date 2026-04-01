@@ -16,7 +16,7 @@ export function useLeads(filters?: LeadFilters) {
   return useQuery({
     queryKey: ['leads', filters],
     queryFn: async (): Promise<Lead[]> => {
-      let query = supabase.from('leads').select('*');
+      let query = supabase.from('leads').select('*').range(0, 4999);
 
       if (filters?.temperature) {
         query = query.eq('temperature', filters.temperature);

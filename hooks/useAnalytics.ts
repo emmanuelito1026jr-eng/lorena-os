@@ -56,7 +56,7 @@ export function useLeadSourceStats(dateRange?: { start: string; end: string } | 
     queryFn: async (): Promise<LeadSourceStat[]> => {
       let query = supabase
         .from('leads')
-        .select('source, score');
+        .select('source, score').range(0, 4999);
       if (dateRange) {
         query = query.gte('created_at', `${dateRange.start}T00:00:00`).lte('created_at', `${dateRange.end}T23:59:59`);
       }
