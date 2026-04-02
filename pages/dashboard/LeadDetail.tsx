@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Phone, Mail, MessageSquare, Calendar, MapPin, Clock, Tag, DollarSign, Globe, Activity, Zap, CheckSquare, X, BarChart3 } from 'lucide-react';
+import { ArrowLeft, Phone, Mail, MessageSquare, Calendar, MapPin, Clock, Tag, DollarSign, Globe, Activity, Zap, CheckSquare, X, BarChart3, Send, Eye, Heart, Search, ChevronDown, ChevronRight, Shield, Home, Cake, Users, CheckCircle2, AlertTriangle, Pause } from 'lucide-react';
 import { EmptyState } from '../../components/shared/EmptyState';
 import { SkeletonCard } from '../../components/shared/Skeleton';
 import { LeadScoreBadge } from '../../components/shared/LeadScoreBadge';
@@ -53,7 +53,7 @@ const CATEGORY_COLORS: Record<ScoreCategory, string> = {
   Risk: 'text-red-600 bg-red-50',
 };
 
-const tabs = ['Overview', 'Activity', 'Messages', 'Showings', 'Sequences', 'Checklists'];
+const tabs = ['Overview', 'Timeline', 'Showings', 'Sequences', 'Checklists'];
 const STATUS_OPTIONS: LeadStatus[] = ['new_lead', 'attempted_contact', 'contacted', 'appointment_set', 'appointment_met', 'active_client', 'pending_client', 'past_client', 'lost'];
 
 export default function LeadDetail() {
@@ -65,6 +65,8 @@ export default function LeadDetail() {
   const [newTag, setNewTag] = useState('');
   const [editingNotes, setEditingNotes] = useState(false);
   const [notesValue, setNotesValue] = useState('');
+  const [showVerification, setShowVerification] = useState(false);
+  const [timelineFilter, setTimelineFilter] = useState<'all' | 'activity' | 'message' | 'showing'>('all');
   const updateLead = useUpdateLead();
 
   const { data: lead, isLoading, error } = useLead(id ?? '');
@@ -131,6 +133,79 @@ export default function LeadDetail() {
     ? `$${(lead.budget_min / 1000).toFixed(0)}K - $${(lead.budget_max / 1000).toFixed(0)}K`
     : lead.budget_min ? `$${(lead.budget_min / 1000).toFixed(0)}K+` : null;
 
+  // Parse custom_fields from CINC import
+  const cf = ((lead.custom_fields ?? {}) as Record<string, unknown>);
+  const cincActivity = (cf.cinc_activity ?? null) as {
+    property_views?: number; favorite_properties?: number;
+    saved_searches?: number; property_inquiries?: number; login_count?: number;
+  } | null;
+  const homeAddress = (cf.home_address ?? null) as {
+    address?: string; city?: string; state?: string; zip?: string;
+  } | null;
+  const secondaryContact = (cf.secondary_contact ?? null) as {
+    name?: string; phone?: string; relationship?: string;
+  } | null;
+
+  const parseCINCDate = (raw: unknown): { month: number; day: number; year: number } | null => {
+    if (!raw || typeof raw !== 'string') return null;
+    const m = raw.trim().match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+    if (!m) return null;
+    const month = parseInt(m[1], 10);
+    const day = parseInt(m[2], 10);
+    const year = parseInt(m[3], 10);
+    if (month < 1 || month > 12 || day < 1 || day > 31) return null;
+    return { month, day, year };
+  };
+
+  const formatCINCDate = (raw: unknown, type: 'birthday' | 'anniversary') => {
+    const d = parseCINCDate(raw);
+    if (!d) return null;
+    const dateObj = new Date(d.year, d.month - 1, d.day);
+    const formatted = format(dateObj, 'MMM d');
+    const now = new Date();
+    if (type === 'birthday') {
+      const age = now.getFullYear() - d.year;
+      return `${formatted} (${t('leadDetail.turnsAge').replace('{n}', String(age))})`;
+    }
+    const years = now.getFullYear() - d.year;
+    return `${formatted} (${t('leadDetail.yearsInHome').replace('{n}', String(years))})`;
+  };
+
+  const hasFinancialData = lead.pre_approved || lead.budget_min || lead.budget_max || lead.deal_type || lead.lender_name;
+  const hasCincActivity = cincActivity && (cincActivity.property_views || cincActivity.favorite_properties || cincActivity.saved_searches || cincActivity.property_inquiries);
+  const hasPersonalDetails = homeAddress?.address || cf.birthday || cf.spouse_birthday || cf.home_anniversary;
+
+  // Unified timeline merge
+  type TimelineItem = {
+    id: string;
+    type: 'activity' | 'message_in' | 'message_out' | 'showing';
+    timestamp: string;
+    action?: string; points?: number;
+    content?: string; channel?: string;
+    address?: string; showingStatus?: string; startTime?: string;
+  };
+
+  const timeline = useMemo<TimelineItem[]>(() => {
+    const items: TimelineItem[] = [];
+    for (const act of activities ?? []) {
+      items.push({ id: `act-${act.id}`, type: 'activity', timestamp: act.created_at, action: act.action, points: act.points });
+    }
+    for (const msg of messages ?? []) {
+      items.push({ id: `msg-${msg.id}`, type: msg.direction === 'inbound' ? 'message_in' : 'message_out', timestamp: msg.created_at, content: msg.content, channel: msg.channel });
+    }
+    for (const sh of showings ?? []) {
+      items.push({ id: `sh-${sh.id}`, type: 'showing', timestamp: sh.date, address: sh.address, showingStatus: sh.status, startTime: sh.start_time });
+    }
+    return items.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
+  }, [activities, messages, showings]);
+
+  const filteredTimeline = useMemo(() => {
+    if (timelineFilter === 'all') return timeline;
+    if (timelineFilter === 'activity') return timeline.filter(t => t.type === 'activity');
+    if (timelineFilter === 'message') return timeline.filter(t => t.type === 'message_in' || t.type === 'message_out');
+    return timeline.filter(t => t.type === 'showing');
+  }, [timeline, timelineFilter]);
+
   return (
     <div className="space-y-6">
       <Link to="/dashboard/leads" className="inline-flex items-center gap-1.5 font-lato text-sm text-dashboard-secondary hover:text-dashboard-body transition-colors">
@@ -149,6 +224,26 @@ export default function LeadDetail() {
               <LeadScoreBadge score={lead.score} size="md" showLabel />
               {lead.preferred_language === 'es' && (
                 <span className="px-2 py-0.5 bg-blue-50 text-blue-600 rounded text-xs font-lato font-medium">Spanish</span>
+              )}
+              {lead.deal_type && (
+                <span className={`px-2 py-0.5 rounded text-xs font-lato font-medium ${
+                  lead.deal_type === 'buyer' ? 'bg-blue-50 text-blue-600'
+                  : lead.deal_type === 'seller' ? 'bg-teal-50 text-teal-600'
+                  : 'bg-purple-50 text-purple-600'
+                }`}>
+                  {lead.deal_type === 'dual' ? t('leadDetail.dual') : lead.deal_type === 'buyer' ? t('leadDetail.buyer') : t('leadDetail.seller')}
+                </span>
+              )}
+              {(lead.verification_status === 'bad_info' || lead.verification_status === 'do_not_contact') && (
+                <span className="px-2 py-0.5 bg-red-50 text-red-600 rounded text-xs font-lato font-medium flex items-center gap-1">
+                  <AlertTriangle size={10} />
+                  {lead.verification_status === 'bad_info' ? t('leadDetail.badInfo') : t('leadDetail.doNotContact')}
+                </span>
+              )}
+              {lead.nurture_paused && (
+                <span className="px-2 py-0.5 bg-yellow-50 text-yellow-700 rounded text-xs font-lato font-medium flex items-center gap-1">
+                  <Pause size={10} /> {t('leadDetail.paused')}
+                </span>
               )}
             </div>
             <div className="flex items-center gap-4 mt-1 flex-wrap">
@@ -244,9 +339,8 @@ export default function LeadDetail() {
               }`}
             >
               {tab}
-              {tab === 'Messages' && messages?.length ? <span className="ml-1 text-xs opacity-60">({messages.length})</span> : null}
+              {tab === 'Timeline' && timeline.length ? <span className="ml-1 text-xs opacity-60">({timeline.length})</span> : null}
               {tab === 'Showings' && showings?.length ? <span className="ml-1 text-xs opacity-60">({showings.length})</span> : null}
-              {tab === 'Activity' && activities?.length ? <span className="ml-1 text-xs opacity-60">({activities.length})</span> : null}
               {tab === 'Sequences' && enrollments?.length ? <span className="ml-1 text-xs opacity-60">({enrollments.length})</span> : null}
               {tab === 'Checklists' && checklists?.length ? <span className="ml-1 text-xs opacity-60">({checklists.length})</span> : null}
             </button>
@@ -256,82 +350,234 @@ export default function LeadDetail() {
 
       {/* Tab Content */}
       {activeTab === 'Overview' && (
-        <div role="tabpanel" id="tabpanel-overview" aria-labelledby="tab-overview" className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Contact Info */}
-          <div className="bg-white rounded-xl border border-dashboard-border p-5 space-y-4">
-            <h3 className="font-playfair text-base font-bold text-dashboard-black">Contact Information</h3>
-            {lead.phone && (
-              <div className="flex items-center gap-3">
-                <Phone size={16} className="text-dashboard-secondary shrink-0" />
-                <span className="font-lato text-sm text-dashboard-body">{lead.phone}</span>
+        <div role="tabpanel" id="tabpanel-overview" aria-labelledby="tab-overview" className="space-y-6">
+
+          {/* Section 1: Financial Qualification */}
+          {hasFinancialData && (
+            <div className="bg-white rounded-xl border border-dashboard-border p-5">
+              <h3 className="font-playfair text-base font-bold text-dashboard-black mb-4 flex items-center gap-2">
+                <DollarSign size={18} className="text-dashboard-gold" />
+                {t('leadDetail.financial')}
+              </h3>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                <div>
+                  <p className="font-lato text-xs text-dashboard-secondary mb-1">{t('leadDetail.preApproved')}</p>
+                  {lead.pre_approved ? (
+                    <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-green-50 text-green-700 rounded text-sm font-lato font-medium">
+                      <CheckCircle2 size={12} /> {t('leadDetail.preApproved')}
+                    </span>
+                  ) : (
+                    <span className="font-lato text-sm text-dashboard-secondary">{t('leadDetail.notPreApproved')}</span>
+                  )}
+                </div>
+                {lead.pre_approval_amount && (
+                  <div>
+                    <p className="font-lato text-xs text-dashboard-secondary mb-1">{t('leadDetail.preApprovalAmount')}</p>
+                    <p className="font-lato text-sm font-medium text-dashboard-black">
+                      {new Intl.NumberFormat('en-US', { style: 'currency', maximumFractionDigits: 0 }).format(lead.pre_approval_amount)}
+                    </p>
+                  </div>
+                )}
+                {budgetStr && (
+                  <div>
+                    <p className="font-lato text-xs text-dashboard-secondary mb-1">{t('leadDetail.budget')}</p>
+                    <p className="font-lato text-sm font-medium text-dashboard-black">{budgetStr}</p>
+                  </div>
+                )}
+                {lead.lender_name && (
+                  <div>
+                    <p className="font-lato text-xs text-dashboard-secondary mb-1">{t('leadDetail.lender')}</p>
+                    <p className="font-lato text-sm text-dashboard-body">{lead.lender_name}</p>
+                  </div>
+                )}
               </div>
-            )}
-            {lead.email && (
-              <div className="flex items-center gap-3">
-                <Mail size={16} className="text-dashboard-secondary shrink-0" />
-                <span className="font-lato text-sm text-dashboard-body">{lead.email}</span>
+            </div>
+          )}
+
+          {/* Section 2: Property Activity (CINC metrics) */}
+          <div className="bg-white rounded-xl border border-dashboard-border p-5">
+            <h3 className="font-playfair text-base font-bold text-dashboard-black mb-4 flex items-center gap-2">
+              <Eye size={18} className="text-dashboard-gold" />
+              {t('leadDetail.propertyActivity')}
+            </h3>
+            {hasCincActivity ? (
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                <div className="text-center p-3 bg-dashboard-surface rounded-lg">
+                  <Eye size={20} className="mx-auto text-dashboard-secondary mb-1" />
+                  <p className="font-lato text-xl font-bold text-dashboard-black">{cincActivity?.property_views ?? 0}</p>
+                  <p className="font-lato text-xs text-dashboard-secondary">{t('leadDetail.propertyViews')}</p>
+                </div>
+                <div className="text-center p-3 bg-dashboard-surface rounded-lg">
+                  <Heart size={20} className="mx-auto text-dashboard-secondary mb-1" />
+                  <p className="font-lato text-xl font-bold text-dashboard-black">{cincActivity?.favorite_properties ?? 0}</p>
+                  <p className="font-lato text-xs text-dashboard-secondary">{t('leadDetail.favorites')}</p>
+                </div>
+                <div className="text-center p-3 bg-dashboard-surface rounded-lg">
+                  <Search size={20} className="mx-auto text-dashboard-secondary mb-1" />
+                  <p className="font-lato text-xl font-bold text-dashboard-black">{cincActivity?.saved_searches ?? 0}</p>
+                  <p className="font-lato text-xs text-dashboard-secondary">{t('leadDetail.savedSearches')}</p>
+                </div>
+                <div className="text-center p-3 bg-dashboard-surface rounded-lg">
+                  <MessageSquare size={20} className="mx-auto text-dashboard-secondary mb-1" />
+                  <p className="font-lato text-xl font-bold text-dashboard-black">{cincActivity?.property_inquiries ?? 0}</p>
+                  <p className="font-lato text-xs text-dashboard-secondary">{t('leadDetail.inquiries')}</p>
+                </div>
               </div>
+            ) : (
+              <p className="font-lato text-sm text-dashboard-secondary">{t('leadDetail.noActivity')}</p>
             )}
-            {lead.preferred_language && (
+          </div>
+
+          {/* Section 3: Contact & Communication */}
+          <div className="bg-white rounded-xl border border-dashboard-border p-5">
+            <h3 className="font-playfair text-base font-bold text-dashboard-black mb-4 flex items-center gap-2">
+              <Phone size={18} className="text-dashboard-gold" />
+              {t('leadDetail.contact')}
+            </h3>
+            <div className="space-y-3">
+              {lead.phone && (
+                <div className="flex items-center gap-3">
+                  <Phone size={16} className="text-dashboard-secondary shrink-0" />
+                  <a href={`tel:${lead.phone}`} className="font-lato text-sm text-dashboard-body hover:text-dashboard-gold transition-colors">{lead.phone}</a>
+                </div>
+              )}
+              {lead.email && (
+                <div className="flex items-center gap-3">
+                  <Mail size={16} className="text-dashboard-secondary shrink-0" />
+                  <a href={`mailto:${lead.email}`} className="font-lato text-sm text-dashboard-body hover:text-dashboard-gold transition-colors">{lead.email}</a>
+                </div>
+              )}
+              <div className="flex flex-wrap gap-4">
+                {lead.communication_preference && lead.communication_preference !== 'any' && (
+                  <div className="flex items-center gap-2">
+                    <span className="font-lato text-xs text-dashboard-secondary">{t('leadDetail.commPref')}:</span>
+                    <span className="px-2 py-0.5 bg-dashboard-surface rounded text-xs font-lato font-medium text-dashboard-body uppercase">{lead.communication_preference}</span>
+                  </div>
+                )}
+                {lead.best_call_time && (
+                  <div className="flex items-center gap-2">
+                    <Clock size={14} className="text-dashboard-secondary" />
+                    <span className="font-lato text-xs text-dashboard-secondary">{t('leadDetail.bestCallTime')}:</span>
+                    <span className="font-lato text-xs text-dashboard-body">{lead.best_call_time}</span>
+                  </div>
+                )}
+              </div>
               <div className="flex items-center gap-3">
                 <Globe size={16} className="text-dashboard-secondary shrink-0" />
                 <span className="font-lato text-sm text-dashboard-body">{lead.preferred_language === 'es' ? 'Spanish' : 'English'}</span>
               </div>
-            )}
+              {/* Co-Buyer / Spouse */}
+              {secondaryContact?.name && (
+                <div className="mt-3 pt-3 border-t border-dashboard-border">
+                  <p className="font-lato text-xs text-dashboard-secondary mb-2 flex items-center gap-1.5">
+                    <Users size={14} /> {t('leadDetail.cobuyer')}
+                  </p>
+                  <div className="flex items-center gap-3">
+                    <span className="font-lato text-sm text-dashboard-body">{secondaryContact.name}</span>
+                    {secondaryContact.relationship && (
+                      <span className="px-2 py-0.5 bg-purple-50 text-purple-600 rounded text-[10px] font-lato font-medium">{secondaryContact.relationship}</span>
+                    )}
+                  </div>
+                  {secondaryContact.phone && (
+                    <a href={`tel:${secondaryContact.phone}`} className="font-lato text-sm text-dashboard-body hover:text-dashboard-gold transition-colors mt-1 inline-block">{secondaryContact.phone}</a>
+                  )}
+                </div>
+              )}
+            </div>
           </div>
 
-          {/* Preferences */}
-          <div className="bg-white rounded-xl border border-dashboard-border p-5 space-y-4">
-            <h3 className="font-playfair text-base font-bold text-dashboard-black">Preferences</h3>
-            {budgetStr && (
-              <div className="flex items-center gap-3">
-                <DollarSign size={16} className="text-dashboard-secondary shrink-0" />
-                <span className="font-lato text-sm text-dashboard-body">{budgetStr}</span>
-              </div>
-            )}
-            {lead.property_type && (
-              <div className="flex items-center gap-3">
-                <MapPin size={16} className="text-dashboard-secondary shrink-0" />
-                <span className="font-lato text-sm text-dashboard-body capitalize">{lead.property_type.replace('_', ' ')}</span>
-              </div>
-            )}
-            {lead.preferred_areas?.length > 0 && (
-              <div className="flex items-center gap-3">
-                <MapPin size={16} className="text-dashboard-secondary shrink-0" />
-                <span className="font-lato text-sm text-dashboard-body">{lead.preferred_areas.join(', ')}</span>
-              </div>
-            )}
-            {lead.timeline && (
-              <div className="flex items-center gap-3">
-                <Clock size={16} className="text-dashboard-secondary shrink-0" />
-                <span className="font-lato text-sm text-dashboard-body">{lead.timeline}</span>
-              </div>
-            )}
-            <div className="flex items-start gap-3">
-              <Tag size={16} className="text-dashboard-secondary shrink-0 mt-1" />
-              <div>
-                <div className="flex flex-wrap gap-1">
-                  {(lead.tags || []).map(tag => (
-                    <span key={tag} className="px-2 py-0.5 bg-dashboard-surface rounded text-xs font-lato text-dashboard-secondary inline-flex items-center gap-1">
-                      {tag}
-                      <button onClick={() => { const newTags = (lead.tags || []).filter(t => t !== tag); updateLead.mutate({ id: lead.id, updates: { tags: newTags } }, { onSuccess: () => showToast('Tag removed') }); }} aria-label={`Remove tag ${tag}`} className="hover:text-red-500 transition-colors"><X size={10} /></button>
-                    </span>
-                  ))}
+          {/* Section 4: Preferences */}
+          <div className="bg-white rounded-xl border border-dashboard-border p-5">
+            <h3 className="font-playfair text-base font-bold text-dashboard-black mb-4 flex items-center gap-2">
+              <MapPin size={18} className="text-dashboard-gold" />
+              {t('leadDetail.preferences')}
+            </h3>
+            <div className="space-y-3">
+              {lead.property_type && (
+                <div className="flex items-center gap-3">
+                  <Home size={16} className="text-dashboard-secondary shrink-0" />
+                  <span className="font-lato text-sm text-dashboard-body capitalize">{lead.property_type.replace('_', ' ')}</span>
                 </div>
-                <input
-                  type="text"
-                  value={newTag}
-                  onChange={(e) => setNewTag(e.target.value)}
-                  onKeyDown={(e) => { if (e.key === 'Enter' && newTag.trim()) { const tags = [...(lead.tags || []), newTag.trim()]; updateLead.mutate({ id: lead.id, updates: { tags } }, { onSuccess: () => { showToast('Tag added'); setNewTag(''); } }); } }}
-                  placeholder="Add tag..."
-                  className="mt-1.5 px-2 py-1 border border-transparent hover:border-dashboard-border focus:border-dashboard-gold/50 rounded text-xs font-lato text-dashboard-body placeholder:text-dashboard-secondary focus:outline-none focus:ring-1 focus:ring-dashboard-gold/20 w-28"
-                />
+              )}
+              {lead.preferred_areas?.length > 0 && (
+                <div className="flex items-center gap-3">
+                  <MapPin size={16} className="text-dashboard-secondary shrink-0" />
+                  <span className="font-lato text-sm text-dashboard-body">{lead.preferred_areas.join(', ')}</span>
+                </div>
+              )}
+              {lead.timeline && (
+                <div className="flex items-center gap-3">
+                  <Clock size={16} className="text-dashboard-secondary shrink-0" />
+                  <span className="font-lato text-sm text-dashboard-body">{lead.timeline}</span>
+                </div>
+              )}
+              <div className="flex items-start gap-3">
+                <Tag size={16} className="text-dashboard-secondary shrink-0 mt-1" />
+                <div>
+                  <div className="flex flex-wrap gap-1">
+                    {(lead.tags || []).map(tag => (
+                      <span key={tag} className="px-2 py-0.5 bg-dashboard-surface rounded text-xs font-lato text-dashboard-secondary inline-flex items-center gap-1">
+                        {tag}
+                        <button onClick={() => { const newTags = (lead.tags || []).filter(tg => tg !== tag); updateLead.mutate({ id: lead.id, updates: { tags: newTags } }, { onSuccess: () => showToast('Tag removed') }); }} aria-label={`Remove tag ${tag}`} className="hover:text-red-500 transition-colors"><X size={10} /></button>
+                      </span>
+                    ))}
+                  </div>
+                  <input
+                    type="text"
+                    value={newTag}
+                    onChange={(e) => setNewTag(e.target.value)}
+                    onKeyDown={(e) => { if (e.key === 'Enter' && newTag.trim()) { const tags = [...(lead.tags || []), newTag.trim()]; updateLead.mutate({ id: lead.id, updates: { tags } }, { onSuccess: () => { showToast('Tag added'); setNewTag(''); } }); } }}
+                    placeholder="Add tag..."
+                    className="mt-1.5 px-2 py-1 border border-transparent hover:border-dashboard-border focus:border-dashboard-gold/50 rounded text-xs font-lato text-dashboard-body placeholder:text-dashboard-secondary focus:outline-none focus:ring-1 focus:ring-dashboard-gold/20 w-28"
+                  />
+                </div>
               </div>
             </div>
           </div>
 
-          {/* Notes */}
-          <div className="bg-white rounded-xl border border-dashboard-border p-5 lg:col-span-2">
+          {/* Section 5: Personal Details */}
+          {hasPersonalDetails && (
+            <div className="bg-white rounded-xl border border-dashboard-border p-5">
+              <h3 className="font-playfair text-base font-bold text-dashboard-black mb-4 flex items-center gap-2">
+                <Cake size={18} className="text-dashboard-gold" />
+                {t('leadDetail.personal')}
+              </h3>
+              <div className="space-y-3">
+                {homeAddress?.address && (
+                  <div className="flex items-center gap-3">
+                    <Home size={16} className="text-dashboard-secondary shrink-0" />
+                    <span className="font-lato text-sm text-dashboard-body">
+                      {[homeAddress.address, homeAddress.city, homeAddress.state, homeAddress.zip].filter(Boolean).join(', ')}
+                    </span>
+                  </div>
+                )}
+                {cf.birthday && (
+                  <div className="flex items-center gap-3">
+                    <Cake size={16} className="text-dashboard-secondary shrink-0" />
+                    <span className="font-lato text-xs text-dashboard-secondary mr-1">{t('leadDetail.birthday')}:</span>
+                    <span className="font-lato text-sm text-dashboard-body">{formatCINCDate(cf.birthday, 'birthday') ?? String(cf.birthday)}</span>
+                  </div>
+                )}
+                {cf.spouse_birthday && (
+                  <div className="flex items-center gap-3">
+                    <Cake size={16} className="text-dashboard-secondary shrink-0" />
+                    <span className="font-lato text-xs text-dashboard-secondary mr-1">{t('leadDetail.spouseBirthday')}:</span>
+                    <span className="font-lato text-sm text-dashboard-body">{formatCINCDate(cf.spouse_birthday, 'birthday') ?? String(cf.spouse_birthday)}</span>
+                  </div>
+                )}
+                {cf.home_anniversary && (
+                  <div className="flex items-center gap-3">
+                    <Home size={16} className="text-dashboard-secondary shrink-0" />
+                    <span className="font-lato text-xs text-dashboard-secondary mr-1">{t('leadDetail.homeAnniversary')}:</span>
+                    <span className="font-lato text-sm text-dashboard-body">{formatCINCDate(cf.home_anniversary, 'anniversary') ?? String(cf.home_anniversary)}</span>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* Section 6: Notes */}
+          <div className="bg-white rounded-xl border border-dashboard-border p-5">
             <h3 className="font-playfair text-base font-bold text-dashboard-black mb-2">Notes</h3>
             {editingNotes ? (
               <textarea
@@ -351,8 +597,8 @@ export default function LeadDetail() {
             )}
           </div>
 
-          {/* Score Breakdown */}
-          <div className="bg-white rounded-xl border border-dashboard-border p-5 lg:col-span-2">
+          {/* Section 7: Score Breakdown */}
+          <div className="bg-white rounded-xl border border-dashboard-border p-5">
             <div className="flex items-center gap-2 mb-4">
               <BarChart3 size={18} className="text-dashboard-gold" />
               <h3 className="font-playfair text-base font-bold text-dashboard-black">Score Breakdown</h3>
@@ -361,35 +607,20 @@ export default function LeadDetail() {
             {!activities?.length ? (
               <p className="font-lato text-sm text-dashboard-secondary">No scored activity yet. Actions that contribute to the lead score will appear here.</p>
             ) : (() => {
-              // Count occurrences and total points per action type from lead_activity
               const actionCounts = new Map<string, { count: number; totalPoints: number }>();
               for (const act of activities) {
                 const existing = actionCounts.get(act.action);
-                if (existing) {
-                  existing.count += 1;
-                  existing.totalPoints += act.points;
-                } else {
-                  actionCounts.set(act.action, { count: 1, totalPoints: act.points });
-                }
+                if (existing) { existing.count += 1; existing.totalPoints += act.points; }
+                else { actionCounts.set(act.action, { count: 1, totalPoints: act.points }); }
               }
-
-              // Group by category
               const categoryGroups = new Map<ScoreCategory, { action: string; label: string; pointValue: number; count: number; totalPoints: number }[]>();
               for (const [action, data] of actionCounts.entries()) {
                 const category = ACTION_CATEGORIES[action as ActionType] ?? 'Engagement';
                 const pointValue = SCORING_TABLE[action as ActionType] ?? 0;
                 if (!categoryGroups.has(category)) categoryGroups.set(category, []);
-                categoryGroups.get(category)!.push({
-                  action,
-                  label: ACTION_LABELS[action] ?? action.replace(/_/g, ' '),
-                  pointValue,
-                  count: data.count,
-                  totalPoints: data.totalPoints,
-                });
+                categoryGroups.get(category)!.push({ action, label: ACTION_LABELS[action] ?? action.replace(/_/g, ' '), pointValue, count: data.count, totalPoints: data.totalPoints });
               }
-
               const categoryOrder: ScoreCategory[] = ['Intent', 'Interest', 'Engagement', 'Decay', 'Risk'];
-
               return (
                 <div className="space-y-4">
                   {categoryOrder.map((category) => {
@@ -399,99 +630,170 @@ export default function LeadDetail() {
                     return (
                       <div key={category}>
                         <div className="flex items-center gap-2 mb-2">
-                          <span className={`px-2 py-0.5 rounded text-xs font-lato font-medium ${CATEGORY_COLORS[category]}`}>
-                            {category}
-                          </span>
-                          <span className={`font-lato text-xs font-bold ${categoryTotal >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                            {categoryTotal >= 0 ? '+' : ''}{categoryTotal} pts
-                          </span>
+                          <span className={`px-2 py-0.5 rounded text-xs font-lato font-medium ${CATEGORY_COLORS[category]}`}>{category}</span>
+                          <span className={`font-lato text-xs font-bold ${categoryTotal >= 0 ? 'text-green-600' : 'text-red-600'}`}>{categoryTotal >= 0 ? '+' : ''}{categoryTotal} pts</span>
                         </div>
                         <div className="space-y-1">
-                          {items
-                            .sort((a, b) => Math.abs(b.totalPoints) - Math.abs(a.totalPoints))
-                            .map((item) => (
-                              <div key={item.action} className="flex items-center justify-between py-1.5 px-2 rounded hover:bg-dashboard-surface/50">
-                                <div className="flex items-center gap-3 min-w-0">
-                                  <span className="font-lato text-sm text-dashboard-body capitalize truncate">{item.label}</span>
-                                  <span className="font-lato text-xs text-dashboard-secondary shrink-0">
-                                    {item.pointValue >= 0 ? '+' : ''}{item.pointValue} pts each
-                                  </span>
-                                </div>
-                                <div className="flex items-center gap-3 shrink-0">
-                                  <span className="font-lato text-xs text-dashboard-secondary">&times;{item.count}</span>
-                                  <span className={`font-lato text-sm font-bold min-w-[50px] text-right ${item.totalPoints >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                                    {item.totalPoints >= 0 ? '+' : ''}{item.totalPoints}
-                                  </span>
-                                </div>
+                          {items.sort((a, b) => Math.abs(b.totalPoints) - Math.abs(a.totalPoints)).map((item) => (
+                            <div key={item.action} className="flex items-center justify-between py-1.5 px-2 rounded hover:bg-dashboard-surface/50">
+                              <div className="flex items-center gap-3 min-w-0">
+                                <span className="font-lato text-sm text-dashboard-body capitalize truncate">{item.label}</span>
+                                <span className="font-lato text-xs text-dashboard-secondary shrink-0">{item.pointValue >= 0 ? '+' : ''}{item.pointValue} pts each</span>
                               </div>
-                            ))}
+                              <div className="flex items-center gap-3 shrink-0">
+                                <span className="font-lato text-xs text-dashboard-secondary">&times;{item.count}</span>
+                                <span className={`font-lato text-sm font-bold min-w-[50px] text-right ${item.totalPoints >= 0 ? 'text-green-600' : 'text-red-600'}`}>{item.totalPoints >= 0 ? '+' : ''}{item.totalPoints}</span>
+                              </div>
+                            </div>
+                          ))}
                         </div>
                       </div>
                     );
                   })}
-                  {/* Grand Total */}
                   <div className="border-t border-dashboard-border pt-3 flex items-center justify-between">
                     <span className="font-lato text-sm font-medium text-dashboard-black">Total from {activities.length} activities</span>
-                    <span className="font-playfair text-lg font-bold text-dashboard-gold">
-                      {activities.reduce((sum, act) => sum + act.points, 0)} pts
-                    </span>
+                    <span className="font-playfair text-lg font-bold text-dashboard-gold">{activities.reduce((sum, act) => sum + act.points, 0)} pts</span>
                   </div>
                 </div>
               );
             })()}
           </div>
-        </div>
-      )}
 
-      {activeTab === 'Activity' && (
-        <div role="tabpanel" id="tabpanel-activity" aria-labelledby="tab-activity" className="bg-white rounded-xl border border-dashboard-border">
-          {!activities?.length ? (
-            <div className="p-8">
-              <EmptyState icon={Activity} title="No Activity" description="Lead activity and score events will appear here." />
-            </div>
-          ) : (
-            <div className="divide-y divide-dashboard-border">
-              {activities.map((act) => (
-                <div key={act.id} className="p-4 flex items-start gap-3">
-                  <div className="w-8 h-8 rounded-full bg-dashboard-surface flex items-center justify-center shrink-0 mt-0.5">
-                    <Activity size={14} className="text-dashboard-secondary" />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="font-lato text-sm text-dashboard-body capitalize">{act.action.replace(/_/g, ' ')}</p>
-                    <p className="font-lato text-xs text-dashboard-secondary mt-0.5">{format(new Date(act.created_at), 'MMM d, yyyy h:mm a')}</p>
-                  </div>
-                  <span className={`font-lato text-sm font-medium ${act.points >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                    {act.points >= 0 ? '+' : ''}{act.points}
+          {/* Section 8: Verification & Import (collapsed) */}
+          <div className="bg-white rounded-xl border border-dashboard-border">
+            <button
+              onClick={() => setShowVerification(!showVerification)}
+              className="w-full p-5 flex items-center justify-between min-h-[44px]"
+            >
+              <h3 className="font-playfair text-base font-bold text-dashboard-black flex items-center gap-2">
+                <Shield size={18} className="text-dashboard-secondary" />
+                {t('leadDetail.verification')}
+              </h3>
+              {showVerification ? <ChevronDown size={18} className="text-dashboard-secondary" /> : <ChevronRight size={18} className="text-dashboard-secondary" />}
+            </button>
+            {showVerification && (
+              <div className="px-5 pb-5 space-y-3 border-t border-dashboard-border pt-3">
+                <div className="flex items-center gap-3">
+                  <span className="font-lato text-xs text-dashboard-secondary w-24">{t('leadDetail.verification')}:</span>
+                  <span className={`px-2 py-0.5 rounded text-xs font-lato font-medium ${
+                    lead.verification_status === 'verified' ? 'bg-green-50 text-green-700'
+                    : lead.verification_status === 'bad_info' ? 'bg-red-50 text-red-600'
+                    : lead.verification_status === 'do_not_contact' ? 'bg-red-50 text-red-600'
+                    : 'bg-gray-50 text-gray-600'
+                  }`}>
+                    {lead.verification_status === 'verified' ? t('leadDetail.verified')
+                      : lead.verification_status === 'bad_info' ? t('leadDetail.badInfo')
+                      : lead.verification_status === 'do_not_contact' ? t('leadDetail.doNotContact')
+                      : t('leadDetail.unverified')}
                   </span>
                 </div>
-              ))}
-            </div>
-          )}
+                {lead.imported_at && (
+                  <div className="flex items-center gap-3">
+                    <span className="font-lato text-xs text-dashboard-secondary w-24">{t('leadDetail.importedOn')}:</span>
+                    <span className="font-lato text-sm text-dashboard-body">{format(new Date(lead.imported_at), 'MMM d, yyyy')}</span>
+                  </div>
+                )}
+                {lead.referral_count > 0 && (
+                  <div className="flex items-center gap-3">
+                    <span className="font-lato text-xs text-dashboard-secondary w-24">{t('leadDetail.referrals')}:</span>
+                    <span className="font-lato text-sm text-dashboard-body">{lead.referral_count}</span>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
         </div>
       )}
 
-      {activeTab === 'Messages' && (
-        <div role="tabpanel" id="tabpanel-messages" aria-labelledby="tab-messages" className="bg-white rounded-xl border border-dashboard-border">
-          {!messages?.length ? (
-            <div className="p-8">
-              <EmptyState icon={MessageSquare} title="No Messages" description="Conversations with this lead will appear here." />
-            </div>
-          ) : (
-            <div className="p-4 space-y-3 max-h-[500px] overflow-y-auto">
-              {messages.map((msg) => (
-                <div key={msg.id} className={`flex ${msg.direction === 'outbound' ? 'justify-end' : 'justify-start'}`}>
-                  <div className={`max-w-[75%] rounded-lg p-3 ${
-                    msg.direction === 'outbound' ? 'bg-dashboard-gold text-white' : 'bg-dashboard-surface text-dashboard-body'
-                  }`}>
-                    <p className="font-lato text-sm">{msg.content}</p>
-                    <p className={`font-lato text-[10px] mt-1 ${msg.direction === 'outbound' ? 'text-white/70' : 'text-dashboard-secondary'}`}>
-                      {format(new Date(msg.created_at), 'MMM d, h:mm a')} &middot; {msg.channel}
-                    </p>
+      {/* Unified Timeline Tab */}
+      {activeTab === 'Timeline' && (
+        <div role="tabpanel" id="tabpanel-timeline" aria-labelledby="tab-timeline" className="space-y-4">
+          {/* Filter buttons */}
+          <div className="flex gap-1 bg-dashboard-surface rounded-lg p-1">
+            {(['all', 'activity', 'message', 'showing'] as const).map((filter) => (
+              <button
+                key={filter}
+                onClick={() => setTimelineFilter(filter)}
+                className={`flex-1 px-3 py-2 rounded-md font-lato text-xs font-medium transition-colors min-h-[36px] ${
+                  timelineFilter === filter
+                    ? 'bg-white text-dashboard-gold shadow-sm'
+                    : 'text-dashboard-secondary hover:text-dashboard-body'
+                }`}
+              >
+                {filter === 'all' ? t('leadDetail.allFilter')
+                  : filter === 'activity' ? t('leadDetail.activityFilter')
+                  : filter === 'message' ? t('leadDetail.messagesFilter')
+                  : t('leadDetail.showingsFilter')}
+              </button>
+            ))}
+          </div>
+
+          <div className="bg-white rounded-xl border border-dashboard-border">
+            {!filteredTimeline.length ? (
+              <div className="p-8">
+                <EmptyState icon={Activity} title={t('leadDetail.noTimeline')} description={t('leadDetail.noTimelineDesc')} />
+              </div>
+            ) : (
+              <div className="divide-y divide-dashboard-border">
+                {filteredTimeline.map((item) => (
+                  <div key={item.id} className="p-4 flex items-start gap-3">
+                    <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 mt-0.5 ${
+                      item.type === 'activity' ? 'bg-dashboard-surface'
+                      : item.type === 'message_in' ? 'bg-blue-50'
+                      : item.type === 'message_out' ? 'bg-dashboard-gold/10'
+                      : 'bg-purple-50'
+                    }`}>
+                      {item.type === 'activity' && <Activity size={14} className="text-dashboard-secondary" />}
+                      {item.type === 'message_in' && <MessageSquare size={14} className="text-blue-600" />}
+                      {item.type === 'message_out' && <Send size={14} className="text-dashboard-gold" />}
+                      {item.type === 'showing' && <Calendar size={14} className="text-purple-600" />}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      {item.type === 'activity' && (
+                        <>
+                          <p className="font-lato text-sm text-dashboard-body capitalize">{(item.action ?? '').replace(/_/g, ' ')}</p>
+                          <p className="font-lato text-xs text-dashboard-secondary mt-0.5">{format(new Date(item.timestamp), 'MMM d, yyyy h:mm a')}</p>
+                        </>
+                      )}
+                      {(item.type === 'message_in' || item.type === 'message_out') && (
+                        <>
+                          <p className="font-lato text-sm text-dashboard-body">
+                            {(item.content ?? '').length > 100 ? (item.content ?? '').slice(0, 100) + '...' : item.content}
+                          </p>
+                          <div className="flex items-center gap-2 mt-0.5">
+                            <p className="font-lato text-xs text-dashboard-secondary">{format(new Date(item.timestamp), 'MMM d, h:mm a')}</p>
+                            {item.channel && <span className="px-1.5 py-0.5 bg-dashboard-surface rounded text-[10px] font-lato text-dashboard-secondary">{item.channel}</span>}
+                            <span className="font-lato text-[10px] text-dashboard-secondary">{item.type === 'message_in' ? 'Inbound' : 'Outbound'}</span>
+                          </div>
+                        </>
+                      )}
+                      {item.type === 'showing' && (
+                        <>
+                          <p className="font-lato text-sm font-medium text-dashboard-black">{item.address}</p>
+                          <div className="flex items-center gap-2 mt-0.5">
+                            <p className="font-lato text-xs text-dashboard-secondary">{format(new Date(item.timestamp), 'MMM d, yyyy')}{item.startTime ? ` at ${item.startTime.slice(0, 5)}` : ''}</p>
+                            {item.showingStatus && (
+                              <span className={`px-1.5 py-0.5 rounded-full text-[10px] font-lato font-medium ${
+                                item.showingStatus === 'confirmed' ? 'bg-green-50 text-green-700'
+                                : item.showingStatus === 'completed' ? 'bg-blue-50 text-blue-700'
+                                : item.showingStatus === 'cancelled' ? 'bg-red-50 text-red-700'
+                                : 'bg-yellow-50 text-yellow-700'
+                              }`}>{item.showingStatus}</span>
+                            )}
+                          </div>
+                        </>
+                      )}
+                    </div>
+                    {item.type === 'activity' && item.points !== undefined && (
+                      <span className={`font-lato text-sm font-medium shrink-0 ${item.points >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                        {item.points >= 0 ? '+' : ''}{item.points}
+                      </span>
+                    )}
                   </div>
-                </div>
-              ))}
-            </div>
-          )}
+                ))}
+              </div>
+            )}
+          </div>
         </div>
       )}
 

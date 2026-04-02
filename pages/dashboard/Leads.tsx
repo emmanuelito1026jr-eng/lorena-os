@@ -365,6 +365,13 @@ export default function Leads() {
                     </div>
                     <div className="flex items-center gap-2 mt-0.5">
                       <span className="font-lato text-xs text-dashboard-secondary capitalize">{lead.status.replace(/_/g, ' ')}</span>
+                      {lead.deal_type && (
+                        <span className={`px-1.5 py-0.5 rounded text-[10px] font-lato font-medium ${
+                          lead.deal_type === 'buyer' ? 'bg-blue-50 text-blue-600'
+                          : lead.deal_type === 'seller' ? 'bg-teal-50 text-teal-600'
+                          : 'bg-purple-50 text-purple-600'
+                        }`}>{lead.deal_type === 'dual' ? 'Both' : lead.deal_type === 'buyer' ? 'Buyer' : 'Seller'}</span>
+                      )}
                       {lead.tags?.length > 0 && <span className="font-lato text-xs text-dashboard-secondary">&middot; {lead.tags.slice(0, 2).join(', ')}</span>}
                       {lead.source && <span className="font-lato text-xs text-dashboard-secondary hidden sm:inline">&middot; {lead.source}</span>}
                     </div>
@@ -409,6 +416,13 @@ export default function Leads() {
                         <LeadScoreBadge score={lead.score} size="sm" />
                       </div>
                       {lead.phone && <p className="font-lato text-xs text-dashboard-secondary truncate">{lead.phone}</p>}
+                      {lead.deal_type && (
+                        <span className={`inline-block mt-1 px-1.5 py-0.5 rounded text-[10px] font-lato font-medium ${
+                          lead.deal_type === 'buyer' ? 'bg-blue-50 text-blue-600'
+                          : lead.deal_type === 'seller' ? 'bg-teal-50 text-teal-600'
+                          : 'bg-purple-50 text-purple-600'
+                        }`}>{lead.deal_type === 'dual' ? 'Both' : lead.deal_type === 'buyer' ? 'Buyer' : 'Seller'}</span>
+                      )}
                       {lead.tags?.length > 0 && (
                         <div className="flex gap-1 mt-2 flex-wrap">
                           {lead.tags.slice(0, 2).map(tag => (
