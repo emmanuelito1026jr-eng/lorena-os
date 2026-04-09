@@ -15,15 +15,9 @@ const FloatingChatButton = React.lazy(() => import('./components/lead-capture/Fl
 import { LanguageProvider } from './lib/i18n';
 
 const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      staleTime: 1000 * 60 * 2, // 2 minutes
-      retry: 1,
-    },
-  },
+  defaultOptions: { queries: { staleTime: 1000 * 60 * 2, retry: 1 } },
 });
 
-// Lazy-loaded public routes
 const Home = React.lazy(() => import('./pages/Home'));
 const Landing = React.lazy(() => import('./pages/Landing'));
 const Properties = React.lazy(() => import('./pages/Properties'));
@@ -43,13 +37,9 @@ const Terms = React.lazy(() => import('./pages/Terms'));
 const Privacy = React.lazy(() => import('./pages/Privacy'));
 const DMCA = React.lazy(() => import('./pages/DMCA'));
 const NotFound = React.lazy(() => import('./pages/NotFound'));
-
-// Lazy-loaded auth routes
 const Login = React.lazy(() => import('./pages/Login'));
 const Signup = React.lazy(() => import('./pages/Signup'));
 const ResetPassword = React.lazy(() => import('./pages/ResetPassword'));
-
-// Lazy-loaded portal routes
 const PortalLogin = React.lazy(() => import('./pages/portal/PortalLogin'));
 const PortalHome = React.lazy(() => import('./pages/portal/PortalHome'));
 const PropertySearch = React.lazy(() => import('./pages/portal/PropertySearch'));
@@ -60,8 +50,6 @@ const MyShowings = React.lazy(() => import('./pages/portal/MyShowings'));
 const HomeValueEstimate = React.lazy(() => import('./pages/portal/HomeValueEstimate'));
 const MortgageCalculator = React.lazy(() => import('./pages/portal/MortgageCalculator'));
 const ClientProfile = React.lazy(() => import('./pages/portal/ClientProfile'));
-
-// Lazy-loaded dashboard routes
 const DashboardHome = React.lazy(() => import('./pages/dashboard/DashboardHome'));
 const Leads = React.lazy(() => import('./pages/dashboard/Leads'));
 const LeadDetail = React.lazy(() => import('./pages/dashboard/LeadDetail'));
@@ -73,29 +61,22 @@ const CMA = React.lazy(() => import('./pages/dashboard/CMA'));
 const AutoTracks = React.lazy(() => import('./pages/dashboard/AutoTracks'));
 const Analytics = React.lazy(() => import('./pages/dashboard/Analytics'));
 const DashboardSettings = React.lazy(() => import('./pages/dashboard/DashboardSettings'));
+const AITeam = React.lazy(() => import('./pages/dashboard/AITeam'));
 
-// ScrollToTop component to handle scroll behavior on navigation
 const ScrollToTop = () => {
   const location = useLocation();
-
   React.useEffect(() => {
     if (location.hash) {
-      const element = document.getElementById(location.hash.slice(1));
-      if (element) {
-        element.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }
+      document.getElementById(location.hash.slice(1))?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     } else {
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   }, [location]);
-
   return null;
 };
 
 const App = () => {
-  // Initialize smooth scrolling (desktop only)
   useLenis();
-
   return (
     <ErrorBoundary>
       <QueryClientProvider client={queryClient}>
@@ -103,18 +84,8 @@ const App = () => {
       <AuthProvider>
         <Router>
           <ScrollToTop />
-          <Suspense fallback={
-            <div className="min-h-screen bg-white flex items-center justify-center">
-              <div className="space-y-4 w-72">
-                <div className="h-8 bg-gray-200 rounded animate-pulse" />
-                <div className="h-4 bg-gray-200 rounded animate-pulse w-3/4" />
-                <div className="h-4 bg-gray-200 rounded animate-pulse w-1/2" />
-                <div className="h-32 bg-gray-200 rounded animate-pulse mt-4" />
-              </div>
-            </div>
-          }>
+          <Suspense fallback={<div className="min-h-screen bg-white flex items-center justify-center"><div className="space-y-4 w-72"><div className="h-8 bg-gray-200 rounded animate-pulse" /><div className="h-4 bg-gray-200 rounded animate-pulse w-3/4" /><div className="h-4 bg-gray-200 rounded animate-pulse w-1/2" /></div></div>}>
           <Routes>
-            {/* Public routes */}
             <Route path="/" element={<Home />} />
             <Route path="/landing" element={<Landing />} />
             <Route path="/properties" element={<Properties />} />
@@ -133,22 +104,11 @@ const App = () => {
             <Route path="/terms" element={<Terms />} />
             <Route path="/privacy" element={<Privacy />} />
             <Route path="/dmca" element={<DMCA />} />
-
-            {/* Auth routes */}
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
             <Route path="/reset-password" element={<ResetPassword />} />
-
-            {/* Portal routes (client) */}
             <Route path="/portal/login" element={<PortalLogin />} />
-            <Route
-              path="/portal"
-              element={
-                <PortalRoute>
-                  <PortalLayout />
-                </PortalRoute>
-              }
-            >
+            <Route path="/portal" element={<PortalRoute><PortalLayout /></PortalRoute>}>
               <Route index element={<PortalHome />} />
               <Route path="search" element={<PropertySearch />} />
               <Route path="favorites" element={<SavedHomes />} />
@@ -159,16 +119,7 @@ const App = () => {
               <Route path="calculator" element={<MortgageCalculator />} />
               <Route path="profile" element={<ClientProfile />} />
             </Route>
-
-            {/* Dashboard routes (protected) */}
-            <Route
-              path="/dashboard"
-              element={
-                <ProtectedRoute>
-                  <DashboardLayout />
-                </ProtectedRoute>
-              }
-            >
+            <Route path="/dashboard" element={<ProtectedRoute><DashboardLayout /></ProtectedRoute>}>
               <Route index element={<DashboardHome />} />
               <Route path="leads" element={<Leads />} />
               <Route path="leads/:id" element={<LeadDetail />} />
@@ -180,9 +131,8 @@ const App = () => {
               <Route path="autotracks" element={<AutoTracks />} />
               <Route path="analytics" element={<Analytics />} />
               <Route path="settings" element={<DashboardSettings />} />
+              <Route path="ai-team" element={<AITeam />} />
             </Route>
-
-            {/* Catch-all */}
             <Route path="*" element={<NotFound />} />
           </Routes>
           </Suspense>
