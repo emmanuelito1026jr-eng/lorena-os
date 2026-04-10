@@ -16,26 +16,18 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-          cache: 'npm'
 
       - name: Install dependencies
         run: npm install --legacy-peer-deps
 
       - name: Build
         run: npm run build
-        env:
-          VITE_SUPABASE_URL: https://zdonombljnuylmnwkhga.supabase.co
-          VITE_SUPABASE_ANON_KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inpkb25vbWJsam51eWxtbndraGdhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzEzNjM2OTUsImV4cCI6MjA4NjkzOTY5NX0.h-rFY-MMuN0jwo8NeIOOLrISkRWd_Xt8Wn9Ffp6_FwQ
-          VITE_WEBHOOK_URL: https://n8n.srv957236.hstgr.cloud/webhook
-          SPARK_API_TOKEN: 7c8gjqi6ccvwfcvoftlyl3fsf
-          SPARK_API_FEED_ID: bslgx50w59ms8w6qyza2tpmjl
-          SPARK_MEMBER_ID: gep.8809
 
-      - name: Deploy to Vercel
+      - name: Deploy prebuilt to Vercel
         run: |
-          npm install -g vercel
+          npm install -g vercel@latest
           VT=$(echo "dmNwXzZwaVlVbk9GSHoxVnlZcUI4dkNSWlpLVjRQaXMzdENJcFY4TmczeVJEWjFNcTBtc0hCMFp0ZmtL" | base64 -d)
-          vercel deploy --prod --token="$VT" --yes
+          vercel deploy --prod --prebuilt --token="$VT" --yes
         env:
           VERCEL_ORG_ID: team_VWxkrFEiDFEjoLWyxR5odBSJ
           VERCEL_PROJECT_ID: prj_2AN7Gwsp8KegTyg3UVGyiyDJ0fty
