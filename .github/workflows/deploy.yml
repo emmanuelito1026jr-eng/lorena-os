@@ -12,22 +12,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-
-      - name: Install dependencies
-        run: npm install --legacy-peer-deps
-
-      - name: Build
-        run: npm run build
-
-      - name: Deploy prebuilt to Vercel
+      - name: Deploy to Vercel
         run: |
           npm install -g vercel@latest
           VT=$(echo "dmNwXzZwaVlVbk9GSHoxVnlZcUI4dkNSWlpLVjRQaXMzdENJcFY4TmczeVJEWjFNcTBtc0hCMFp0ZmtL" | base64 -d)
-          vercel deploy --prod --prebuilt --token="$VT" --yes
+          vercel deploy --prod --token="$VT" --yes
         env:
           VERCEL_ORG_ID: team_VWxkrFEiDFEjoLWyxR5odBSJ
           VERCEL_PROJECT_ID: prj_2AN7Gwsp8KegTyg3UVGyiyDJ0fty
