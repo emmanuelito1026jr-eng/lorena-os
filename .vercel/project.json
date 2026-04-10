@@ -1,0 +1,10 @@
+{
+  "projectId": "prj_2AN7Gwsp8KegTyg3UVGyiyDJ0fty",
+  "orgId": "team_VWxkrFEiDFEjoLWyxR5odBSJ",
+  "settings": {
+    "framework": "vite",
+    "buildCommand": "npm run build",
+    "outputDirectory": "dist",
+    "installCommand": "npm install --legacy-peer-deps"
+  }
+}
