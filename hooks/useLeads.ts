@@ -16,8 +16,7 @@ export function useLeads(filters?: LeadFilters) {
   return useQuery({
     queryKey: ['leads', filters],
     queryFn: async (): Promise<Lead[]> => {
-      // Fetch ALL leads in batches — Supabase has a 1000-row default cap
-      // so we page through until we have every lead in the pipeline
+      // Fetch ALL leads in batches — Supabase caps at 1000 rows per request
       const PAGE_SIZE = 1000;
       const fetchBatch = async (from: number): Promise<Lead[]> => {
         let q = supabase.from('leads').select('*').range(from, from + PAGE_SIZE - 1);
@@ -84,17 +83,11 @@ export function useCreateLead() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (lead: InsertTables<'leads'>) => {
-      const { data, error } = await supabase
-        .from('leads')
-        .insert(lead)
-        .select()
-        .single();
+      const { data, error } = await supabase.from('leads').insert(lead).select().single();
       if (error) throw error;
       return data;
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['leads'] });
-    },
+    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['leads'] }); },
   });
 }
 
@@ -102,12 +95,7 @@ export function useUpdateLead() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async ({ id, updates }: { id: string; updates: UpdateTables<'leads'> }) => {
-      const { data, error } = await supabase
-        .from('leads')
-        .update(updates)
-        .eq('id', id)
-        .select()
-        .single();
+      const { data, error } = await supabase.from('leads').update(updates).eq('id', id).select().single();
       if (error) throw error;
       return data;
     },
@@ -137,14 +125,8 @@ export function useLeadActivity(leadId: string, filters?: { actionType?: string 
   return useQuery({
     queryKey: ['lead-activity', leadId, filters],
     queryFn: async () => {
-      let query = supabase
-        .from('lead_activity')
-        .select('*')
-        .eq('lead_id', leadId)
-        .order('created_at', { ascending: false });
-      if (filters?.actionType) {
-        query = query.eq('action', filters.actionType);
-      }
+      let query = supabase.from('lead_activity').select('*').eq('lead_id', leadId).order('created_at', { ascending: false });
+      if (filters?.actionType) query = query.eq('action', filters.actionType);
       const { data, error } = await query;
       if (error) throw error;
       return data ?? [];
