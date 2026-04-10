@@ -16,30 +16,34 @@ export function useLeads(filters?: LeadFilters) {
   return useQuery({
     queryKey: ['leads', filters],
     queryFn: async (): Promise<Lead[]> => {
-      let query = supabase.from('leads').select('*').range(0, 4999);
+      // Fetch ALL leads in batches — Supabase has a 1000-row default cap
+      // so we page through until we have every lead in the pipeline
+      const PAGE_SIZE = 1000;
+      const fetchBatch = async (from: number): Promise<Lead[]> => {
+        let q = supabase.from('leads').select('*').range(from, from + PAGE_SIZE - 1);
+        if (filters?.temperature) q = q.eq('temperature', filters.temperature);
+        if (filters?.status) q = q.eq('status', filters.status);
+        if (filters?.source) q = q.eq('source', filters.source);
+        if (filters?.search) {
+          q = q.or(`first_name.ilike.%${filters.search}%,last_name.ilike.%${filters.search}%,email.ilike.%${filters.search}%,phone.ilike.%${filters.search}%`);
+        }
+        const sortBy = filters?.sortBy || 'score';
+        const sortOrder = filters?.sortOrder || 'desc';
+        q = q.order(sortBy, { ascending: sortOrder === 'asc' });
+        const { data, error } = await q;
+        if (error) throw error;
+        return data ?? [];
+      };
 
-      if (filters?.temperature) {
-        query = query.eq('temperature', filters.temperature);
+      let allLeads: Lead[] = [];
+      let page = 0;
+      while (true) {
+        const batch = await fetchBatch(page * PAGE_SIZE);
+        allLeads = allLeads.concat(batch);
+        if (batch.length < PAGE_SIZE) break;
+        page++;
       }
-      if (filters?.status) {
-        query = query.eq('status', filters.status);
-      }
-      if (filters?.source) {
-        query = query.eq('source', filters.source);
-      }
-      if (filters?.search) {
-        query = query.or(
-          `first_name.ilike.%${filters.search}%,last_name.ilike.%${filters.search}%,email.ilike.%${filters.search}%,phone.ilike.%${filters.search}%`
-        );
-      }
-
-      const sortBy = filters?.sortBy || 'score';
-      const sortOrder = filters?.sortOrder || 'desc';
-      query = query.order(sortBy, { ascending: sortOrder === 'asc' });
-
-      const { data, error } = await query;
-      if (error) throw error;
-      return data ?? [];
+      return allLeads;
     },
   });
 }

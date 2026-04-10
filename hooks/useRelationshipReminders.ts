@@ -88,7 +88,7 @@ export function useRelationshipReminders() {
         .from('leads')
         .select('id, first_name, last_name, phone, email, preferred_language, custom_fields')
         .neq('custom_fields', '{}')
-        .range(0, 4999);
+        .range(0, 9999);
 
       if (error) throw error;
 
