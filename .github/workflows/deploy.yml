@@ -6,8 +6,28 @@ on:
   workflow_dispatch:
 
 jobs:
+  setup-auth:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Supabase client
+        run: npm install @supabase/supabase-js
+
+      - name: Setup Lorena auth account
+        run: node scripts/setup-auth.mjs
+        env:
+          SUPABASE_SERVICE_KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inpkb25vbWJsam51eWxtbndraGdhIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3MTM2MzY5NSwiZXhwIjoyMDg2OTM5Njk1fQ.nZUClSBdrkX9f-DdbbYtErWske7yCvr1FWIkDfO8sdE
+
   deploy:
     runs-on: ubuntu-latest
+    needs: setup-auth
     steps:
       - name: Checkout
         uses: actions/checkout@v4
