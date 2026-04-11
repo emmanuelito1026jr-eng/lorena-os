@@ -42,6 +42,7 @@ export default function Analytics() {
     { id: 'Funnel', label: t('analytics.funnel') },
     { id: 'Leads', label: t('analytics.leadsTab') },
     { id: 'Automations', label: t('analytics.automations') },
+    { id: 'ROI', label: 'Source ROI' },
   ];
 
   // Compute lead temperature distribution
@@ -439,6 +440,149 @@ export default function Analytics() {
           )}
         </div>
       )}
+
+      {activeTab === 'ROI' && (() => {
+        // Source ROI — which channel makes Lorena the most money
+        const sourceGroups = new Map<string, { leads: number; hot: number; contacted: number; active: number; closed: number }>();
+        for (const lead of allLeads ?? []) {
+          const src = lead.source ?? 'unknown';
+          const existing = sourceGroups.get(src) ?? { leads: 0, hot: 0, contacted: 0, active: 0, closed: 0 };
+          existing.leads++;
+          if (lead.score >= 80) existing.hot++;
+          if (lead.status === 'contacted' || lead.status === 'attempted_contact') existing.contacted++;
+          if (lead.status === 'active_client' || lead.status === 'pending_client') existing.active++;
+          if (lead.status === 'past_client') existing.closed++;
+          sourceGroups.set(src, existing);
+        }
+
+        const AVG_DEAL_VALUE = 275000;
+        const AVG_COMMISSION_RATE = 0.03;
+        const AVG_COMMISSION = AVG_DEAL_VALUE * AVG_COMMISSION_RATE; // $8,250
+
+        const roiData = Array.from(sourceGroups.entries())
+          .map(([src, data]) => ({
+            source: src,
+            leads: data.leads,
+            hot: data.hot,
+            contacted: data.contacted,
+            active: data.active,
+            closed: data.closed,
+            contactRate: data.leads > 0 ? Math.round((data.contacted / data.leads) * 100) : 0,
+            closeRate: data.leads > 0 ? Math.round((data.closed / data.leads) * 100) : 0,
+            estCommission: Math.round(data.closed * AVG_COMMISSION),
+            pipelineCommission: Math.round((data.active + data.closed) * AVG_COMMISSION),
+          }))
+          .sort((a, b) => b.leads - a.leads);
+
+        const totalLeads = roiData.reduce((s, r) => s + r.leads, 0);
+        const totalClosed = roiData.reduce((s, r) => s + r.closed, 0);
+        const totalActive = roiData.reduce((s, r) => s + r.active, 0);
+        const totalCommission = Math.round((totalActive + totalClosed) * AVG_COMMISSION);
+
+        const sourceLabels: Record<string, string> = {
+          cinc: 'CINC Platform',
+          website: 'Website (IDX)',
+          cold_call: 'Cold Call',
+          social: 'Social Media',
+          facebook_ad: 'Facebook Ads',
+          military_referral: 'Military Referral',
+          open_house: 'Open House QR',
+          other: 'Other',
+          unknown: 'Unknown',
+        };
+
+        return (
+          <div className="space-y-6">
+            {/* Summary cards */}
+            <div className="grid grid-cols-4 gap-4">
+              <div className="bg-white rounded-xl border border-dashboard-border p-4">
+                <p className="text-xs text-dashboard-secondary mb-1">Total Pipeline Value</p>
+                <p className="text-2xl font-bold text-dashboard-black">${(totalCommission / 1000).toFixed(0)}K</p>
+                <p className="text-[11px] text-dashboard-secondary mt-0.5">est. commission</p>
+              </div>
+              <div className="bg-white rounded-xl border border-dashboard-border p-4">
+                <p className="text-xs text-dashboard-secondary mb-1">Active + Closed</p>
+                <p className="text-2xl font-bold text-green-600">{totalActive + totalClosed}</p>
+                <p className="text-[11px] text-dashboard-secondary mt-0.5">across all sources</p>
+              </div>
+              <div className="bg-white rounded-xl border border-dashboard-border p-4">
+                <p className="text-xs text-dashboard-secondary mb-1">Overall Close Rate</p>
+                <p className="text-2xl font-bold text-dashboard-black">
+                  {totalLeads > 0 ? ((totalClosed / totalLeads) * 100).toFixed(1) : '0'}%
+                </p>
+                <p className="text-[11px] text-dashboard-secondary mt-0.5">lead → closed</p>
+              </div>
+              <div className="bg-white rounded-xl border border-dashboard-border p-4">
+                <p className="text-xs text-dashboard-secondary mb-1">Avg Commission/Lead</p>
+                <p className="text-2xl font-bold text-dashboard-gold">
+                  ${totalLeads > 0 ? Math.round(totalCommission / totalLeads).toLocaleString() : '0'}
+                </p>
+                <p className="text-[11px] text-dashboard-secondary mt-0.5">per lead across portfolio</p>
+              </div>
+            </div>
+
+            {/* Source ROI table */}
+            <div className="bg-white rounded-xl border border-dashboard-border overflow-hidden">
+              <div className="px-5 py-4 border-b border-dashboard-border">
+                <h3 className="text-base font-semibold text-dashboard-black">Lead Source ROI Breakdown</h3>
+                <p className="text-xs text-dashboard-secondary mt-0.5">Avg deal: $275K · 3% commission = $8,250/deal</p>
+              </div>
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead>
+                    <tr className="border-b border-dashboard-border bg-dashboard-surface/50">
+                      <th className="text-left px-4 py-3 text-xs font-medium text-dashboard-secondary uppercase">Source</th>
+                      <th className="text-right px-4 py-3 text-xs font-medium text-dashboard-secondary uppercase">Leads</th>
+                      <th className="text-right px-4 py-3 text-xs font-medium text-dashboard-secondary uppercase">Hot</th>
+                      <th className="text-right px-4 py-3 text-xs font-medium text-dashboard-secondary uppercase">Contact%</th>
+                      <th className="text-right px-4 py-3 text-xs font-medium text-dashboard-secondary uppercase">Close%</th>
+                      <th className="text-right px-4 py-3 text-xs font-medium text-dashboard-secondary uppercase">Est. Commission</th>
+                      <th className="text-right px-4 py-3 text-xs font-medium text-dashboard-secondary uppercase">$/Lead</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-dashboard-border">
+                    {roiData.map((row) => {
+                      const perLead = row.leads > 0 ? Math.round(row.pipelineCommission / row.leads) : 0;
+                      const isTop = roiData[0].source === row.source;
+                      return (
+                        <tr key={row.source} className={`hover:bg-dashboard-surface/30 ${isTop ? 'bg-green-50/30' : ''}`}>
+                          <td className="px-4 py-3 text-sm font-medium text-dashboard-black">
+                            <div className="flex items-center gap-2">
+                              {isTop && <span className="text-[10px] bg-green-100 text-green-700 px-1.5 py-0.5 rounded font-semibold">TOP</span>}
+                              {sourceLabels[row.source] ?? row.source}
+                            </div>
+                          </td>
+                          <td className="px-4 py-3 text-sm text-dashboard-black text-right font-medium">{row.leads.toLocaleString()}</td>
+                          <td className="px-4 py-3 text-sm text-score-hot text-right">{row.hot}</td>
+                          <td className="px-4 py-3 text-sm text-dashboard-secondary text-right">{row.contactRate}%</td>
+                          <td className="px-4 py-3 text-right">
+                            <span className={`text-sm font-medium ${row.closeRate > 0 ? 'text-green-600' : 'text-dashboard-secondary'}`}>
+                              {row.closeRate}%
+                            </span>
+                          </td>
+                          <td className="px-4 py-3 text-sm text-dashboard-gold text-right font-semibold">
+                            {row.pipelineCommission > 0 ? `$${(row.pipelineCommission / 1000).toFixed(0)}K` : '—'}
+                          </td>
+                          <td className="px-4 py-3 text-right">
+                            <span className={`text-sm font-medium ${perLead > 500 ? 'text-green-600' : 'text-dashboard-secondary'}`}>
+                              {perLead > 0 ? `$${perLead.toLocaleString()}` : '—'}
+                            </span>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+              <div className="px-5 py-3 border-t border-dashboard-border bg-dashboard-surface/30">
+                <p className="text-[11px] text-dashboard-secondary">
+                  Commission estimates based on avg El Paso deal $275K × 3%. Actuals tracked in Deals Pipeline.
+                </p>
+              </div>
+            </div>
+          </div>
+        );
+      })()}
     </div>
   );
 }
