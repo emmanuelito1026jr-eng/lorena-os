@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Phone, Mail, MessageSquare, Calendar, MapPin, Clock, Tag, DollarSign, Globe, Activity, Zap, CheckSquare, X, BarChart3, Send, Eye, Heart, Search, ChevronDown, ChevronRight, Shield, Home, Cake, Users, CheckCircle2, AlertTriangle, Pause } from 'lucide-react';
 import { EmptyState } from '../../components/shared/EmptyState';
@@ -279,7 +279,7 @@ export default function LeadDetail() {
                     headers: { 'Content-Type': 'application/json', 'apikey': ANON_KEY, 'Authorization': `Bearer ${ANON_KEY}` },
                     body: JSON.stringify({
                       agent: 'ceo',
-                      messages: [{ role: 'user', content: `Generate a call prep brief for Lorena before she calls this lead. Lead info: Name: ${lead.first_name} ${lead.last_name}, Score: ${lead.score}, Status: ${lead.status}, Source: ${lead.source}, Budget: ${lead.pre_approval_amount ? `$${lead.pre_approval_amount.toLocaleString()}` : 'unknown'}, Type: ${lead.lead_type}, Tags: ${lead.tags?.join(', ')||'none'}, Notes: ${lead.notes||'none'}. Provide: 1) Quick summary of who this person is, 2) What they likely want, 3) 3 conversation starters, 4) Potential objections and how to handle them. Keep it concise and actionable. Format with clear sections.` }],
+                      messages: [{ role: 'user', content: `Generate a call prep brief for Lorena before she calls this lead. Lead info: Name: ${lead.first_name} ${lead.last_name}, Score: ${lead.score}, Status: ${lead.status}, Source: ${lead.source}, Budget: ${lead.pre_approval_amount ? `$${lead.pre_approval_amount.toLocaleString()}` : 'unknown'}, Tags: ${lead.tags?.join(', ')||'none'}, Notes: ${lead.notes||'none'}. Provide: 1) Quick summary of who this person is, 2) What they likely want, 3) 3 conversation starters, 4) Potential objections and how to handle them. Keep it concise and actionable. Format with clear sections.` }],
                       context: 'Lorena Ontiveros-Ortega | El Paso TX REALTOR | specializes in military, first-time buyers, luxury'
                     })
                   });

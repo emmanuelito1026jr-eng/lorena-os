@@ -4,6 +4,7 @@ import { EmptyState } from '../../components/shared/EmptyState';
 import { SkeletonList } from '../../components/shared/Skeleton';
 import { showToast } from '../../components/shared/Toast';
 import { useCMAReports, useCreateCMAReport } from '../../hooks/useCMAReports';
+import type { CMAResult } from '../../hooks/useCMAReports';
 import { useComparableSales } from '../../hooks/useComparableSales';
 import { format } from 'date-fns';
 import { usePageTitle } from '../../hooks/usePageTitle';
@@ -27,7 +28,7 @@ export default function CMA() {
   const [sqft, setSqft] = useState(1800);
   const [yearBuilt, setYearBuilt] = useState(2000);
   const [step, setStep] = useState<'input' | 'comps' | 'result' | 'ai-result'>('input');
-  const [aiResult, setAiResult] = useState<import('../../hooks/useCMAReports').CMAResult | null>(null);
+  const [aiResult, setAiResult] = useState<CMAResult | null>(null);
   const [compCriteria, setCompCriteria] = useState<{
     subjectZip: string;
     subjectBeds: number;
