@@ -2,10 +2,6 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '../lib/supabase/client';
 import { useAuth } from './useAuth';
 
-// ---------------------------------------------------------------------------
-// Types — matches the Edge Function response shape
-// ---------------------------------------------------------------------------
-
 interface BriefingSection {
   title: string;
   items: string[];
@@ -34,58 +30,55 @@ interface BriefingResponse {
   date: string;
 }
 
-// ---------------------------------------------------------------------------
-// Hook
-// ---------------------------------------------------------------------------
-
 export function useDailyBriefing() {
   const { user } = useAuth();
 
-  const query = useQuery<DailyBriefing>({
+  const query = useQuery<DailyBriefing | null>({
     queryKey: ['daily-briefing', user?.id],
-    queryFn: async (): Promise<DailyBriefing> => {
-      if (!user) throw new Error('Not authenticated');
+    queryFn: async (): Promise<DailyBriefing | null> => {
+      if (!user) return null;
 
       const { data: sessionData } = await supabase.auth.getSession();
       const accessToken = sessionData.session?.access_token;
-
-      if (!accessToken) throw new Error('No session token');
+      if (!accessToken) return null;
 
       const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-      if (!supabaseUrl) return null as unknown as DailyBriefing;
+      if (!supabaseUrl) return null;
 
-      let response: Response;
       try {
-        response = await fetch(
-          `${supabaseUrl}/functions/v1/daily-briefing`,
-          {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              Authorization: `Bearer ${accessToken}`,
-              apikey: import.meta.env.VITE_SUPABASE_ANON_KEY as string,
-            },
-            body: JSON.stringify({ agent_id: user.id }),
+        const response = await fetch(`${supabaseUrl}/functions/v1/daily-briefing`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${accessToken}`,
+            apikey: import.meta.env.VITE_SUPABASE_ANON_KEY as string,
           },
-        );
+          body: JSON.stringify({ agent_id: user.id }),
+        });
+
+        if (!response.ok) return null;
+
+        const data: BriefingResponse = await response.json();
+        
+        // Validate the response has the expected shape
+        if (!data.briefing?.narrative || !data.briefing?.sections || !data.briefing?.raw_data) {
+          return null;
+        }
+        
+        return data.briefing;
       } catch {
-        // Edge function not deployed or network error — return null silently
-        return null as unknown as DailyBriefing;
+        return null;
       }
-
-      if (!response.ok) {
-        // Edge function returned an error — return null silently
-        return null as unknown as DailyBriefing;
-      }
-
-      const data: BriefingResponse = await response.json();
-      return data.briefing;
     },
     enabled: !!user,
-    staleTime: 1000 * 60 * 60, // 1 hour — briefing is valid for the day
-    gcTime: 1000 * 60 * 60 * 4, // keep in cache for 4 hours
-    retry: 1, // only retry once — Edge Function may not be deployed
-    retryDelay: 2000,
+    staleTime: (query) => {
+      // If data is null (briefing failed/not deployed), retry after 30s
+      // If data exists, cache for 1 hour
+      return query.state.data ? 1000 * 60 * 60 : 1000 * 30;
+    },
+    gcTime: 1000 * 60 * 60 * 4,
+    retry: 2,
+    retryDelay: 3000,
   });
 
   return {

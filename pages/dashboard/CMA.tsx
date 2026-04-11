@@ -26,7 +26,8 @@ export default function CMA() {
   const [baths, setBaths] = useState(2);
   const [sqft, setSqft] = useState(1800);
   const [yearBuilt, setYearBuilt] = useState(2000);
-  const [step, setStep] = useState<'input' | 'comps' | 'result'>('input');
+  const [step, setStep] = useState<'input' | 'comps' | 'result' | 'ai-result'>('input');
+  const [aiResult, setAiResult] = useState<import('../../hooks/useCMAReports').CMAResult | null>(null);
   const [compCriteria, setCompCriteria] = useState<{
     subjectZip: string;
     subjectBeds: number;
@@ -41,8 +42,18 @@ export default function CMA() {
 
   const handleGenerate = () => {
     if (!address.trim()) return;
-    createReport.mutate({ address: address.trim() }, {
-      onSuccess: () => { showToast(t('cma.reportGenerated')); setAddress(''); },
+    createReport.mutate({ 
+      address: address.trim(),
+      beds,
+      baths,
+      sqft,
+      year_built: yearBuilt,
+    }, {
+      onSuccess: (result) => { 
+        showToast(t('cma.reportGenerated')); 
+        setAiResult(result);
+        setStep('ai-result');
+      },
       onError: () => showToast(t('cma.reportFailed'), 'error'),
     });
   };
@@ -171,6 +182,71 @@ export default function CMA() {
           </div>
         </div>
       </div>
+
+      {/* AI-Generated CMA Result */}
+      {step === 'ai-result' && aiResult && (
+        <div className="space-y-4">
+          {/* Valuation Card */}
+          <div className="bg-white rounded-xl border border-dashboard-border p-6">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="font-playfair text-lg font-bold text-dashboard-black">AI CMA Results</h3>
+              <button onClick={() => { setStep('input'); setAiResult(null); }} className="font-lato text-xs text-dashboard-secondary hover:text-dashboard-gold">
+                New Report
+              </button>
+            </div>
+            <p className="font-lato text-sm text-dashboard-secondary mb-4">{address} — {beds}bd/{baths}ba, {sqft?.toLocaleString()} sqft</p>
+
+            {/* Price Range */}
+            <div className="grid grid-cols-3 gap-4 mb-6">
+              <div className="text-center bg-dashboard-surface rounded-lg p-4">
+                <p className="font-lato text-xs text-dashboard-secondary mb-1">Low Estimate</p>
+                <p className="font-playfair text-xl font-bold text-dashboard-black">${aiResult.valuation.low.toLocaleString()}</p>
+              </div>
+              <div className="text-center bg-dashboard-gold/10 border-2 border-dashboard-gold rounded-lg p-4">
+                <p className="font-lato text-xs text-dashboard-gold font-semibold mb-1">Estimated Value</p>
+                <p className="font-playfair text-2xl font-bold text-dashboard-gold">${aiResult.valuation.estimated.toLocaleString()}</p>
+              </div>
+              <div className="text-center bg-dashboard-surface rounded-lg p-4">
+                <p className="font-lato text-xs text-dashboard-secondary mb-1">High Estimate</p>
+                <p className="font-playfair text-xl font-bold text-dashboard-black">${aiResult.valuation.high.toLocaleString()}</p>
+              </div>
+            </div>
+
+            <div className="flex gap-6 text-sm mb-6">
+              <div><span className="text-dashboard-secondary">$/sqft:</span> <span className="font-semibold">${aiResult.valuation.price_per_sqft}</span></div>
+              <div><span className="text-dashboard-secondary">Avg DOM:</span> <span className="font-semibold">{aiResult.market.avg_days_on_market} days</span></div>
+              <div><span className="text-dashboard-secondary">Comps:</span> <span className="font-semibold">{aiResult.comparable_sales.length} sales</span></div>
+            </div>
+
+            {/* AI Narrative */}
+            <div className="bg-purple-50 border border-purple-200 rounded-lg p-4 mb-4">
+              <div className="flex items-center gap-2 mb-2">
+                <div className="w-5 h-5 bg-purple-600 rounded flex items-center justify-center">
+                  <span className="text-white text-xs">AI</span>
+                </div>
+                <p className="font-lato text-xs font-semibold text-purple-700">Claude Market Analysis</p>
+              </div>
+              <p className="font-lato text-sm text-dashboard-body leading-relaxed whitespace-pre-wrap">{aiResult.narrative}</p>
+            </div>
+
+            {/* Comparable Sales Table */}
+            <div>
+              <h4 className="font-playfair font-bold text-sm text-dashboard-black mb-3">Comparable Sales (Last 90 Days)</h4>
+              <div className="space-y-2">
+                {aiResult.comparable_sales.map((comp, i) => (
+                  <div key={i} className="flex items-center justify-between py-2 border-b border-dashboard-border last:border-0 text-sm">
+                    <div>
+                      <p className="font-lato font-medium text-dashboard-black">{comp.address}</p>
+                      <p className="font-lato text-xs text-dashboard-secondary">{comp.beds}bd/{comp.baths}ba · {comp.sqft?.toLocaleString()} sqft · {comp.days_on_market} DOM · {comp.sold_date}</p>
+                    </div>
+                    <p className="font-playfair font-bold text-dashboard-black">${comp.sale_price.toLocaleString()}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Comparable Sales Step */}
       {step === 'comps' && (
