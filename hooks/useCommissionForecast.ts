@@ -1,8 +1,3 @@
-/**
- * Commission Tracker — Projected vs Actual
- * Shows Lorena her earnings pipeline in real-time
- * P2 feature from Evolution Engine backlog
- */
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '../lib/supabase/client';
 
@@ -10,10 +5,20 @@ interface CommissionData {
   projected_total: number;
   actual_ytd: number;
   active_deals: number;
+  totalDeals: number; // alias for active_deals — used by DashboardHome
   closing_this_month: number;
   avg_commission_rate: number;
   pipeline_value: number;
+  byStage: { stage: string; label: string; count: number; value: number; commission: number }[];
 }
+
+const STAGE_LABELS: Record<string, string> = {
+  pre_listing: 'Pre-Listing',
+  active_listing: 'Active Listing',
+  under_contract: 'Under Contract',
+  pending: 'Pending',
+  closed: 'Closed',
+};
 
 export function useCommissionForecast() {
   return useQuery<CommissionData>({
@@ -21,8 +26,6 @@ export function useCommissionForecast() {
     queryFn: async (): Promise<CommissionData> => {
       const now = new Date();
       const yearStart = `${now.getFullYear()}-01-01`;
-      const monthStart = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-01`;
-      const monthEnd = new Date(now.getFullYear(), now.getMonth() + 1, 0).toISOString().split('T')[0];
 
       const [activePipeline, closedYTD] = await Promise.all([
         supabase
@@ -36,34 +39,49 @@ export function useCommissionForecast() {
           .gte('actual_close_date', yearStart),
       ]);
 
-      const activeDeals = activePipeline.data || [];
-      const closedDeals = closedYTD.data || [];
+      const active = activePipeline.data ?? [];
+      const closed = closedYTD.data ?? [];
 
-      const pipelineValue = activeDeals.reduce((sum, d) => sum + (d.sale_price || d.list_price || 0), 0);
-      const avgRate = activeDeals.length
-        ? activeDeals.reduce((sum, d) => sum + (d.commission_rate || 3), 0) / activeDeals.length
+      const pipelineValue = active.reduce((s, d) => s + (d.sale_price ?? d.list_price ?? 0), 0);
+      const avgRate = active.length
+        ? active.reduce((s, d) => s + (d.commission_rate ?? 3), 0) / active.length
         : 3;
       const projected = Math.round(pipelineValue * (avgRate / 100));
 
-      const actualYTD = closedDeals.reduce((sum, d) => {
-        const price = d.sale_price || d.list_price || 0;
-        const rate = d.commission_rate || 3;
-        return sum + Math.round(price * (rate / 100));
+      const actualYTD = closed.reduce((s, d) => {
+        const p = d.sale_price ?? d.list_price ?? 0;
+        const r = d.commission_rate ?? 3;
+        return s + Math.round(p * (r / 100));
       }, 0);
 
-      const closingThisMonth = activeDeals.filter(d =>
-        d.stage === 'pending' || d.stage === 'under_contract'
-      ).length;
+      // Group by stage
+      const stageMap = new Map<string, { count: number; value: number }>();
+      for (const d of active) {
+        const existing = stageMap.get(d.stage) ?? { count: 0, value: 0 };
+        existing.count += 1;
+        existing.value += d.sale_price ?? d.list_price ?? 0;
+        stageMap.set(d.stage, existing);
+      }
+
+      const byStage = Array.from(stageMap.entries()).map(([stage, { count, value }]) => ({
+        stage,
+        label: STAGE_LABELS[stage] ?? stage,
+        count,
+        value,
+        commission: Math.round(value * (avgRate / 100)),
+      }));
 
       return {
         projected_total: projected,
         actual_ytd: actualYTD,
-        active_deals: activeDeals.length,
-        closing_this_month: closingThisMonth,
+        active_deals: active.length,
+        totalDeals: active.length,
+        closing_this_month: active.filter(d => d.stage === 'pending' || d.stage === 'under_contract').length,
         avg_commission_rate: Math.round(avgRate * 10) / 10,
         pipeline_value: pipelineValue,
+        byStage,
       };
     },
-    staleTime: 1000 * 60 * 15, // 15 minutes
+    staleTime: 1000 * 60 * 15,
   });
 }
