@@ -54,8 +54,13 @@ export default {
         },
       },
       fontFamily: {
-        playfair: ['"Playfair Display"', 'serif'],
-        lato: ['"Lato"', 'sans-serif'],
+        // PUBLIC WEBSITE fonts — Realty ONE Group brand standards
+        playfair: ['"Playfair Display"', 'Georgia', 'serif'],        // luxury headings
+        lato: ['"Plus Jakarta Sans"', 'Inter', 'sans-serif'],        // body text (Museo Sans equiv)
+        jakarta: ['"Plus Jakarta Sans"', 'Inter', 'sans-serif'],     // explicit public body
+        // DASHBOARD fonts — enterprise SaaS standard (Google / Claude / Stripe)
+        inter: ['Inter', '-apple-system', 'BlinkMacSystemFont', '"Segoe UI"', 'sans-serif'],
+        sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', '"Segoe UI"', 'sans-serif'],
       },
       screens: {
         'sm': '640px',

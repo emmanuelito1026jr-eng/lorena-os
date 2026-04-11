@@ -64,6 +64,7 @@ const DashboardSettings = React.lazy(() => import('./pages/dashboard/DashboardSe
 const AITeam = React.lazy(() => import('./pages/dashboard/AITeam'));
 const MilitaryPipeline = React.lazy(() => import('./pages/dashboard/Military'));
 const ValorPage = React.lazy(() => import('./pages/valor'));
+const OpenHousePage = React.lazy(() => import('./pages/open-house'));
 
 const ScrollToTop = () => {
   const location = useLocation();
@@ -137,6 +138,7 @@ const App = () => {
               <Route path="military" element={<MilitaryPipeline />} />
             </Route>
             <Route path="/valor" element={<ValorPage />} />
+            <Route path="/open-house" element={<OpenHousePage />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
           </Suspense>

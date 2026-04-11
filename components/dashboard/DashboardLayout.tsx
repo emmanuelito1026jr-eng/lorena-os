@@ -12,7 +12,7 @@ function DashboardInner() {
   const { data: notifCount } = useUnreadNotificationCount();
 
   return (
-    <div className="min-h-screen bg-dashboard-offwhite">
+    <div id="dashboard-root" className="min-h-screen bg-dashboard-offwhite">
       <Sidebar />
 
       {/* Main content area */}
