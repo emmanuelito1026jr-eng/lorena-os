@@ -1,14 +1,14 @@
 /**
  * /valor — Home Valuation Landing Page
  * Facebook Ad destination: "What's your El Paso home worth?"
- * EN/ES bilingual, auto-captures seller leads into InnoClose OS
+ * EN/ES bilingual, auto-captures seller leads via capture-lead edge function
  */
 import { useState } from 'react';
 import { Home, CheckCircle, Phone, Star } from 'lucide-react';
-import { supabase } from '../lib/supabase/client';
 
 const LORENA_PHONE = '(915) 500-0573';
-const AGENT_ID = '373896de-b814-4a83-9ce1-a2af5a1b5ed2';
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL as string;
+const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY as string;
 
 export default function ValorPage() {
   const [lang, setLang] = useState<'en' | 'es'>('en');
@@ -17,13 +17,13 @@ export default function ValorPage() {
   const [form, setForm] = useState({
     first_name: '', last_name: '', phone: '', email: '',
     address: '', bedrooms: '3', bathrooms: '2', sqft: '',
-    timeline: '3_6_months', condition: 'good',
+    timeline: '3_6_months',
   });
 
   const copy = {
     en: {
       headline: 'What Is Your El Paso Home Worth?',
-      sub: 'Get a free, no-obligation home valuation from Lorena Ontiveros-Ortega — El Paso\'s bilingual real estate expert.',
+      sub: "Get a free, no-obligation home valuation from Lorena Ontiveros-Ortega — El Paso's bilingual real estate expert.",
       cta: 'Get My Free Home Value',
       success_title: 'Request Received!',
       success_sub: 'Lorena will contact you within 24 hours with your personalized home valuation.',
@@ -42,30 +42,33 @@ export default function ValorPage() {
     if (!form.first_name || !form.phone || !form.address) return;
     setSaving(true);
     try {
-      await supabase.from('leads').insert({
-        first_name: form.first_name,
-        last_name: form.last_name || '(seller)',
-        phone: form.phone,
-        email: form.email || null,
-        agent_id: AGENT_ID,
-        source: 'facebook_ad',
-        status: 'new_lead',
-        score: 80,
-        tags: ['Seller Lead', 'Home Valuation', 'Facebook Ad', lang === 'es' ? 'Spanish' : 'English'],
-        notes: `Home valuation request: ${form.address} | ${form.bedrooms}bd/${form.bathrooms}ba | ${form.sqft} sqft | Timeline: ${form.timeline} | Condition: ${form.condition}`,
-        custom_fields: {
-          valuation_request: true,
-          property_address: form.address,
-          bedrooms: form.bedrooms,
-          bathrooms: form.bathrooms,
-          sqft: form.sqft,
-          seller_timeline: form.timeline,
-          property_condition: form.condition,
-          lead_language: lang,
-          facebook_lead: true,
-        }
+      const res = await fetch(`${SUPABASE_URL}/functions/v1/capture-lead`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'apikey': SUPABASE_ANON_KEY,
+        },
+        body: JSON.stringify({
+          first_name: form.first_name,
+          last_name: form.last_name || '(seller)',
+          phone: form.phone,
+          email: form.email || null,
+          source: 'facebook_ad',
+          tags: ['Seller Lead', 'Home Valuation', 'Facebook Ad', lang === 'es' ? 'Spanish' : 'English'],
+          notes: `Home valuation: ${form.address} | ${form.bedrooms}bd/${form.bathrooms}ba | ${form.sqft || '?'} sqft | Timeline: ${form.timeline}`,
+          custom_fields: {
+            valuation_request: true,
+            property_address: form.address,
+            bedrooms: form.bedrooms,
+            bathrooms: form.bathrooms,
+            sqft: form.sqft,
+            seller_timeline: form.timeline,
+            lead_language: lang,
+            facebook_lead: true,
+          }
+        }),
       });
-      setStep('success');
+      if (res.ok) setStep('success');
     } catch (e) {
       console.error(e);
     } finally {
@@ -94,7 +97,6 @@ export default function ValorPage() {
 
   return (
     <div className="min-h-screen bg-[#FAFAF7]">
-      {/* Hero */}
       <div className="bg-[#1a1a1a] text-white py-10 px-4 text-center">
         <div className="flex justify-center gap-2 mb-5">
           <button onClick={() => setLang('en')} className={`px-4 py-1.5 rounded-full text-sm font-lato font-medium transition-colors ${lang==='en' ? 'bg-[#C9A84C] text-white' : 'border border-white/30 text-white/70'}`}>English</button>
@@ -109,7 +111,6 @@ export default function ValorPage() {
         </div>
       </div>
 
-      {/* Form */}
       <div className="max-w-lg mx-auto px-4 py-8">
         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 space-y-4">
           <div className="grid grid-cols-2 gap-3">
@@ -138,13 +139,13 @@ export default function ValorPage() {
             <div>
               <label className="font-lato text-xs text-gray-500 mb-1 block">{lang==='es' ? 'Cuartos' : 'Beds'}</label>
               <select value={form.bedrooms} onChange={e => f('bedrooms', e.target.value)} className="w-full border border-gray-200 rounded-xl px-3 py-2.5 font-lato text-sm focus:outline-none focus:border-[#C9A84C]">
-                {['2','3','4','5','6+'].map(n => <option key={n} value={n}>{n}</option>)}
+                {['2','3','4','5','6+'].map(n => <option key={n}>{n}</option>)}
               </select>
             </div>
             <div>
               <label className="font-lato text-xs text-gray-500 mb-1 block">{lang==='es' ? 'Baños' : 'Baths'}</label>
               <select value={form.bathrooms} onChange={e => f('bathrooms', e.target.value)} className="w-full border border-gray-200 rounded-xl px-3 py-2.5 font-lato text-sm focus:outline-none focus:border-[#C9A84C]">
-                {['1','1.5','2','2.5','3','3+'].map(n => <option key={n} value={n}>{n}</option>)}
+                {['1','1.5','2','2.5','3','3+'].map(n => <option key={n}>{n}</option>)}
               </select>
             </div>
             <div>
