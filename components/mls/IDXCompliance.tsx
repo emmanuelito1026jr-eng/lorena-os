@@ -8,17 +8,14 @@ interface IDXComplianceProps {
 
 const currentYear = new Date().getFullYear();
 
-const IDXCompliance = ({
-  variant = 'full',
-  showLogo = true,
-  className = '',
-}: IDXComplianceProps) => {
+const IDXCompliance = ({ variant = 'full', showLogo = true, className = '' }: IDXComplianceProps) => {
   if (variant === 'compact') {
     return (
       <div className={`text-xs text-black/50 ${className}`}>
         <p>
           &copy; {currentYear} Greater El Paso Association of REALTORS&reg;.
-          Information deemed reliable but not guaranteed.
+          Information deemed reliable but not guaranteed. A written buyer agreement is
+          required prior to touring properties (GEPAR Rule 5.0.1).
         </p>
       </div>
     );
@@ -38,32 +35,55 @@ const IDXCompliance = ({
           </div>
         )}
 
-        {/* Agent & Broker Info — GEPAR Section 18 */}
+        {/* GEPAR Section 5.0.0 — Required Consumer Disclosure */}
+        <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 max-w-3xl mx-auto text-left">
+          <p className="text-xs font-semibold text-amber-800 mb-1">Consumer Notice (Required Disclosure)</p>
+          <p className="text-xs text-amber-700 leading-relaxed">
+            This site is operated by a REALTOR® who is a member of The National Association of REALTORS®.
+            The information on this site is provided for consumers' personal, non-commercial use and may
+            not be used for any purpose other than to identify prospective properties consumers may be
+            interested in purchasing. All real estate listings are marked with the REALTOR® logo and
+            detailed information about them includes the name of the listing brokers.
+          </p>
+        </div>
+
+        {/* GEPAR Section 5.0.1 — Written Buyer Agreement Required */}
+        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 max-w-3xl mx-auto text-left">
+          <p className="text-xs font-semibold text-blue-800 mb-1">Buyer Agreement Required (GEPAR Rule 5.0.1)</p>
+          <p className="text-xs text-blue-700 leading-relaxed">
+            A written buyer agreement is required prior to touring any property. Contact Lorena
+            Ontiveros-Ortega at 915-487-5581 or{' '}
+            <a href="mailto:lorena.realtor@icloud.com" className="underline">lorena.realtor@icloud.com</a>{' '}
+            to complete your buyer agreement before scheduling a showing.
+          </p>
+        </div>
+
+        {/* Agent & Broker Info */}
         <p className="text-sm text-black/70 font-lato">
           Lorena Ontiveros-Ortega &nbsp;|&nbsp; The Right Move Real Estate Group LLC &nbsp;|&nbsp; Licensed in Texas
         </p>
 
-        {/* MLS Data Source & Date Period */}
+        {/* MLS Data Source */}
         <p className="text-xs text-black/60 font-lato leading-relaxed max-w-4xl mx-auto">
-          Based on information from the Greater El Paso Association of REALTORS&reg;
-          Multiple Listing Service. IDX information is provided exclusively for
-          consumers&rsquo; personal, non-commercial use, and may not be used for
-          any purpose other than to identify prospective properties consumers may
-          be interested in purchasing. Information is believed to be accurate but
-          not guaranteed.
+          Based on information from the Greater El Paso Association of REALTORS&reg; Multiple Listing Service.
+          IDX information is provided exclusively for consumers&rsquo; personal, non-commercial use and may not
+          be used for any purpose other than to identify prospective properties consumers may be interested in
+          purchasing. Information is believed to be accurate but not guaranteed.
         </p>
 
-        {/* Copyright */}
+        {/* Fair Housing */}
+        <p className="text-xs text-black/60 font-lato">
+          🏠 Equal Housing Opportunity &nbsp;|&nbsp; We do not discriminate on the basis of race, color,
+          national origin, religion, sex, familial status, or disability.
+        </p>
+
         <p className="text-xs text-black/40 font-lato">
           &copy; {currentYear} Greater El Paso Association of REALTORS&reg;. All rights reserved.
+          Data last updated: {new Date().toLocaleDateString()}.
         </p>
 
-        {/* Report Link */}
         <p className="text-xs">
-          <a
-            href={`mailto:${BUSINESS_EMAIL}?subject=Inaccurate%20Listing%20Data`}
-            className="text-gold hover:underline font-lato"
-          >
+          <a href={`mailto:${BUSINESS_EMAIL}?subject=Inaccurate%20Listing%20Data`} className="text-gold hover:underline font-lato">
             Report inaccurate listing data
           </a>
         </p>

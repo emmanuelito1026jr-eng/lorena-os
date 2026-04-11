@@ -372,3 +372,18 @@ Each agent reads specific files before working. This ensures consistent context 
 |-------|------|
 | Phase 3 | `prompts/phase-3-integration.md`, ai-engine skill |
 | Phase 4 | `prompts/phase-2-parallel-build.md` (automation section), automation-engine skill |
+
+---
+## New Agents Added 2026-04-11
+
+### Security Guardian (Quality Team)
+File: `.agent/teams/quality/security-guardian.md`
+Role: Full-stack security auditor, GEPAR MLS compliance enforcer, zero white-screen guardian
+Escalates P0 immediately to CEO. Audits every route on every deploy.
+
+### Evolution Engine (R&D Team — NEW)
+File: `.agent/teams/rnd/evolution-engine.md`
+Role: Self-improving PropTech research agent, competitive intelligence, feature backlog owner
+Reports weekly to CEO. Never ships without approval. Uses improvised-intelligence + marketing-orchestrator skills.
+
+## Updated Agent Count: 19 agents across 7 teams

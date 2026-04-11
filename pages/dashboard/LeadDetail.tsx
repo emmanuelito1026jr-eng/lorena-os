@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Phone, Mail, MessageSquare, Calendar, MapPin, Clock, Tag, DollarSign, Globe, Activity, Zap, CheckSquare, X, BarChart3, Send, Eye, Heart, Search, ChevronDown, ChevronRight, Shield, Home, Cake, Users, CheckCircle2, AlertTriangle, Pause } from 'lucide-react';
 import { EmptyState } from '../../components/shared/EmptyState';
@@ -67,6 +67,9 @@ export default function LeadDetail() {
   const [notesValue, setNotesValue] = useState('');
   const [showVerification, setShowVerification] = useState(false);
   const [timelineFilter, setTimelineFilter] = useState<'all' | 'activity' | 'message' | 'showing'>('all');
+  const [showCallPrep, setShowCallPrep] = useState(false);
+  const [callPrepContent, setCallPrepContent] = useState('');
+  const [callPrepLoading, setCallPrepLoading] = useState(false);
   const updateLead = useUpdateLead();
 
   const { data: lead, isLoading, error } = useLead(id ?? '');
@@ -264,6 +267,35 @@ export default function LeadDetail() {
                 <Phone size={14} /> Call
               </a>
             )}
+            <button
+              onClick={async () => {
+                setShowCallPrep(true);
+                setCallPrepLoading(true);
+                setCallPrepContent('');
+                try {
+                  const ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY as string;
+                  const res = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/ai-staff`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'apikey': ANON_KEY, 'Authorization': `Bearer ${ANON_KEY}` },
+                    body: JSON.stringify({
+                      agent: 'ceo',
+                      messages: [{ role: 'user', content: `Generate a call prep brief for Lorena before she calls this lead. Lead info: Name: ${lead.first_name} ${lead.last_name}, Score: ${lead.score}, Status: ${lead.status}, Source: ${lead.source}, Budget: ${lead.pre_approval_amount ? `$${lead.pre_approval_amount.toLocaleString()}` : 'unknown'}, Type: ${lead.lead_type}, Tags: ${lead.tags?.join(', ')||'none'}, Notes: ${lead.notes||'none'}. Provide: 1) Quick summary of who this person is, 2) What they likely want, 3) 3 conversation starters, 4) Potential objections and how to handle them. Keep it concise and actionable. Format with clear sections.` }],
+                      context: 'Lorena Ontiveros-Ortega | El Paso TX REALTOR | specializes in military, first-time buyers, luxury'
+                    })
+                  });
+                  const data = await res.json();
+                  setCallPrepContent(data.text || data.content?.[0]?.text || 'Unable to generate brief.');
+                } catch {
+                  setCallPrepContent('Error generating brief. Please try again.');
+                } finally {
+                  setCallPrepLoading(false);
+                }
+              }}
+              className="flex items-center gap-1.5 px-3 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg font-lato text-sm transition-colors min-h-[44px]"
+              title="AI Call Prep — get a briefing before you call"
+            >
+              <Zap size={14} /> AI Prep
+            </button>
             {lead.email && (
               <a href={`mailto:${lead.email}`} className="flex items-center gap-1.5 px-3 py-2 border border-dashboard-border hover:border-dashboard-gold text-dashboard-body rounded-lg font-lato text-sm transition-colors min-h-[44px]">
                 <Mail size={14} /> Email
@@ -895,6 +927,47 @@ export default function LeadDetail() {
           <EnrollLeadModal isOpen={showEnrollModal} onClose={() => setShowEnrollModal(false)} leadId={lead.id} leadName={`${lead.first_name} ${lead.last_name}`} />
           <AssignChecklistModal isOpen={showChecklistModal} onClose={() => setShowChecklistModal(false)} leadId={lead.id} leadName={`${lead.first_name} ${lead.last_name}`} />
           <AddShowingModal isOpen={showShowingModal} onClose={() => setShowShowingModal(false)} preselectedLeadId={lead.id} />
+          {/* AI Call Prep Modal */}
+          {showCallPrep && (
+            <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" onClick={() => setShowCallPrep(false)}>
+              <div className="bg-white rounded-xl shadow-2xl max-w-lg w-full max-h-[80vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
+                <div className="p-5 border-b border-gray-100 flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <div className="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center">
+                      <Zap size={16} className="text-purple-600" />
+                    </div>
+                    <div>
+                      <h3 className="font-playfair font-bold text-dashboard-black">AI Call Prep</h3>
+                      <p className="font-lato text-xs text-dashboard-secondary">{lead.first_name} {lead.last_name}</p>
+                    </div>
+                  </div>
+                  <button onClick={() => setShowCallPrep(false)} className="text-dashboard-secondary hover:text-dashboard-black"><X size={20} /></button>
+                </div>
+                <div className="p-5">
+                  {callPrepLoading ? (
+                    <div className="flex flex-col items-center gap-3 py-8">
+                      <div className="w-8 h-8 border-2 border-purple-600 border-t-transparent rounded-full animate-spin" />
+                      <p className="font-lato text-sm text-dashboard-secondary">Analyzing lead profile...</p>
+                    </div>
+                  ) : (
+                    <div className="font-lato text-sm text-dashboard-body whitespace-pre-wrap leading-relaxed">{callPrepContent}</div>
+                  )}
+                </div>
+                {!callPrepLoading && (
+                  <div className="p-4 border-t border-gray-100 flex gap-2">
+                    {lead.phone && (
+                      <a href={`tel:${lead.phone}`} className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-dashboard-gold text-white rounded-lg font-lato text-sm font-medium">
+                        <Phone size={14} /> Call Now
+                      </a>
+                    )}
+                    <button onClick={() => setShowCallPrep(false)} className="px-4 py-2.5 border border-gray-200 rounded-lg font-lato text-sm text-dashboard-secondary">
+                      Close
+                    </button>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
         </>
       )}
     </div>
