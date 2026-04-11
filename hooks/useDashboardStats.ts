@@ -296,7 +296,20 @@ export function usePerformanceMetrics() {
       const monthStart = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-01`;
 
       const [leads, closedDeals, enrollments, outboundMsgs] = await Promise.all([
-        supabase.from('leads').select('score').range(0, 9999),
+        (async () => {
+          // Get exact total count
+          const countRes = await supabase.from('leads').select('*', { count: 'exact', head: true });
+          // Get scores in pages for avg calculation
+          let scores: number[] = [];
+          let p = 0;
+          while (true) {
+            const batch = await supabase.from('leads').select('score').range(p * 1000, p * 1000 + 999);
+            if (batch.data?.length) scores = scores.concat(batch.data.map((l: {score: number}) => l.score));
+            if (!batch.data || batch.data.length < 1000) break;
+            p++;
+          }
+          return { count: countRes.count, data: scores.map(score => ({ score })) };
+        })(),
         supabase
           .from('deals')
           .select('sale_price, list_price')
@@ -312,8 +325,8 @@ export function usePerformanceMetrics() {
           .eq('direction', 'outbound'),
       ]);
 
-      const allLeads = leads.data ?? [];
-      const totalLeads = allLeads.length;
+      const allLeads = (leads as unknown as {count: number|null, data: {score:number}[]}).data ?? [];
+      const totalLeads = (leads as unknown as {count: number|null}).count ?? allLeads.length;
       const hotCount = allLeads.filter(l => l.score >= 80).length;
       const avgScore = totalLeads > 0
         ? Math.round(allLeads.reduce((sum, l) => sum + l.score, 0) / totalLeads)
