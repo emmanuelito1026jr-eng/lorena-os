@@ -6,9 +6,12 @@ import { QuickActionFAB } from './QuickActionFAB';
 import { ToastContainer } from '../shared/Toast';
 import { ConfirmDialogContainer } from '../shared/ConfirmDialog';
 import { useUnreadNotificationCount } from '../../hooks/useNotifications';
+import { useRealtimeLeadActivity } from '../../hooks/useRealtimeLeadActivity';
 import ErrorBoundary from '../ErrorBoundary';
 
 function DashboardInner() {
+  // 🔥 Real-time lead behavior alerts — fires toast when leads act on site
+  useRealtimeLeadActivity(true);
   const { data: notifCount } = useUnreadNotificationCount();
 
   return (
