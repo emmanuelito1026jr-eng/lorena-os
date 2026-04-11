@@ -155,6 +155,51 @@ export default function LeadDetail() {
   const { data: enrollments } = useEnrollments(id ?? '');
   const { data: checklists } = useChecklists(id ?? '');
 
+  // ── useMemo hooks MUST be before any early returns (Rules of Hooks) ──────
+  const nextAction = useMemo(() => {
+    if (!lead) return null;
+    const lastActivityDaysAgo = lead.last_activity
+      ? differenceInDays(new Date(), new Date(lead.last_activity))
+      : 999;
+    return getNextBestAction(lead, {
+      showingCount: showings?.length ?? 0,
+      enrollmentCount: enrollments?.length ?? 0,
+      messageCount: messages?.length ?? 0,
+      lastActivityDaysAgo,
+    });
+  }, [lead, showings, enrollments, messages]);
+
+  type TimelineItem = {
+    id: string;
+    type: 'activity' | 'message_in' | 'message_out' | 'showing';
+    timestamp: string;
+    action?: string; points?: number;
+    content?: string; channel?: string;
+    address?: string; showingStatus?: string; startTime?: string;
+  };
+
+  const timeline = useMemo<TimelineItem[]>(() => {
+    const items: TimelineItem[] = [];
+    for (const act of activities ?? []) {
+      items.push({ id: `act-${act.id}`, type: 'activity', timestamp: act.created_at, action: act.action, points: act.points });
+    }
+    for (const msg of messages ?? []) {
+      items.push({ id: `msg-${msg.id}`, type: msg.direction === 'inbound' ? 'message_in' : 'message_out', timestamp: msg.created_at, content: msg.content, channel: msg.channel });
+    }
+    for (const sh of showings ?? []) {
+      items.push({ id: `sh-${sh.id}`, type: 'showing', timestamp: sh.date, address: sh.address, showingStatus: sh.status, startTime: sh.start_time });
+    }
+    return items.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
+  }, [activities, messages, showings]);
+
+  const filteredTimeline = useMemo(() => {
+    if (timelineFilter === 'all') return timeline;
+    if (timelineFilter === 'activity') return timeline.filter(t => t.type === 'activity');
+    if (timelineFilter === 'message') return timeline.filter(t => t.type === 'message_in' || t.type === 'message_out');
+    return timeline.filter(t => t.type === 'showing');
+  }, [timeline, timelineFilter]);
+  // ─────────────────────────────────────────────────────────────────────────
+
   if (isLoading) {
     return (
       <div className="space-y-6">
@@ -177,18 +222,6 @@ export default function LeadDetail() {
   }
 
   // Compute Next Best Action
-  const nextAction = useMemo(() => {
-    if (!lead) return null;
-    const lastActivityDaysAgo = lead.last_activity
-      ? differenceInDays(new Date(), new Date(lead.last_activity))
-      : 999;
-    return getNextBestAction(lead, {
-      showingCount: showings?.length ?? 0,
-      enrollmentCount: enrollments?.length ?? 0,
-      messageCount: messages?.length ?? 0,
-      lastActivityDaysAgo,
-    });
-  }, [lead, showings, enrollments, messages]);
 
   const nbaIcons: Record<string, typeof Phone> = {
     phone: Phone,
@@ -249,37 +282,6 @@ export default function LeadDetail() {
   const hasFinancialData = lead.pre_approved || lead.budget_min || lead.budget_max || lead.deal_type || lead.lender_name;
   const hasCincActivity = cincActivity && (cincActivity.property_views || cincActivity.favorite_properties || cincActivity.saved_searches || cincActivity.property_inquiries);
   const hasPersonalDetails = homeAddress?.address || cf.birthday || cf.spouse_birthday || cf.home_anniversary;
-
-  // Unified timeline merge
-  type TimelineItem = {
-    id: string;
-    type: 'activity' | 'message_in' | 'message_out' | 'showing';
-    timestamp: string;
-    action?: string; points?: number;
-    content?: string; channel?: string;
-    address?: string; showingStatus?: string; startTime?: string;
-  };
-
-  const timeline = useMemo<TimelineItem[]>(() => {
-    const items: TimelineItem[] = [];
-    for (const act of activities ?? []) {
-      items.push({ id: `act-${act.id}`, type: 'activity', timestamp: act.created_at, action: act.action, points: act.points });
-    }
-    for (const msg of messages ?? []) {
-      items.push({ id: `msg-${msg.id}`, type: msg.direction === 'inbound' ? 'message_in' : 'message_out', timestamp: msg.created_at, content: msg.content, channel: msg.channel });
-    }
-    for (const sh of showings ?? []) {
-      items.push({ id: `sh-${sh.id}`, type: 'showing', timestamp: sh.date, address: sh.address, showingStatus: sh.status, startTime: sh.start_time });
-    }
-    return items.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
-  }, [activities, messages, showings]);
-
-  const filteredTimeline = useMemo(() => {
-    if (timelineFilter === 'all') return timeline;
-    if (timelineFilter === 'activity') return timeline.filter(t => t.type === 'activity');
-    if (timelineFilter === 'message') return timeline.filter(t => t.type === 'message_in' || t.type === 'message_out');
-    return timeline.filter(t => t.type === 'showing');
-  }, [timeline, timelineFilter]);
 
   return (
     <div className="space-y-6">
