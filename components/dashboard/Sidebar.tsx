@@ -28,7 +28,6 @@ const navItems = [
   { to: '/dashboard/deals', icon: DollarSign, label: 'Deals' },
   { to: '/dashboard/messages', icon: MessageSquare, label: 'Messages', badgeKey: 'messages' as const },
   { to: '/dashboard/showings', icon: Calendar, label: 'Showings' },
-  { to: '/dashboard/military', icon: Shield, label: 'Military' },
   { to: '/dashboard/market', icon: TrendingUp, label: 'HomePulse' },
   { to: '/dashboard/cma', icon: FileText, label: 'CMA' },
   { to: '/dashboard/autotracks', icon: Zap, label: 'AutoTracks' },

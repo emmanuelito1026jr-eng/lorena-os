@@ -7,7 +7,6 @@
   "nav.agentLogin": "Agent Login",
   "nav.dashboard": "Dashboard",
   "nav.callNow": "Call Now",
-
   "hero.headline": "Your Home in the Sun City Starts Here",
   "hero.subheadline": "Bilingual expertise. Local knowledge. Your personal guide to El Paso real estate.",
   "hero.searchPlaceholder": "Search by City, ZIP, or Neighborhood",
@@ -22,7 +21,6 @@
   "hero.activeListings": "Active Listings",
   "hero.medianPrice": "Median Price",
   "hero.avgDays": "Avg Days on Market",
-
   "featured.title": "Featured Homes",
   "featured.subtitle": "Featured Properties",
   "featured.viewAll": "View All",
@@ -30,7 +28,6 @@
   "featured.baths": "Baths",
   "featured.sqft": "SqFt",
   "featured.viewAllProperties": "View All Properties",
-
   "why.subtitle": "Why Choose Lorena",
   "why.headline": "Why Families Choose Lorena",
   "why.localExpert": "Local Expert",
@@ -39,7 +36,6 @@
   "why.bilingualServiceDesc": "Seamless communication in English and Spanish — so nothing gets lost in translation during the biggest purchase of your life.",
   "why.aiSearch": "AI-Powered Search",
   "why.aiSearchDesc": "Get instant listing alerts and market updates before they hit Zillow. Technology-forward service with a personal touch.",
-
   "whyLorena.title": "Why Work With Lorena?",
   "whyLorena.subtitle": "What sets Lorena apart in El Paso real estate",
   "whyLorena.localExpert": "Local Expert",
@@ -49,18 +45,15 @@
   "whyLorena.aiPowered": "AI-Powered Search",
   "whyLorena.aiPoweredDesc": "Smart property matching, instant market data, and real-time alerts. Lorena combines local expertise with cutting-edge technology.",
   "whyLorena.testimonialLabel": "What Clients Say",
-
   "services.title": "How I Help You",
   "services.subtitle": "Whether buying, selling, or serving — a clear process for every client",
   "services.buying": "Buying",
   "services.selling": "Selling",
   "services.military": "Military / VA",
-
   "neighborhoods.title": "Explore El Paso Neighborhoods",
   "neighborhoods.subtitle": "From the trendy Westside to affordable Horizon City — find your perfect area",
   "neighborhoods.viewAll": "View All Neighborhoods",
   "neighborhoods.medianPrice": "Median",
-
   "market.title": "El Paso Market Snapshot",
   "market.subtitle": "Real-time data from current El Paso listings",
   "market.viewListings": "View All Listings",
@@ -68,14 +61,11 @@
   "market.activeListings": "Active Listings",
   "market.avgDom": "Avg Days on Market",
   "market.pricePerSqft": "Avg Price/Sqft",
-
   "testimonials.title": "What Our Clients Say",
   "testimonials.subtitle": "Real reviews from real families",
-
   "leadCapture.title": "Ready to Find Your Dream Home?",
   "leadCapture.subtitle": "Get started with a free consultation. Lorena will help you navigate the El Paso market with confidence.",
   "leadCapture.habloEspanol": "Hablo Espanol",
-
   "cta.title": "Let's Find Your Perfect Home",
   "cta.subtitle": "Whether you're buying, selling, or just exploring — Lorena is here to help.",
   "cta.headline": "Ready to Find Your Dream Home?",
@@ -87,7 +77,6 @@
   "cta.sameDayResponse": "Same-Day Response",
   "cta.callNow": "Call Now",
   "cta.viewProperties": "View Properties",
-
   "footer.company": "Casas En El Paso TX",
   "footer.tagline": "Your trusted El Paso real estate expert.",
   "footer.description": "Helping families on both sides of the border build wealth through real estate. Bilingual, professional, and dedicated to your future.",
@@ -108,7 +97,6 @@
   "footer.termsOfUse": "Terms of Use",
   "footer.privacyNotice": "Privacy Notice",
   "footer.eachOffice": "Each office is independently owned and operated.",
-
   "contact.title": "Get in Touch",
   "contact.subtitle": "Ready to buy, sell, or have questions about El Paso real estate? Reach out today.",
   "contact.form.name": "Full Name",
@@ -119,7 +107,6 @@
   "contact.form.sending": "Sending...",
   "contact.form.success": "Message sent successfully! We'll contact you soon.",
   "contact.form.error": "Failed to send message. Please try again or call us directly.",
-
   "form.nameRequired": "Name is required",
   "form.emailRequired": "Email is required",
   "form.emailInvalid": "Please enter a valid email address",
@@ -140,11 +127,9 @@
   "form.sellingOption": "Selling a Home / Vender",
   "form.investingOption": "Investing / Invertir",
   "form.informationOption": "General Information",
-
   "mobileCta.call": "Call",
   "mobileCta.text": "Text",
   "mobileCta.consult": "Consult",
-
   "chat.header": "Chat with Lorena's Team",
   "chat.subtitle": "We typically respond within 30 min",
   "chat.captureTitle": "Let Lorena reach out to you",
@@ -156,7 +141,6 @@
   "chat.skip": "Skip",
   "chat.typePlaceholder": "Type a message...",
   "chat.callDirectly": "Or call directly:",
-
   "exitPopup.headline": "Wait — Don't Miss Out!",
   "exitPopup.description": "Get El Paso's newest listings and market updates delivered to your inbox. No spam, just homes.",
   "exitPopup.emailPlaceholder": "Enter your email address",
@@ -164,7 +148,6 @@
   "exitPopup.disclaimer": "Unsubscribe anytime. We respect your privacy.",
   "exitPopup.successTitle": "You're In!",
   "exitPopup.successMessage": "Check your inbox for El Paso's hottest listings.",
-
   "listings.beds": "Beds",
   "listings.baths": "Baths",
   "listings.sqft": "SqFt",
@@ -177,7 +160,6 @@
   "listings.propertyType": "Property Type",
   "listings.newListing": "New Listing",
   "listings.staleWarning": "MLS data may be outdated. Last updated {time} ago.",
-
   "portal.nav.clientPortal": "Client Portal",
   "portal.nav.home": "Home",
   "portal.nav.search": "Search",
@@ -192,7 +174,6 @@
   "portal.nav.darkMode": "Dark Mode",
   "portal.nav.lightMode": "Light Mode",
   "portal.nav.signOut": "Sign Out",
-
   "portal.home.goodMorning": "Good morning",
   "portal.home.goodAfternoon": "Good afternoon",
   "portal.home.goodEvening": "Good evening",
@@ -208,7 +189,6 @@
   "portal.home.viewAll": "View all",
   "portal.home.startJourneyTitle": "Start Your Home Journey",
   "portal.home.startJourneyDesc": "Browse homes, save your favorites, and I'll help you find the perfect place in El Paso.",
-
   "portal.search.title": "Search Homes",
   "portal.search.subtitle": "Find your perfect home in El Paso",
   "portal.search.mySavedSearches": "My Saved Searches",
@@ -235,7 +215,6 @@
   "portal.search.next": "Next",
   "portal.search.page": "Page",
   "portal.search.of": "of",
-
   "portal.savedHomes.title": "Saved Homes",
   "portal.savedHomes.homesSaved": "homes saved",
   "portal.savedHomes.emptyTitle": "No Saved Homes Yet",
@@ -246,13 +225,11 @@
   "portal.savedHomes.preferredTime": "Preferred Time",
   "portal.savedHomes.requesting": "Requesting...",
   "portal.savedHomes.requestShowing": "Request Showing",
-
   "portal.messages.title": "Messages",
   "portal.messages.subtitle": "Chat with Lorena",
   "portal.messages.emptyTitle": "No Messages Yet",
   "portal.messages.emptyDesc": "Send a message to start a conversation with Lorena.",
   "portal.messages.placeholder": "Type a message...",
-
   "portal.showings.title": "My Showings",
   "portal.showings.upcoming": "upcoming",
   "portal.showings.requestShowing": "Request Showing",
@@ -266,7 +243,6 @@
   "portal.showings.statusCompleted": "Completed",
   "portal.showings.statusCancelled": "Cancelled",
   "portal.showings.statusNoShow": "No Show",
-
   "portal.homeValue.title": "Home Value Estimate",
   "portal.homeValue.subtitle": "Get a quick estimate based on recent sales",
   "portal.homeValue.propertyAddress": "Property Address",
@@ -284,7 +260,6 @@
   "portal.homeValue.cmaDesc": "Get a detailed comparative market analysis from Lorena.",
   "portal.homeValue.requestCMA": "Request Professional CMA",
   "portal.homeValue.disclaimer": "This is an automated estimate based on recent comparable sales and is not a formal appraisal. Actual market value may differ. Contact a licensed agent for a professional opinion.",
-
   "portal.calculator.title": "Mortgage Calculator",
   "portal.calculator.subtitle": "Estimate your monthly payment",
   "portal.calculator.homePrice": "Home Price",
@@ -307,7 +282,6 @@
   "portal.calculator.preApprovedTitle": "Ready to Get Pre-Approved?",
   "portal.calculator.preApprovedDesc": "Lorena works with trusted local lenders to get you the best rate.",
   "portal.calculator.askLorena": "Ask Lorena About Lenders",
-
   "portal.profile.title": "My Profile",
   "portal.profile.subtitle": "Manage your account",
   "portal.profile.fullName": "Full Name",
@@ -321,7 +295,6 @@
   "portal.profile.saving": "Saving...",
   "portal.profile.saveChanges": "Save Changes",
   "portal.profile.needHelp": "Need help? Email lorena@casasenelpasotx.com",
-
   "portal.transaction.title": "My Transaction",
   "portal.transaction.emptyTitle": "No Active Transaction",
   "portal.transaction.emptyDesc": "Once you're under contract, your transaction progress will appear here.",
@@ -357,12 +330,10 @@
   "portal.transaction.sellerStep8": "Home inspection response",
   "portal.transaction.sellerStep9": "Appraisal",
   "portal.transaction.sellerStep10": "Close on home",
-
   "notFound.title": "Page Not Found",
   "notFound.message": "The page you're looking for doesn't exist or has been moved. Let's get you back on track.",
   "notFound.backHome": "Back to Home",
   "notFound.searchHomes": "Search Homes",
-
   "errorBoundary.title": "Oops! Something went wrong",
   "errorBoundary.message": "We're sorry for the inconvenience. Please try refreshing the page.",
   "errorBoundary.inlineTitle": "Something went wrong",
@@ -370,9 +341,7 @@
   "errorBoundary.tryAgain": "Try Again",
   "errorBoundary.refreshPage": "Refresh Page",
   "errorBoundary.errorDetails": "Error Details (Dev Only)",
-
   "exitPopup.error": "Something went wrong. Please try again.",
-
   "auth.welcomeBack": "Welcome Back",
   "auth.signInToDashboard": "Sign in to your dashboard",
   "auth.signInToPortal": "Sign in to track your home search",
@@ -419,7 +388,6 @@
   "auth.contactLorena": "Contact Lorena for an invitation",
   "auth.backToWebsite": "Back to website",
   "auth.signOut": "Sign Out",
-
   "dash.greeting.morning": "Good morning",
   "dash.greeting.afternoon": "Good afternoon",
   "dash.greeting.evening": "Good evening",
@@ -523,7 +491,6 @@
   "fab.close": "Close",
   "fab.addLead": "Add Lead",
   "fab.scheduleShowing": "Schedule Showing",
-
   "nextAction.callNow": "Call now — don't let this one slip",
   "nextAction.hotGoingCold": "Hot lead with no contact in 2+ days. Act fast.",
   "nextAction.scheduleShowing": "Schedule a showing",
@@ -540,7 +507,6 @@
   "nextAction.activeClient": "Active client — keep the momentum going.",
   "nextAction.generalFollowUp": "Send a follow-up",
   "nextAction.keepMomentum": "Keep the conversation going.",
-
   "analytics.funnel": "Funnel",
   "analytics.conversionFunnel": "Conversion Funnel",
   "analytics.funnelNew": "New Lead",
@@ -557,7 +523,6 @@
   "analytics.totalDeals": "Total Deals",
   "analytics.sourceROI": "Lead Source ROI",
   "analytics.avgScore": "Avg Score",
-
   "leads.title": "Prospecting Launchpad",
   "leads.addLead": "Add Lead",
   "leads.search": "Search leads...",
@@ -604,7 +569,6 @@
   "leads.bulkDeleteConfirm": "Delete {count} leads? This cannot be undone.",
   "leads.bulkDeleted": "{count} leads deleted",
   "leads.bulkDeleteFailed": "Failed to delete leads",
-
   "deals.title": "Deals Pipeline",
   "deals.search": "Search by property...",
   "deals.listView": "List",
@@ -645,7 +609,6 @@
   "deals.creating": "Creating...",
   "deals.dealCreated": "Deal created successfully",
   "deals.dealCreateError": "Failed to create deal",
-
   "messages.title": "Messages",
   "messages.leadsTab": "Leads",
   "messages.chatTab": "Chat",
@@ -667,7 +630,6 @@
   "messages.noMessagesYet": "No messages yet",
   "messages.score": "Score",
   "messages.converted": "Converted",
-
   "showings.title": "Showings",
   "showings.schedule": "Schedule Showing",
   "showings.listView": "List",
@@ -710,7 +672,6 @@
   "showings.feedback.skip": "Skip",
   "showings.feedback.submit": "Save Feedback",
   "showings.feedback.saving": "Saving...",
-
   "homepulse.title": "HomePulse",
   "homepulse.overview": "Overview",
   "homepulse.neighborhoods": "Neighborhoods",
@@ -750,7 +711,6 @@
   "homepulse.inventory": "Inventory",
   "homepulse.new7d": "New (7d)",
   "homepulse.pending": "Pending",
-
   "cma.title": "CMA Generator",
   "cma.newReport": "New CMA Report",
   "cma.propertyAddress": "Property Address",
@@ -798,7 +758,6 @@
   "cma.reportGenerated": "CMA report generated",
   "cma.reportFailed": "Failed to generate CMA report",
   "cma.noCompsSelected": "No comps selected. Go back and select comparable sales.",
-
   "autotracks.title": "AutoTracks",
   "autotracks.sequences": "Sequences",
   "autotracks.calendar": "Calendar",
@@ -836,7 +795,6 @@
   "autotracks.enrolled": "active",
   "autotracks.completed": "completed",
   "autotracks.pausedCount": "paused",
-
   "analytics.title": "Analytics",
   "analytics.overview": "Overview",
   "analytics.leadsTab": "Leads",
@@ -866,7 +824,6 @@
   "analytics.noAutomationDesc": "Create drip sequences to see automation analytics here.",
   "analytics.noLeadData": "No lead data yet",
   "analytics.hot": "Hot",
-
   "settings.title": "Settings",
   "settings.subtitle": "Manage your account and preferences",
   "settings.profile": "Profile",
@@ -919,26 +876,22 @@
   "settings.importLeads": "Import Leads",
   "settings.exporting": "Exporting...",
   "settings.exportSuccess": "Leads exported successfully",
-
   "sellers.addressPlaceholder": "123 Main St, El Paso, TX 79901",
   "sellers.sqftPlaceholder": "1,500",
   "sellers.yearBuiltPlaceholder": "2005",
   "sellers.namePlaceholder": "Maria Garcia",
   "sellers.emailPlaceholder": "maria@example.com",
   "sellers.phonePlaceholder": "(915) 555-1234",
-
   "homeEstimate.addressPlaceholder": "123 Main St, El Paso, TX 79901",
   "homeEstimate.namePlaceholder": "Full Name",
   "homeEstimate.emailPlaceholder": "Email Address",
   "homeEstimate.phonePlaceholder": "Phone Number",
-
   "portal.addressPlaceholder": "123 Main St, El Paso, TX",
   "portal.zipPlaceholder": "79912",
   "portal.sqftPlaceholder": "1800",
   "portal.yearBuiltPlaceholder": "2000",
   "portal.minPricePlaceholder": "$150,000",
   "portal.maxPricePlaceholder": "$400,000",
-
   "propertyGate.title": "Never Miss a Home",
   "propertyGate.titleSubmitted": "You're All Set!",
   "propertyGate.successMessage": "We'll send you alerts when new homes match your search.",
@@ -947,17 +900,13 @@
   "propertyGate.phonePlaceholder": "Phone (optional)",
   "propertyGate.submitButton": "Get Alerts",
   "propertyGate.dismiss": "No thanks, keep browsing",
-
   "properties.searchPlaceholder": "Search by address, neighborhood, or features...",
-
   "form.namePlaceholder": "Maria Gonzalez",
   "form.emailPlaceholder": "email@example.com",
   "form.phonePlaceholder": "(915) 555-0123",
-
   "leadCapture.headline": "Ready to Find Your El Paso Home?",
   "leadCapture.description": "Whether you're buying your first home, selling, or relocating to Fort Bliss — Lorena is here to guide you every step of the way.",
   "leadCapture.callDirectly": "Or call directly:",
-
   "about.contactMe": "Contact Me",
   "about.meetAgent": "Meet Your Agent",
   "about.headline1": "Bridging Cultures,",
@@ -969,7 +918,6 @@
   "about.featureFamilies": "100+ Families Served",
   "about.featureEducation": "UTEP Graduate",
   "about.readBio": "Read Full Bio",
-
   "servicesTabs.subtitle": "Our Services",
   "servicesTabs.title": "How Lorena Helps",
   "servicesTabs.buyingLabel": "Buying a Home",
@@ -1002,7 +950,6 @@
   "servicesTabs.military.step4Title": "PCS-Ready Closing",
   "servicesTabs.military.step4Desc": "Fast closings that work with your PCS timeline. No surprises.",
   "servicesTabs.military.cta": "Military Home Search",
-
   "contact.heroSubtitle": "Get In Touch / Contáctenos",
   "contact.heroTitle": "Let's Connect",
   "contact.heroDescription": "Whether you're buying, selling, or just exploring your options in El Paso — Lorena Ontiveros-Ortega is here to help. Reach out today for a no-obligation conversation.",
@@ -1024,7 +971,6 @@
   "contact.trustResponseDesc": "Your inquiry answered within hours, not days",
   "contact.trustLicensed": "Licensed in Texas",
   "contact.trustLicensedDesc": "Professional, licensed real estate service you can trust",
-
   "leadDetail.financial": "Financial Qualification",
   "leadDetail.preApproved": "Pre-Approved",
   "leadDetail.notPreApproved": "Not Pre-Approved",
@@ -1069,5 +1015,20 @@
   "leadDetail.badInfo": "Bad Info",
   "leadDetail.doNotContact": "Do Not Contact",
   "leadDetail.paused": "Paused",
-  "leadDetail.preferences": "Preferences"
+  "leadDetail.preferences": "Preferences",
+  "nav.darkMode": "Dark Mode",
+  "nav.lightMode": "Light Mode",
+  "nav.signOut": "Sign Out",
+  "nav.commandCenter": "Command Center",
+  "nav.leads": "Leads",
+  "nav.deals": "Deals",
+  "nav.messages": "Messages",
+  "nav.showings": "Showings",
+  "nav.military": "Military",
+  "nav.homePulse": "HomePulse",
+  "nav.cma": "CMA",
+  "nav.autoTracks": "AutoTracks",
+  "nav.analytics": "Analytics",
+  "nav.aiStaff": "AI Staff",
+  "nav.settings": "Settings"
 }

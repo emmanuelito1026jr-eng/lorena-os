@@ -1,6 +1,6 @@
 import { useState, useMemo, useDeferredValue, useCallback } from 'react';
 import { Link } from 'react-router-dom';
-import { Users, Search, Filter, Plus, Phone, Trash2, Flame, TrendingUp, UserPlus, Zap, CheckSquare, X } from 'lucide-react';
+import { Users, Search, Filter, Plus, Phone, Trash2, Flame, TrendingUp, UserPlus, Zap, CheckSquare, X, Shield } from 'lucide-react';
 import { EmptyState } from '../../components/shared/EmptyState';
 import { SkeletonList } from '../../components/shared/Skeleton';
 import { LeadScoreBadge } from '../../components/shared/LeadScoreBadge';
@@ -213,20 +213,28 @@ export default function Leads() {
         </div>
       </div>
 
-      {/* Temperature Tabs */}
-      <div className="flex gap-1 bg-dashboard-surface rounded-lg p-1">
-        {TEMP_TAB_KEYS.map((tab) => (
-          <button
-            key={tab.value}
-            onClick={() => setTempFilter(tab.value)}
-            className={`flex-1 py-2 px-3 rounded-md font-lato text-sm font-medium transition-colors min-h-[44px] ${
-              tempFilter === tab.value ? 'bg-white shadow-sm text-dashboard-black' : 'text-dashboard-secondary hover:text-dashboard-body'
-            }`}
-          >
-            <span className={tempFilter === tab.value ? tab.color : ''}>{t(tab.i18nKey)}</span>
-            {tempFilter === 'all' && <span className="ml-1 text-xs opacity-60">{tempCounts[tab.value]}</span>}
-          </button>
-        ))}
+      {/* Temperature Tabs + Military shortcut */}
+      <div className="flex gap-2">
+        <div className="flex gap-1 bg-dashboard-surface rounded-lg p-1 flex-1">
+          {TEMP_TAB_KEYS.map((tab) => (
+            <button
+              key={tab.value}
+              onClick={() => setTempFilter(tab.value)}
+              className={`flex-1 py-2 px-3 rounded-md font-lato text-sm font-medium transition-colors min-h-[44px] ${
+                tempFilter === tab.value ? 'bg-white shadow-sm text-dashboard-black' : 'text-dashboard-secondary hover:text-dashboard-body'
+              }`}
+            >
+              <span className={tempFilter === tab.value ? tab.color : ''}>{t(tab.i18nKey)}</span>
+              {tempFilter === 'all' && <span className="ml-1 text-xs opacity-60">{tempCounts[tab.value]}</span>}
+            </button>
+          ))}
+        </div>
+        <Link
+          to="/dashboard/military"
+          className="flex items-center gap-1.5 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg font-lato text-sm font-medium transition-colors min-h-[44px] whitespace-nowrap"
+        >
+          <Shield size={14} /> Military
+        </Link>
       </div>
 
       {/* Search + Filter Row */}

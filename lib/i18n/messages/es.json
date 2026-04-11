@@ -7,7 +7,6 @@
   "nav.agentLogin": "Acceso Agente",
   "nav.dashboard": "Panel",
   "nav.callNow": "Llamar Ahora",
-
   "hero.headline": "Tu Hogar en la Ciudad del Sol Empieza Aqui",
   "hero.subheadline": "Experiencia bilingue. Conocimiento local. Tu guia personal en bienes raices de El Paso.",
   "hero.searchPlaceholder": "Buscar por Ciudad, ZIP o Vecindario",
@@ -22,7 +21,6 @@
   "hero.activeListings": "Listados Activos",
   "hero.medianPrice": "Precio Medio",
   "hero.avgDays": "Dias Promedio en Mercado",
-
   "featured.title": "Casas Destacadas",
   "featured.subtitle": "Propiedades Destacadas",
   "featured.viewAll": "Ver Todas",
@@ -30,7 +28,6 @@
   "featured.baths": "Banos",
   "featured.sqft": "Pies²",
   "featured.viewAllProperties": "Ver Todas las Propiedades",
-
   "why.subtitle": "Por Que Elegir a Lorena",
   "why.headline": "Por Que las Familias Eligen a Lorena",
   "why.localExpert": "Experta Local",
@@ -39,7 +36,6 @@
   "why.bilingualServiceDesc": "Comunicacion fluida en ingles y espanol — para que nada se pierda en la traduccion durante la compra mas importante de tu vida.",
   "why.aiSearch": "Busqueda con IA",
   "why.aiSearchDesc": "Recibe alertas de listados y actualizaciones del mercado antes de que lleguen a Zillow. Servicio con tecnologia avanzada y toque personal.",
-
   "whyLorena.title": "Por Que Trabajar Con Lorena?",
   "whyLorena.subtitle": "Lo que distingue a Lorena en bienes raices de El Paso",
   "whyLorena.localExpert": "Experta Local",
@@ -49,18 +45,15 @@
   "whyLorena.aiPowered": "Busqueda con IA",
   "whyLorena.aiPoweredDesc": "Emparejamiento inteligente de propiedades, datos de mercado instantaneos y alertas en tiempo real. Lorena combina experiencia local con tecnologia de punta.",
   "whyLorena.testimonialLabel": "Lo Que Dicen Nuestros Clientes",
-
   "services.title": "Como Te Ayudo",
   "services.subtitle": "Ya sea comprando, vendiendo o sirviendo — un proceso claro para cada cliente",
   "services.buying": "Comprar",
   "services.selling": "Vender",
   "services.military": "Militar / VA",
-
   "neighborhoods.title": "Explora Vecindarios de El Paso",
   "neighborhoods.subtitle": "Desde el moderno Westside hasta el asequible Horizon City — encuentra tu area perfecta",
   "neighborhoods.viewAll": "Ver Todos los Vecindarios",
   "neighborhoods.medianPrice": "Precio Medio",
-
   "market.title": "Resumen del Mercado de El Paso",
   "market.subtitle": "Datos en tiempo real de listados actuales de El Paso",
   "market.viewListings": "Ver Todos los Listados",
@@ -68,14 +61,11 @@
   "market.activeListings": "Listados Activos",
   "market.avgDom": "Dias Promedio en Mercado",
   "market.pricePerSqft": "Precio Promedio/Pie Cuadrado",
-
   "testimonials.title": "Lo Que Dicen Nuestros Clientes",
   "testimonials.subtitle": "Resenas reales de familias reales",
-
   "leadCapture.title": "Lista para Encontrar Tu Casa Ideal?",
   "leadCapture.subtitle": "Comienza con una consulta gratuita. Lorena te ayudara a navegar el mercado de El Paso con confianza.",
   "leadCapture.habloEspanol": "Hablo Espanol",
-
   "cta.title": "Encontremos Tu Casa Perfecta",
   "cta.subtitle": "Ya sea que estes comprando, vendiendo o solo explorando — Lorena esta aqui para ayudarte.",
   "cta.headline": "Lista Para Encontrar Tu Casa Ideal?",
@@ -87,7 +77,6 @@
   "cta.sameDayResponse": "Respuesta el Mismo Dia",
   "cta.callNow": "Llamar Ahora",
   "cta.viewProperties": "Ver Propiedades",
-
   "footer.company": "Casas En El Paso TX",
   "footer.tagline": "Tu experta de confianza en bienes raices de El Paso.",
   "footer.description": "Ayudando a familias en ambos lados de la frontera a construir patrimonio a traves de bienes raices. Bilingue, profesional, y dedicada a tu futuro.",
@@ -108,7 +97,6 @@
   "footer.termsOfUse": "Terminos de Uso",
   "footer.privacyNotice": "Aviso de Privacidad",
   "footer.eachOffice": "Cada oficina es de propiedad y operacion independiente.",
-
   "contact.title": "Contactanos",
   "contact.subtitle": "Listo para comprar, vender, o tienes preguntas sobre bienes raices en El Paso? Comunicate hoy.",
   "contact.form.name": "Nombre Completo",
@@ -119,7 +107,6 @@
   "contact.form.sending": "Enviando...",
   "contact.form.success": "Mensaje enviado exitosamente! Te contactaremos pronto.",
   "contact.form.error": "Error al enviar mensaje. Intenta de nuevo o llamanos directamente.",
-
   "form.nameRequired": "El nombre es requerido",
   "form.emailRequired": "El correo es requerido",
   "form.emailInvalid": "Ingresa un correo electronico valido",
@@ -140,11 +127,9 @@
   "form.sellingOption": "Vender una Casa",
   "form.investingOption": "Invertir",
   "form.informationOption": "Informacion General",
-
   "mobileCta.call": "Llamar",
   "mobileCta.text": "Texto",
   "mobileCta.consult": "Consulta",
-
   "chat.header": "Chatea con el Equipo de Lorena",
   "chat.subtitle": "Respondemos en menos de 30 min",
   "chat.captureTitle": "Deja que Lorena te contacte",
@@ -156,7 +141,6 @@
   "chat.skip": "Saltar",
   "chat.typePlaceholder": "Escribe un mensaje...",
   "chat.callDirectly": "O llama directamente:",
-
   "exitPopup.headline": "Espera — No Te Lo Pierdas!",
   "exitPopup.description": "Recibe los listados mas nuevos de El Paso y actualizaciones del mercado en tu correo. Sin spam, solo casas.",
   "exitPopup.emailPlaceholder": "Ingresa tu correo electronico",
@@ -164,7 +148,6 @@
   "exitPopup.disclaimer": "Cancela cuando quieras. Respetamos tu privacidad.",
   "exitPopup.successTitle": "Ya Estas Dentro!",
   "exitPopup.successMessage": "Revisa tu correo para las casas mas recientes de El Paso.",
-
   "listings.beds": "Rec",
   "listings.baths": "Banos",
   "listings.sqft": "Pies²",
@@ -177,7 +160,6 @@
   "listings.propertyType": "Tipo de Propiedad",
   "listings.newListing": "Nuevo Listado",
   "listings.staleWarning": "Los datos del MLS pueden estar desactualizados. Ultima actualizacion hace {time}.",
-
   "portal.nav.clientPortal": "Portal de Cliente",
   "portal.nav.home": "Inicio",
   "portal.nav.search": "Buscar",
@@ -192,7 +174,6 @@
   "portal.nav.darkMode": "Modo Oscuro",
   "portal.nav.lightMode": "Modo Claro",
   "portal.nav.signOut": "Cerrar Sesion",
-
   "portal.home.goodMorning": "Buenos dias",
   "portal.home.goodAfternoon": "Buenas tardes",
   "portal.home.goodEvening": "Buenas noches",
@@ -208,7 +189,6 @@
   "portal.home.viewAll": "Ver todas",
   "portal.home.startJourneyTitle": "Comienza Tu Camino a Casa",
   "portal.home.startJourneyDesc": "Busca casas, guarda tus favoritas, y te ayudo a encontrar el lugar perfecto en El Paso.",
-
   "portal.search.title": "Buscar Casas",
   "portal.search.subtitle": "Encuentra tu casa perfecta en El Paso",
   "portal.search.mySavedSearches": "Mis Busquedas Guardadas",
@@ -235,7 +215,6 @@
   "portal.search.next": "Siguiente",
   "portal.search.page": "Pagina",
   "portal.search.of": "de",
-
   "portal.savedHomes.title": "Casas Guardadas",
   "portal.savedHomes.homesSaved": "casas guardadas",
   "portal.savedHomes.emptyTitle": "No Tienes Casas Guardadas",
@@ -246,13 +225,11 @@
   "portal.savedHomes.preferredTime": "Hora Preferida",
   "portal.savedHomes.requesting": "Solicitando...",
   "portal.savedHomes.requestShowing": "Solicitar Visita",
-
   "portal.messages.title": "Mensajes",
   "portal.messages.subtitle": "Chatea con Lorena",
   "portal.messages.emptyTitle": "No Hay Mensajes",
   "portal.messages.emptyDesc": "Envia un mensaje para iniciar una conversacion con Lorena.",
   "portal.messages.placeholder": "Escribe un mensaje...",
-
   "portal.showings.title": "Mis Visitas",
   "portal.showings.upcoming": "proximas",
   "portal.showings.requestShowing": "Solicitar Visita",
@@ -266,7 +243,6 @@
   "portal.showings.statusCompleted": "Completada",
   "portal.showings.statusCancelled": "Cancelada",
   "portal.showings.statusNoShow": "No Se Presento",
-
   "portal.homeValue.title": "Estimado de Valor de Casa",
   "portal.homeValue.subtitle": "Obtiene un estimado rapido basado en ventas recientes",
   "portal.homeValue.propertyAddress": "Direccion de la Propiedad",
@@ -284,7 +260,6 @@
   "portal.homeValue.cmaDesc": "Obtiene un analisis comparativo de mercado detallado de Lorena.",
   "portal.homeValue.requestCMA": "Solicitar CMA Profesional",
   "portal.homeValue.disclaimer": "Este es un estimado automatizado basado en ventas comparables recientes y no es una tasacion formal. El valor real del mercado puede variar. Contacta a un agente licenciado para una opinion profesional.",
-
   "portal.calculator.title": "Calculadora de Hipoteca",
   "portal.calculator.subtitle": "Estima tu pago mensual",
   "portal.calculator.homePrice": "Precio de Casa",
@@ -307,7 +282,6 @@
   "portal.calculator.preApprovedTitle": "Lista para Pre-Aprobacion?",
   "portal.calculator.preApprovedDesc": "Lorena trabaja con prestamistas locales de confianza para conseguirte la mejor tasa.",
   "portal.calculator.askLorena": "Preguntale a Lorena Sobre Prestamistas",
-
   "portal.profile.title": "Mi Perfil",
   "portal.profile.subtitle": "Administra tu cuenta",
   "portal.profile.fullName": "Nombre Completo",
@@ -321,7 +295,6 @@
   "portal.profile.saving": "Guardando...",
   "portal.profile.saveChanges": "Guardar Cambios",
   "portal.profile.needHelp": "Necesitas ayuda? Escribe a lorena@casasenelpasotx.com",
-
   "portal.transaction.title": "Mi Transaccion",
   "portal.transaction.emptyTitle": "No Hay Transaccion Activa",
   "portal.transaction.emptyDesc": "Cuando estes bajo contrato, el progreso de tu transaccion aparecera aqui.",
@@ -357,12 +330,10 @@
   "portal.transaction.sellerStep8": "Respuesta a inspeccion",
   "portal.transaction.sellerStep9": "Avaluo",
   "portal.transaction.sellerStep10": "Cerrar la venta",
-
   "notFound.title": "Pagina No Encontrada",
   "notFound.message": "La pagina que buscas no existe o ha sido movida. Regresemos al camino correcto.",
   "notFound.backHome": "Regresar al Inicio",
   "notFound.searchHomes": "Buscar Casas",
-
   "errorBoundary.title": "Algo salio mal",
   "errorBoundary.message": "Lo sentimos por la inconveniencia. Por favor intenta recargar la pagina.",
   "errorBoundary.inlineTitle": "Algo salio mal",
@@ -370,9 +341,7 @@
   "errorBoundary.tryAgain": "Intentar de Nuevo",
   "errorBoundary.refreshPage": "Recargar Pagina",
   "errorBoundary.errorDetails": "Detalles del Error (Solo Dev)",
-
   "exitPopup.error": "Algo salio mal. Por favor intenta de nuevo.",
-
   "auth.welcomeBack": "Bienvenido",
   "auth.signInToDashboard": "Inicia sesion en tu panel",
   "auth.signInToPortal": "Inicia sesion para seguir tu busqueda de hogar",
@@ -419,7 +388,6 @@
   "auth.contactLorena": "Contacta a Lorena para una invitacion",
   "auth.backToWebsite": "Regresar al sitio",
   "auth.signOut": "Cerrar Sesion",
-
   "dash.greeting.morning": "Buenos dias",
   "dash.greeting.afternoon": "Buenas tardes",
   "dash.greeting.evening": "Buenas noches",
@@ -523,7 +491,6 @@
   "fab.close": "Cerrar",
   "fab.addLead": "Agregar Lead",
   "fab.scheduleShowing": "Programar Visita",
-
   "nextAction.callNow": "Llama ahora — no dejes que se enfrie",
   "nextAction.hotGoingCold": "Lead caliente sin contacto en 2+ dias. Actua rapido.",
   "nextAction.scheduleShowing": "Programa una visita",
@@ -540,7 +507,6 @@
   "nextAction.activeClient": "Cliente activo — mantiene el impulso.",
   "nextAction.generalFollowUp": "Envia un seguimiento",
   "nextAction.keepMomentum": "Mantiene la conversacion.",
-
   "analytics.funnel": "Embudo",
   "analytics.conversionFunnel": "Embudo de Conversion",
   "analytics.funnelNew": "Lead Nuevo",
@@ -557,7 +523,6 @@
   "analytics.totalDeals": "Total de Tratos",
   "analytics.sourceROI": "ROI por Fuente de Lead",
   "analytics.avgScore": "Puntaje Prom.",
-
   "leads.title": "Centro de Prospeccion",
   "leads.addLead": "Agregar Lead",
   "leads.search": "Buscar leads...",
@@ -604,7 +569,6 @@
   "leads.bulkDeleteConfirm": "Eliminar {count} leads? Esto no se puede deshacer.",
   "leads.bulkDeleted": "{count} leads eliminados",
   "leads.bulkDeleteFailed": "Error al eliminar leads",
-
   "deals.title": "Pipeline de Tratos",
   "deals.search": "Buscar por propiedad...",
   "deals.listView": "Lista",
@@ -645,7 +609,6 @@
   "deals.creating": "Creando...",
   "deals.dealCreated": "Trato creado exitosamente",
   "deals.dealCreateError": "Error al crear trato",
-
   "messages.title": "Mensajes",
   "messages.leadsTab": "Leads",
   "messages.chatTab": "Chat",
@@ -667,7 +630,6 @@
   "messages.noMessagesYet": "No hay mensajes aun",
   "messages.score": "Puntuacion",
   "messages.converted": "Convertido",
-
   "showings.title": "Visitas",
   "showings.schedule": "Agendar Visita",
   "showings.listView": "Lista",
@@ -710,7 +672,6 @@
   "showings.feedback.skip": "Omitir",
   "showings.feedback.submit": "Guardar Comentarios",
   "showings.feedback.saving": "Guardando...",
-
   "homepulse.title": "Resumen del Mercado",
   "homepulse.overview": "General",
   "homepulse.neighborhoods": "Vecindarios",
@@ -750,7 +711,6 @@
   "homepulse.inventory": "Inventario",
   "homepulse.new7d": "Nuevos (7d)",
   "homepulse.pending": "Pendientes",
-
   "cma.title": "Generador CMA",
   "cma.newReport": "Nuevo Reporte CMA",
   "cma.propertyAddress": "Direccion de Propiedad",
@@ -798,7 +758,6 @@
   "cma.reportGenerated": "Reporte CMA generado",
   "cma.reportFailed": "Error al generar reporte CMA",
   "cma.noCompsSelected": "Sin comparables seleccionados. Regresa y selecciona ventas comparables.",
-
   "autotracks.title": "AutoTracks",
   "autotracks.sequences": "Secuencias",
   "autotracks.calendar": "Calendario",
@@ -836,7 +795,6 @@
   "autotracks.enrolled": "activos",
   "autotracks.completed": "completados",
   "autotracks.pausedCount": "pausados",
-
   "analytics.title": "Analiticas",
   "analytics.overview": "General",
   "analytics.leadsTab": "Leads",
@@ -866,7 +824,6 @@
   "analytics.noAutomationDesc": "Crea secuencias de drip para ver analiticas de automatizacion aqui.",
   "analytics.noLeadData": "Sin datos de leads aun",
   "analytics.hot": "Caliente",
-
   "settings.title": "Configuracion",
   "settings.subtitle": "Administra tu cuenta y preferencias",
   "settings.profile": "Perfil",
@@ -919,26 +876,22 @@
   "settings.importLeads": "Importar Leads",
   "settings.exporting": "Exportando...",
   "settings.exportSuccess": "Leads exportados exitosamente",
-
   "sellers.addressPlaceholder": "123 Calle Principal, El Paso, TX 79901",
   "sellers.sqftPlaceholder": "1,500",
   "sellers.yearBuiltPlaceholder": "2005",
   "sellers.namePlaceholder": "Maria Garcia",
   "sellers.emailPlaceholder": "maria@ejemplo.com",
   "sellers.phonePlaceholder": "(915) 555-1234",
-
   "homeEstimate.addressPlaceholder": "123 Calle Principal, El Paso, TX 79901",
   "homeEstimate.namePlaceholder": "Nombre Completo",
   "homeEstimate.emailPlaceholder": "Correo Electronico",
   "homeEstimate.phonePlaceholder": "Numero de Telefono",
-
   "portal.addressPlaceholder": "123 Calle Principal, El Paso, TX",
   "portal.zipPlaceholder": "79912",
   "portal.sqftPlaceholder": "1800",
   "portal.yearBuiltPlaceholder": "2000",
   "portal.minPricePlaceholder": "$150,000",
   "portal.maxPricePlaceholder": "$400,000",
-
   "propertyGate.title": "No Te Pierdas Ninguna Casa",
   "propertyGate.titleSubmitted": "Listo!",
   "propertyGate.successMessage": "Te enviaremos alertas cuando nuevas casas coincidan con tu busqueda.",
@@ -947,17 +900,13 @@
   "propertyGate.phonePlaceholder": "Telefono (opcional)",
   "propertyGate.submitButton": "Recibir Alertas",
   "propertyGate.dismiss": "No gracias, seguir viendo",
-
   "properties.searchPlaceholder": "Buscar por direccion, vecindario o caracteristicas...",
-
   "form.namePlaceholder": "Maria Gonzalez",
   "form.emailPlaceholder": "correo@ejemplo.com",
   "form.phonePlaceholder": "(915) 555-0123",
-
   "leadCapture.headline": "Lista para Encontrar Tu Casa en El Paso?",
   "leadCapture.description": "Ya sea que compres tu primera casa, vendas, o te mudes a Fort Bliss — Lorena te guia en cada paso del camino.",
   "leadCapture.callDirectly": "O llama directamente:",
-
   "about.contactMe": "Contáctame",
   "about.meetAgent": "Conoce a Tu Agente",
   "about.headline1": "Uniendo Culturas,",
@@ -969,7 +918,6 @@
   "about.featureFamilies": "100+ Familias Atendidas",
   "about.featureEducation": "Graduada de UTEP",
   "about.readBio": "Leer Biografia Completa",
-
   "servicesTabs.subtitle": "Nuestros Servicios",
   "servicesTabs.title": "Como Lorena Te Ayuda",
   "servicesTabs.buyingLabel": "Comprar Casa",
@@ -1002,7 +950,6 @@
   "servicesTabs.military.step4Title": "Cierre Listo para PCS",
   "servicesTabs.military.step4Desc": "Cierres rapidos que funcionan con tu calendario de PCS. Sin sorpresas.",
   "servicesTabs.military.cta": "Busqueda Militar de Casas",
-
   "contact.heroSubtitle": "Contactanos",
   "contact.heroTitle": "Conectemos",
   "contact.heroDescription": "Ya sea que estes comprando, vendiendo, o explorando tus opciones en El Paso — Lorena Ontiveros-Ortega esta aqui para ayudarte. Contactanos hoy para una conversacion sin compromiso.",
@@ -1024,7 +971,6 @@
   "contact.trustResponseDesc": "Tu consulta respondida en horas, no dias",
   "contact.trustLicensed": "Licenciada en Texas",
   "contact.trustLicensedDesc": "Servicio profesional y licenciado de bienes raices en que puedes confiar",
-
   "leadDetail.financial": "Calificación Financiera",
   "leadDetail.preApproved": "Pre-Aprobado",
   "leadDetail.notPreApproved": "Sin Pre-Aprobación",
@@ -1069,5 +1015,20 @@
   "leadDetail.badInfo": "Info Incorrecta",
   "leadDetail.doNotContact": "No Contactar",
   "leadDetail.paused": "Pausado",
-  "leadDetail.preferences": "Preferencias"
+  "leadDetail.preferences": "Preferencias",
+  "nav.darkMode": "Modo Oscuro",
+  "nav.lightMode": "Modo Claro",
+  "nav.signOut": "Cerrar Sesión",
+  "nav.commandCenter": "Centro de Mando",
+  "nav.leads": "Prospectos",
+  "nav.deals": "Transacciones",
+  "nav.messages": "Mensajes",
+  "nav.showings": "Visitas",
+  "nav.military": "Militar",
+  "nav.homePulse": "HomePulse",
+  "nav.cma": "CMA",
+  "nav.autoTracks": "AutoTracks",
+  "nav.analytics": "Análisis",
+  "nav.aiStaff": "Equipo IA",
+  "nav.settings": "Configuración"
 }
