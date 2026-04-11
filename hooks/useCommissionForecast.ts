@@ -5,11 +5,13 @@ interface CommissionData {
   projected_total: number;
   actual_ytd: number;
   active_deals: number;
-  totalDeals: number; // alias for active_deals — used by DashboardHome
+  totalDeals: number;
   closing_this_month: number;
   avg_commission_rate: number;
   pipeline_value: number;
-  byStage: { stage: string; label: string; count: number; value: number; commission: number }[];
+  projectedRevenue: number;      // alias for projected_total
+  rawPipelineVolume: number;     // alias for pipeline_value
+  byStage: { stage: string; label: string; count: number; value: number; commission: number; probability?: number; weightedCommission?: number; rawVolume?: number }[];
 }
 
 const STAGE_LABELS: Record<string, string> = {
@@ -71,6 +73,17 @@ export function useCommissionForecast() {
         commission: Math.round(value * (avgRate / 100)),
       }));
 
+      // Add probability and weighted values to byStage
+      const stageProbability: Record<string,number> = {
+        pre_listing: 0.3, active_listing: 0.5, under_contract: 0.8, pending: 0.9, closed: 1.0,
+      };
+      const byStageEnriched = byStage.map(s => ({
+        ...s,
+        probability: stageProbability[s.stage] ?? 0.5,
+        weightedCommission: Math.round(s.commission * (stageProbability[s.stage] ?? 0.5)),
+        rawVolume: s.value,
+      }));
+
       return {
         projected_total: projected,
         actual_ytd: actualYTD,
@@ -79,7 +92,9 @@ export function useCommissionForecast() {
         closing_this_month: active.filter(d => d.stage === 'pending' || d.stage === 'under_contract').length,
         avg_commission_rate: Math.round(avgRate * 10) / 10,
         pipeline_value: pipelineValue,
-        byStage,
+        projectedRevenue: projected,
+        rawPipelineVolume: pipelineValue,
+        byStage: byStageEnriched,
       };
     },
     staleTime: 1000 * 60 * 15,

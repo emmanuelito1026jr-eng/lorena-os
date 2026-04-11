@@ -1626,7 +1626,7 @@ export type ChatMessage = Tables<'chat_messages'>;
 export type ChatLeadCapture = Tables<'chat_lead_captures'>;
 
 // Enum-like types
-export type LeadSource = 'website' | 'referral' | 'zillow' | 'cinc' | 'google' | 'facebook' | 'social' | 'open_house' | 'cold_call' | 'other' | 'apollo' | 'instantly' | 'import';
+export type LeadSource = 'website' | 'referral' | 'zillow' | 'cinc' | 'google' | 'facebook' | 'facebook_ad' | 'social' | 'open_house' | 'cold_call' | 'military_referral' | 'other' | 'apollo' | 'instantly' | 'import';
 export type LeadStatus = 'new_lead' | 'attempted_contact' | 'contacted' | 'appointment_set' | 'appointment_met' | 'active_client' | 'pending_client' | 'past_client' | 'lost';
 export type LeadTemperature = 'hot' | 'warm' | 'cool' | 'cold';
 export type MessageChannel = 'sms' | 'email' | 'ai_sms' | 'chatbot' | 'phone';

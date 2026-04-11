@@ -53,13 +53,29 @@ export default function Analytics() {
     { name: t('leads.cold'), count: allLeads.filter(l => l.score < COOL_THRESHOLD).length, color: '#9CA3AF' },
   ] : [];
 
+  // Status label formatter
+  const statusLabel = (s: string): string => ({
+    new_lead: 'New Lead',
+    attempted_contact: 'Attempted',
+    contacted: 'Contacted',
+    appointment_set: 'Appt Set',
+    appointment_met: 'Appt Met',
+    active_client: 'Active',
+    pending_client: 'Pending',
+    past_client: 'Closed',
+    nurture: 'Nurture',
+    lost: 'Lost',
+  }[s] ?? s.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase()));
+
   // Compute lead status distribution
   const statusData = allLeads ? (() => {
     const counts = new Map<string, number>();
     for (const l of allLeads) {
       counts.set(l.status, (counts.get(l.status) ?? 0) + 1);
     }
-    return Array.from(counts.entries()).map(([name, count]) => ({ name, count })).sort((a, b) => b.count - a.count);
+    return Array.from(counts.entries())
+      .map(([name, count]) => ({ name: statusLabel(name), rawName: name, count }))
+      .sort((a, b) => b.count - a.count);
   })() : [];
 
   // Source data for chart
@@ -151,31 +167,39 @@ export default function Analytics() {
               <h3 className="font-playfair text-base font-bold text-dashboard-black mb-4">{t('analytics.leadTemperature')}</h3>
               {!tempData.length || tempData.every(td => td.count === 0) ? (
                 <p className="font-lato text-sm text-dashboard-secondary text-center py-8">{t('analytics.noLeadData')}</p>
-              ) : (
-                <div className="flex items-center gap-6">
-                  <div className="w-40 h-40">
-                    <ResponsiveContainer width="100%" height="100%">
-                      <PieChart>
-                        <Pie data={tempData} dataKey="count" cx="50%" cy="50%" innerRadius={30} outerRadius={60} paddingAngle={2}>
-                          {tempData.map((entry, _i) => (
-                            <Cell key={entry.name} fill={entry.color} />
-                          ))}
-                        </Pie>
-                        <Tooltip />
-                      </PieChart>
-                    </ResponsiveContainer>
-                  </div>
-                  <div className="space-y-2">
-                    {tempData.map((td) => (
-                      <div key={td.name} className="flex items-center gap-2">
-                        <div className="w-3 h-3 rounded-full" style={{ backgroundColor: td.color }} />
-                        <span className="font-lato text-sm text-dashboard-body">{td.name}</span>
-                        <span className="font-lato text-sm font-medium text-dashboard-black">{td.count}</span>
+              ) : (() => {
+                const total = tempData.reduce((s, d) => s + d.count, 0);
+                return (
+                  <div className="flex items-center gap-6">
+                    <div className="relative w-44 h-44 flex-shrink-0">
+                      <ResponsiveContainer width="100%" height="100%">
+                        <PieChart>
+                          <Pie data={tempData} dataKey="count" cx="50%" cy="50%" innerRadius={52} outerRadius={76} paddingAngle={3} startAngle={90} endAngle={-270}>
+                            {tempData.map((entry) => (
+                              <Cell key={entry.name} fill={entry.color} strokeWidth={0} />
+                            ))}
+                          </Pie>
+                          <Tooltip formatter={(val: number, name: string) => [`${val} (${Math.round(val/total*100)}%)`, name]} />
+                        </PieChart>
+                      </ResponsiveContainer>
+                      <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+                        <span className="text-2xl font-bold text-dashboard-black">{total}</span>
+                        <span className="text-[11px] text-dashboard-secondary">leads</span>
                       </div>
-                    ))}
+                    </div>
+                    <div className="space-y-2.5 flex-1">
+                      {tempData.map((td) => (
+                        <div key={td.name} className="flex items-center gap-2">
+                          <div className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: td.color }} />
+                          <span className="font-lato text-sm text-dashboard-body flex-1">{td.name}</span>
+                          <span className="font-lato text-sm font-bold text-dashboard-black">{td.count}</span>
+                          <span className="font-lato text-xs text-dashboard-secondary w-10 text-right">{Math.round(td.count/total*100)}%</span>
+                        </div>
+                      ))}
+                    </div>
                   </div>
-                </div>
-              )}
+                );
+              })()}
             </div>
 
             {/* Status Distribution */}

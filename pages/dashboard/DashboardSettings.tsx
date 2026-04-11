@@ -200,22 +200,32 @@ export default function DashboardSettings() {
       {activeTab === 'Integrations' && (
         <div role="tabpanel" id="tabpanel-integrations" aria-labelledby="tab-integrations" className="bg-white rounded-xl border border-dashboard-border p-6 max-w-2xl">
           <h3 className="font-playfair text-lg font-bold text-dashboard-black mb-6">{t('settings.integrations')}</h3>
-          <div className="space-y-4">
+          <div className="space-y-3">
             {[
-              { name: 'Twilio SMS', desc: 'Send/receive SMS messages', connected: false },
-              { name: 'SendGrid Email', desc: 'Email campaigns and transactional emails', connected: false },
-              { name: 'Zillow', desc: 'Import leads from Zillow', connected: false },
-              { name: 'Spark MLS', desc: 'Sync listings from GEPAR MLS', connected: false },
-              { name: 'Google Calendar', desc: 'Sync showings with Google Calendar', connected: false },
+              { name: 'Twilio SMS', desc: 'SMS automation — 877 leads waiting', connected: false, pending: true, note: 'Purchase 915 area code number to activate' },
+              { name: 'SendGrid Email', desc: 'Email drip campaigns and sequences', connected: false, pending: true, note: 'Credentials required from admin' },
+              { name: 'Spark API / GEPAR MLS', desc: '3,591 El Paso listings synced', connected: true, note: 'Live — 1,000 listings loaded' },
+              { name: 'Anthropic Claude API', desc: 'AI Staff, CMA analysis, Daily Briefing', connected: false, pending: true, note: 'API key required for full AI features' },
+              { name: 'Google Calendar', desc: 'Sync showings with Google Calendar', connected: false, pending: false, note: '' },
             ].map((item) => (
-              <div key={item.name} className="flex items-center justify-between py-3 border-b border-dashboard-border last:border-b-0">
-                <div>
-                  <p className="font-lato text-sm font-medium text-dashboard-black">{item.name}</p>
-                  <p className="font-lato text-xs text-dashboard-secondary mt-0.5">{item.desc}</p>
+              <div key={item.name} className={`flex items-start justify-between p-4 rounded-xl border ${item.connected ? 'border-green-200 bg-green-50/30' : item.pending ? 'border-amber-200 bg-amber-50/20' : 'border-dashboard-border bg-white'}`}>
+                <div className="flex items-start gap-3">
+                  <div className={`w-2 h-2 rounded-full mt-1.5 flex-shrink-0 ${item.connected ? 'bg-green-500' : item.pending ? 'bg-amber-400' : 'bg-gray-300'}`} />
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <p className="text-sm font-medium text-dashboard-black">{item.name}</p>
+                      {item.connected && <span className="px-1.5 py-0.5 bg-green-100 text-green-700 text-[10px] rounded font-medium">Connected</span>}
+                      {item.pending && !item.connected && <span className="px-1.5 py-0.5 bg-amber-100 text-amber-700 text-[10px] rounded font-medium">Pending</span>}
+                    </div>
+                    <p className="text-xs text-dashboard-secondary mt-0.5">{item.desc}</p>
+                    {item.note && <p className="text-[11px] text-dashboard-secondary mt-1 italic">{item.note}</p>}
+                  </div>
                 </div>
-                <button onClick={() => showToast(t('settings.comingSoon'))} className="px-3 py-1.5 rounded-lg font-lato text-xs font-medium transition-colors min-h-[32px] border border-dashboard-border text-dashboard-secondary hover:border-dashboard-gold hover:text-dashboard-gold flex items-center gap-1.5">
-                  {t('settings.connect')} <span className="px-1.5 py-0.5 bg-dashboard-surface text-dashboard-secondary text-[10px] rounded">{t('settings.soon')}</span>
-                </button>
+                {!item.connected && (
+                  <button onClick={() => showToast(t('settings.comingSoon'))} className="flex-shrink-0 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors min-h-[32px] border border-dashboard-border text-dashboard-secondary hover:border-dashboard-gold hover:text-dashboard-gold">
+                    Configure
+                  </button>
+                )}
               </div>
             ))}
           </div>

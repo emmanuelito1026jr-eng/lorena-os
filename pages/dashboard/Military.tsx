@@ -167,7 +167,7 @@ export default function Military() {
   const [showAdd, setShowAdd] = useState(false);
   const [activeStage, setActiveStage] = useState<string | null>(null);
 
-  const { data: militaryLeads = [], isLoading } = useQuery<MilitaryLead[]>({
+  const { data: rawMilitaryData = [], isLoading } = useQuery<MilitaryLead[]>({
     queryKey: ['military-leads'],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -176,9 +176,10 @@ export default function Military() {
         .contains('tags', ['Military'])
         .order('created_at', { ascending: false });
       if (error) throw error;
-      return data ?? [];
+      return (data ?? []) as MilitaryLead[];
     },
   });
+  const militaryLeads: MilitaryLead[] = Array.isArray(rawMilitaryData) ? rawMilitaryData : [];
 
   const getPCSStage = (lead: MilitaryLead) => {
     const cf = lead.custom_fields as Record<string, string> | null;

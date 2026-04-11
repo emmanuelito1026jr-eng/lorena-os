@@ -395,7 +395,7 @@ export default function Leads() {
                   {lead.last_activity && (() => {
                     const days = differenceInDays(new Date(), new Date(lead.last_activity));
                     const urgencyColor = days <= 1 ? 'text-status-success' : days <= 3 ? 'text-score-warm' : 'text-score-hot';
-                    const urgencyLabel = days === 0 ? t('leads.today') : days === 1 ? t('leads.yesterday') : `${days}d`;
+                    const urgencyLabel = days === 0 ? t('leads.today') : days === 1 ? t('leads.yesterday') : days < 30 ? `${days}d ago` : `${Math.floor(days/30)}mo ago`;
                     return (
                       <span className={`font-lato text-xs font-medium hidden md:block w-16 text-right ${urgencyColor}`} title={format(new Date(lead.last_activity), 'MMM d, yyyy')}>
                         {urgencyLabel}
