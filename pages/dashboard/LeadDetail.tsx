@@ -56,8 +56,86 @@ const CATEGORY_COLORS: Record<ScoreCategory, string> = {
 const tabs = ['Overview', 'Timeline', 'Showings', 'Sequences', 'Checklists'];
 const STATUS_OPTIONS: LeadStatus[] = ['new_lead', 'attempted_contact', 'contacted', 'appointment_set', 'appointment_met', 'active_client', 'pending_client', 'past_client', 'lost'];
 
+// ─── AI Call Prep Button ──────────────────────────────────────────────────────
+// Self-contained component with its own state — safe to render anywhere
+function AICallPrepButton({ lead }: { lead: { first_name: string; last_name: string; score: number; status: string; source: string; pre_approval_amount: number | null; tags: string[] | null; notes: string | null; phone: string | null } }) {
+  const [open, setOpen] = useState(false);
+  const [content, setContent] = useState('');
+  const [loading, setLoading] = useState(false);
+
+  const generate = async () => {
+    setOpen(true);
+    setLoading(true);
+    setContent('');
+    try {
+      const ANON = import.meta.env.VITE_SUPABASE_ANON_KEY as string;
+      const res = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/ai-staff`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'apikey': ANON, 'Authorization': `Bearer ${ANON}` },
+        body: JSON.stringify({
+          agent: 'ceo',
+          messages: [{ role: 'user', content: `Call prep for: ${lead.first_name} ${lead.last_name} | Score: ${lead.score} | Status: ${lead.status} | Source: ${lead.source} | Budget: ${lead.pre_approval_amount ? `$${lead.pre_approval_amount.toLocaleString()}` : 'unknown'} | Tags: ${lead.tags?.join(', ') || 'none'} | Notes: ${lead.notes || 'none'}. Give Lorena: 1) Who is this person, 2) What do they want, 3) 3 opening lines, 4) Objection handling. Be specific and concise.` }],
+          context: 'Lorena Ontiveros-Ortega | El Paso TX REALTOR | military, first-time buyers, luxury',
+        }),
+      });
+      const data = await res.json();
+      setContent(data.text || data.content?.[0]?.text || 'Unable to generate. Try again.');
+    } catch {
+      setContent('Error generating brief. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <>
+      <button onClick={generate} className="flex items-center gap-1.5 px-3 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg font-lato text-sm transition-colors min-h-[44px]" title="AI Call Prep">
+        <Zap size={14} /> AI Prep
+      </button>
+      {open && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" onClick={() => setOpen(false)}>
+          <div className="bg-white rounded-xl shadow-2xl max-w-lg w-full max-h-[80vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
+            <div className="p-5 border-b border-gray-100 flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center"><Zap size={16} className="text-purple-600" /></div>
+                <div>
+                  <h3 className="font-playfair font-bold text-dashboard-black">AI Call Prep</h3>
+                  <p className="font-lato text-xs text-dashboard-secondary">{lead.first_name} {lead.last_name}</p>
+                </div>
+              </div>
+              <button onClick={() => setOpen(false)} className="text-dashboard-secondary hover:text-dashboard-black"><X size={20} /></button>
+            </div>
+            <div className="p-5">
+              {loading ? (
+                <div className="flex flex-col items-center gap-3 py-8">
+                  <div className="w-8 h-8 border-2 border-purple-600 border-t-transparent rounded-full animate-spin" />
+                  <p className="font-lato text-sm text-dashboard-secondary">Analyzing lead profile...</p>
+                </div>
+              ) : (
+                <div className="font-lato text-sm text-dashboard-body whitespace-pre-wrap leading-relaxed">{content}</div>
+              )}
+            </div>
+            {!loading && (
+              <div className="p-4 border-t border-gray-100 flex gap-2">
+                {lead.phone && (
+                  <a href={`tel:${lead.phone}`} className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-dashboard-gold text-white rounded-lg font-lato text-sm font-medium">
+                    <Phone size={14} /> Call Now
+                  </a>
+                )}
+                <button onClick={() => setOpen(false)} className="px-4 py-2.5 border border-gray-200 rounded-lg font-lato text-sm text-dashboard-secondary">Close</button>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+    </>
+  );
+}
+
 export default function LeadDetail() {
   const { id } = useParams<{ id: string }>();
+  const { t } = useTranslation();
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('Overview');
   const [showEnrollModal, setShowEnrollModal] = useState(false);
   const [showChecklistModal, setShowChecklistModal] = useState(false);
@@ -97,9 +175,6 @@ export default function LeadDetail() {
       </div>
     );
   }
-
-  const { t } = useTranslation();
-  const navigate = useNavigate();
 
   // Compute Next Best Action
   const nextAction = useMemo(() => {
@@ -264,6 +339,7 @@ export default function LeadDetail() {
                 <Phone size={14} /> Call
               </a>
             )}
+            <AICallPrepButton lead={lead} />
             {lead.email && (
               <a href={`mailto:${lead.email}`} className="flex items-center gap-1.5 px-3 py-2 border border-dashboard-border hover:border-dashboard-gold text-dashboard-body rounded-lg font-lato text-sm transition-colors min-h-[44px]">
                 <Mail size={14} /> Email
