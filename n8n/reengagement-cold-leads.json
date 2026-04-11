@@ -1,0 +1,159 @@
+{
+  "name": "Re-engagement Drip — Cold Lead Reactivation",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [{ "field": "hours", "hoursInterval": 24 }]
+        }
+      },
+      "id": "cron-trigger",
+      "name": "Daily Trigger",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "position": [240, 300],
+      "typeVersion": 1.1
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "https://zdonombljnuylmnwkhga.supabase.co/rest/v1/drip_enrollments",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "apikey", "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inpkb25vbWJsam51eWxtbndraGdhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzEzNjM2OTUsImV4cCI6MjA4NjkzOTY5NX0.h-rFY-MMuN0jwo8NeIOOLrISkRWd_Xt8Wn9Ffp6_FwQ" },
+            { "name": "Authorization", "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inpkb25vbWJsam51eWxtbndraGdhIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3MTM2MzY5NSwiZXhwIjoyMDg2OTM5Njk1fQ.nZUClSBdrkX9f-DdbbYtErWske7yCvr1FWIkDfO8sdE" },
+            { "name": "Prefer", "value": "count=exact" }
+          ]
+        },
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            { "name": "sequence_id", "value": "eq.6bccf229-429f-4f07-abc8-070697050ed1" },
+            { "name": "status", "value": "eq.active" },
+            { "name": "select", "value": "id,lead_id,current_step,enrolled_at,leads(first_name,last_name,email,phone,score,status,tags)" },
+            { "name": "limit", "value": "50" },
+            { "name": "current_step", "value": "lte.3" }
+          ]
+        }
+      },
+      "id": "get-enrollments",
+      "name": "Get Active Re-engagement Enrollments",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [460, 300],
+      "typeVersion": 4.2
+    },
+    {
+      "parameters": {
+        "jsCode": "// Parse and prepare enrollments for processing\nconst enrollments = $input.all();\nconst results = [];\n\nfor (const item of enrollments) {\n  const data = item.json;\n  if (!Array.isArray(data)) continue;\n  \n  for (const enrollment of data) {\n    const lead = enrollment.leads;\n    if (!lead) continue;\n    \n    // Determine message based on current_step\n    const step = enrollment.current_step || 0;\n    const daysSinceEnroll = Math.floor((Date.now() - new Date(enrollment.enrolled_at).getTime()) / (1000 * 60 * 60 * 24));\n    \n    // Only send if it's been enough days since last step\n    const stepDelays = [0, 3, 7, 14]; // days between steps\n    const expectedDay = stepDelays.slice(0, step + 1).reduce((a, b) => a + b, 0);\n    \n    if (daysSinceEnroll < expectedDay) continue;\n    \n    const isSpanish = lead.tags?.includes('Spanish') || lead.tags?.includes('ES');\n    \n    // Build message for each step\n    const messages = {\n      en: [\n        `Hi ${lead.first_name}! This is Lorena Ontiveros-Ortega, your El Paso real estate expert. I noticed we haven't connected in a while. El Paso's market has some exciting opportunities right now — homes in your area are moving fast! When would be a good time to chat? Call or text me at (915) 500-0573. 🏡`,\n        `${lead.first_name}, Lorena here! Just wanted to share — El Paso home values have shifted recently and I'd love to give you a personalized update. Whether you're buying, selling, or just curious, I'm here to help. No pressure! Text back anytime or visit CasasEnElPaso.com`,\n        `Hey ${lead.first_name}! Quick update from Lorena — I just pulled the latest market stats for El Paso and there are some incredible deals right now. Buyers are competing and sellers are winning big. Can I send you a quick market report? Just reply YES! 📊`,\n        `${lead.first_name}, this is Lorena one last time. I don't want to keep reaching out if the timing isn't right, but I do want to make sure you know I'm here whenever you're ready. El Paso real estate is my passion and helping people like you is why I do this. Call me anytime: (915) 500-0573. Take care! 💛`\n      ],\n      es: [\n        `¡Hola ${lead.first_name}! Soy Lorena Ontiveros-Ortega, tu experta en bienes raíces en El Paso. Noté que no hemos hablado en un tiempo. ¡El mercado de El Paso tiene oportunidades increíbles ahora mismo! ¿Cuándo podemos hablar? Llámame o mándame un mensaje al (915) 500-0573. 🏡`,\n        `${lead.first_name}, ¡es Lorena! Quería compartir — los valores de las casas en El Paso han cambiado recientemente y me encantaría darte una actualización personalizada. Ya sea que quieras comprar, vender, o solo informarte, estoy aquí para ayudarte. Sin presión. Escríbeme cuando quieras o visita CasasEnElPaso.com`,\n        `¡Hola ${lead.first_name}! Lorena aquí con una actualización rápida — acabo de revisar las estadísticas más recientes del mercado de El Paso y hay ofertas increíbles ahora. Los compradores están compitiendo y los vendedores están ganando. ¿Te mando un reporte del mercado? ¡Solo responde SÍ! 📊`,\n        `${lead.first_name}, esta es Lorena por última vez. No quiero seguir escribiendo si el momento no es el adecuado, pero quiero que sepas que estoy aquí cuando estés listo/a. Los bienes raíces en El Paso son mi pasión. Llámame cuando quieras: (915) 500-0573. ¡Cuídate mucho! 💛`\n      ]\n    };\n    \n    const msgList = isSpanish ? messages.es : messages.en;\n    const message = msgList[Math.min(step, msgList.length - 1)];\n    \n    results.push({\n      enrollment_id: enrollment.id,\n      lead_id: enrollment.lead_id,\n      current_step: step,\n      next_step: step + 1,\n      phone: lead.phone,\n      email: lead.email,\n      first_name: lead.first_name,\n      last_name: lead.last_name,\n      message,\n      should_complete: step >= 3,\n      has_phone: !!lead.phone,\n      has_email: !!lead.email\n    });\n  }\n}\n\nreturn results.map(r => ({ json: r }));\n"
+      },
+      "id": "prepare-messages",
+      "name": "Prepare Re-engagement Messages",
+      "type": "n8n-nodes-base.code",
+      "position": [680, 300],
+      "typeVersion": 2
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": { "caseSensitive": false },
+          "conditions": [
+            {
+              "leftValue": "={{ $json.has_phone }}",
+              "rightValue": true,
+              "operator": { "type": "boolean", "operation": "equals" }
+            }
+          ]
+        }
+      },
+      "id": "has-phone-check",
+      "name": "Has Phone?",
+      "type": "n8n-nodes-base.if",
+      "position": [900, 300],
+      "typeVersion": 2
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://n8n.srv957236.hstgr.cloud/webhook/twilio-send-sms",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            { "name": "to", "value": "={{ $json.phone }}" },
+            { "name": "body", "value": "={{ $json.message }}" },
+            { "name": "lead_id", "value": "={{ $json.lead_id }}" }
+          ]
+        }
+      },
+      "id": "send-sms",
+      "name": "Send SMS via Twilio",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [1120, 220],
+      "typeVersion": 4.2
+    },
+    {
+      "parameters": {
+        "method": "PATCH",
+        "url": "=https://zdonombljnuylmnwkhga.supabase.co/rest/v1/drip_enrollments?id=eq.{{ $json.enrollment_id }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "apikey", "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inpkb25vbWJsam51eWxtbndraGdhIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3MTM2MzY5NSwiZXhwIjoyMDg2OTM5Njk1fQ.nZUClSBdrkX9f-DdbbYtErWske7yCvr1FWIkDfO8sdE" },
+            { "name": "Authorization", "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inpkb25vbWJsam51eWxtbndraGdhIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3MTM2MzY5NSwiZXhwIjoyMDg2OTM5Njk1fQ.nZUClSBdrkX9f-DdbbYtErWske7yCvr1FWIkDfO8sdE" },
+            { "name": "Content-Type", "value": "application/json" }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            { "name": "current_step", "value": "={{ $json.next_step }}" },
+            { "name": "status", "value": "={{ $json.should_complete ? 'completed' : 'active' }}" }
+          ]
+        }
+      },
+      "id": "update-step",
+      "name": "Update Enrollment Step",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [1340, 300],
+      "typeVersion": 4.2
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://zdonombljnuylmnwkhga.supabase.co/rest/v1/lead_activity",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "apikey", "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inpkb25vbWJsam51eWxtbndraGdhIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3MTM2MzY5NSwiZXhwIjoyMDg2OTM5Njk1fQ.nZUClSBdrkX9f-DdbbYtErWske7yCvr1FWIkDfO8sdE" },
+            { "name": "Authorization", "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inpkb25vbWJsam51eWxtbndraGdhIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3MTM2MzY5NSwiZXhwIjoyMDg2OTM5Njk1fQ.nZUClSBdrkX9f-DdbbYtErWske7yCvr1FWIkDfO8sdE" },
+            { "name": "Content-Type", "value": "application/json" }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ { lead_id: $json.lead_id, action: 'reengagement_sms_sent', points: 3, metadata: { step: $json.current_step, sequence: 'Re-engagement' } } }}"
+      },
+      "id": "log-activity",
+      "name": "Log SMS Activity",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [1560, 300],
+      "typeVersion": 4.2
+    }
+  ],
+  "connections": {
+    "Daily Trigger": { "main": [[{ "node": "Get Active Re-engagement Enrollments", "type": "main", "index": 0 }]] },
+    "Get Active Re-engagement Enrollments": { "main": [[{ "node": "Prepare Re-engagement Messages", "type": "main", "index": 0 }]] },
+    "Prepare Re-engagement Messages": { "main": [[{ "node": "Has Phone?", "type": "main", "index": 0 }]] },
+    "Has Phone?": {
+      "main": [
+        [{ "node": "Send SMS via Twilio", "type": "main", "index": 0 }],
+        [{ "node": "Update Enrollment Step", "type": "main", "index": 0 }]
+      ]
+    },
+    "Send SMS via Twilio": { "main": [[{ "node": "Update Enrollment Step", "type": "main", "index": 0 }]] },
+    "Update Enrollment Step": { "main": [[{ "node": "Log SMS Activity", "type": "main", "index": 0 }]] }
+  },
+  "settings": { "timezone": "America/Denver" },
+  "tags": [{ "name": "reactivation" }, { "name": "cold-leads" }]
+}

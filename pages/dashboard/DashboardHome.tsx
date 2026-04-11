@@ -30,6 +30,7 @@ import {
 import { useDailyBriefing } from '../../hooks/useDailyBriefing';
 import { useRelationshipReminders } from '../../hooks/useRelationshipReminders';
 import type { RelationshipReminder } from '../../hooks/useRelationshipReminders';
+import { ReactivationModule } from '../../components/dashboard/ReactivationModule';
 import { useSpeedToLead } from '../../hooks/useSpeedToLead';
 import { useCommissionForecast } from '../../hooks/useCommissionForecast';
 import { format } from 'date-fns';
@@ -1327,6 +1328,9 @@ export default function DashboardHome() {
 
         {/* Commission Forecast — weighted pipeline projection */}
         <CommissionForecastWidget />
+
+        {/* Cold Lead Reactivation Campaign */}
+        <ReactivationModule />
       </div>
 
       {/* Performance Metrics */}

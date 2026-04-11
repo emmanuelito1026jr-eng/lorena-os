@@ -1,27 +1,13 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
-const ALLOWED_ORIGINS = [
-  Deno.env.get("ALLOWED_ORIGIN") || "https://casasenelpasotx.com",
-  "http://localhost:3000",
-];
-
-function getCorsHeaders(req: Request): Record<string, string> {
-  const origin = req.headers.get("Origin") || "";
-  const allowedOrigin = ALLOWED_ORIGINS.includes(origin) ? origin : ALLOWED_ORIGINS[0];
-
-  return {
-    "Access-Control-Allow-Origin": allowedOrigin,
-    "Access-Control-Allow-Headers":
-      "authorization, x-client-info, apikey, content-type",
-    "Access-Control-Allow-Methods": "POST, OPTIONS",
-    "Vary": "Origin",
-  };
-}
+// Allow all origins — the function is protected by JWT auth, not CORS
+const CORS_HEADERS = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+  "Access-Control-Allow-Methods": "POST, OPTIONS",
+};
 
 Deno.serve(async (req) => {
-  const CORS_HEADERS = getCorsHeaders(req);
-
-  // Handle CORS preflight
   if (req.method === "OPTIONS") {
     return new Response("ok", { headers: CORS_HEADERS });
   }
@@ -34,7 +20,6 @@ Deno.serve(async (req) => {
   }
 
   try {
-    // Verify the caller is authenticated by checking the Authorization header
     const authHeader = req.headers.get("Authorization");
     if (!authHeader) {
       return new Response(JSON.stringify({ error: "Missing authorization" }), {
@@ -45,39 +30,30 @@ Deno.serve(async (req) => {
 
     const { user_id, email, full_name } = await req.json();
 
-    if (!user_id || !email || !full_name) {
+    if (!user_id || !email) {
       return new Response(
-        JSON.stringify({ error: "Missing required fields: user_id, email, full_name" }),
-        {
-          status: 400,
-          headers: { ...CORS_HEADERS, "Content-Type": "application/json" },
-        }
+        JSON.stringify({ error: "Missing required fields: user_id, email" }),
+        { status: 400, headers: { ...CORS_HEADERS, "Content-Type": "application/json" } }
       );
     }
 
-    // Verify the JWT belongs to the same user requesting profile creation
+    // Verify the JWT belongs to the same user
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
     const anonClient = createClient(supabaseUrl, supabaseAnonKey, {
       global: { headers: { Authorization: authHeader } },
     });
 
-    const {
-      data: { user },
-      error: authError,
-    } = await anonClient.auth.getUser();
+    const { data: { user }, error: authError } = await anonClient.auth.getUser();
 
     if (authError || !user || user.id !== user_id) {
       return new Response(
         JSON.stringify({ error: "Unauthorized: token does not match user_id" }),
-        {
-          status: 403,
-          headers: { ...CORS_HEADERS, "Content-Type": "application/json" },
-        }
+        { status: 403, headers: { ...CORS_HEADERS, "Content-Type": "application/json" } }
       );
     }
 
-    // Use service role key to bypass RLS for profile insertion
+    // Use service role key to bypass RLS
     const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const adminClient = createClient(supabaseUrl, serviceRoleKey);
 
@@ -87,8 +63,8 @@ Deno.serve(async (req) => {
         {
           id: user_id,
           email,
-          full_name,
-          role: "client",
+          full_name: full_name || user.user_metadata?.full_name || email.split("@")[0],
+          role: user.user_metadata?.role || "realtor",
         },
         { onConflict: "id" }
       );
@@ -96,10 +72,7 @@ Deno.serve(async (req) => {
     if (insertError) {
       return new Response(
         JSON.stringify({ error: insertError.message }),
-        {
-          status: 500,
-          headers: { ...CORS_HEADERS, "Content-Type": "application/json" },
-        }
+        { status: 500, headers: { ...CORS_HEADERS, "Content-Type": "application/json" } }
       );
     }
 
@@ -110,10 +83,7 @@ Deno.serve(async (req) => {
   } catch (err) {
     return new Response(
       JSON.stringify({ error: err instanceof Error ? err.message : "Internal server error" }),
-      {
-        status: 500,
-        headers: { ...CORS_HEADERS, "Content-Type": "application/json" },
-      }
+      { status: 500, headers: { ...CORS_HEADERS, "Content-Type": "application/json" } }
     );
   }
 });

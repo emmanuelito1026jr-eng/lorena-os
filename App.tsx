@@ -62,6 +62,8 @@ const AutoTracks = React.lazy(() => import('./pages/dashboard/AutoTracks'));
 const Analytics = React.lazy(() => import('./pages/dashboard/Analytics'));
 const DashboardSettings = React.lazy(() => import('./pages/dashboard/DashboardSettings'));
 const AITeam = React.lazy(() => import('./pages/dashboard/AITeam'));
+const MilitaryPipeline = React.lazy(() => import('./pages/dashboard/Military'));
+const ValorPage = React.lazy(() => import('./pages/valor'));
 
 const ScrollToTop = () => {
   const location = useLocation();
@@ -132,7 +134,9 @@ const App = () => {
               <Route path="analytics" element={<Analytics />} />
               <Route path="settings" element={<DashboardSettings />} />
               <Route path="ai-team" element={<AITeam />} />
+              <Route path="military" element={<MilitaryPipeline />} />
             </Route>
+            <Route path="/valor" element={<ValorPage />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
           </Suspense>
