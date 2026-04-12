@@ -169,31 +169,49 @@ export default function Analytics() {
                 <p className="font-lato text-sm text-dashboard-secondary text-center py-8">{t('analytics.noLeadData')}</p>
               ) : (() => {
                 const total = tempData.reduce((s, d) => s + d.count, 0);
+                // Custom SVG donut — precise, always renders correctly
+                const R = 72; const r = 48; const cx = 88; const cy = 88;
+                const circumference = 2 * Math.PI * ((R + r) / 2);
+                let startAngle = -Math.PI / 2; // 12 o'clock
+                const arcs = tempData.map(d => {
+                  const fraction = total > 0 ? d.count / total : 0;
+                  const angle = fraction * 2 * Math.PI;
+                  const endAngle = startAngle + angle;
+                  const gap = total > 0 && fraction > 0 ? 0.03 : 0;
+                  const s = startAngle + gap;
+                  const e = endAngle - gap;
+                  const x1 = cx + R * Math.cos(s); const y1 = cy + R * Math.sin(s);
+                  const x2 = cx + R * Math.cos(e); const y2 = cy + R * Math.sin(e);
+                  const x3 = cx + r * Math.cos(e); const y3 = cy + r * Math.sin(e);
+                  const x4 = cx + r * Math.cos(s); const y4 = cy + r * Math.sin(s);
+                  const large = angle > Math.PI ? 1 : 0;
+                  const path = fraction > 0.001 
+                    ? `M ${x1} ${y1} A ${R} ${R} 0 ${large} 1 ${x2} ${y2} L ${x3} ${y3} A ${r} ${r} 0 ${large} 0 ${x4} ${y4} Z`
+                    : '';
+                  startAngle = endAngle;
+                  return { ...d, path, fraction };
+                });
                 return (
                   <div className="flex items-center gap-6">
-                    <div className="relative w-44 h-44 flex-shrink-0">
-                      <ResponsiveContainer width="100%" height="100%">
-                        <PieChart>
-                          <Pie data={tempData} dataKey="count" cx="50%" cy="50%" innerRadius={52} outerRadius={76} paddingAngle={3} startAngle={90} endAngle={-270}>
-                            {tempData.map((entry) => (
-                              <Cell key={entry.name} fill={entry.color} strokeWidth={0} />
-                            ))}
-                          </Pie>
-                          <Tooltip formatter={(val: number, name: string) => [`${val} (${Math.round(val/total*100)}%)`, name]} />
-                        </PieChart>
-                      </ResponsiveContainer>
-                      <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-                        <span className="text-2xl font-bold text-dashboard-black">{total}</span>
-                        <span className="text-[11px] text-dashboard-secondary">leads</span>
+                    <div className="relative flex-shrink-0" style={{ width: 176, height: 176 }}>
+                      <svg width={176} height={176} viewBox="0 0 176 176">
+                        <circle cx={cx} cy={cy} r={(R+r)/2} fill="none" stroke="#f0ede6" strokeWidth={R-r} />
+                        {arcs.map((arc) => arc.path ? (
+                          <path key={arc.name} d={arc.path} fill={arc.color} />
+                        ) : null)}
+                      </svg>
+                      <div className="absolute inset-0 flex flex-col items-center justify-center">
+                        <span className="text-2xl font-bold text-dashboard-black leading-none">{total.toLocaleString()}</span>
+                        <span className="text-[11px] text-dashboard-secondary mt-0.5">leads</span>
                       </div>
                     </div>
                     <div className="space-y-2.5 flex-1">
                       {tempData.map((td) => (
-                        <div key={td.name} className="flex items-center gap-2">
-                          <div className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: td.color }} />
-                          <span className="font-lato text-sm text-dashboard-body flex-1">{td.name}</span>
-                          <span className="font-lato text-sm font-bold text-dashboard-black">{td.count}</span>
-                          <span className="font-lato text-xs text-dashboard-secondary w-10 text-right">{Math.round(td.count/total*100)}%</span>
+                        <div key={td.name} className="flex items-center gap-2.5">
+                          <div className="w-3 h-3 rounded-sm flex-shrink-0" style={{ backgroundColor: td.color }} />
+                          <span className="text-sm text-dashboard-body flex-1">{td.name}</span>
+                          <span className="text-sm font-bold text-dashboard-black tabular-nums">{td.count.toLocaleString()}</span>
+                          <span className="text-xs text-dashboard-secondary w-10 text-right tabular-nums">{total > 0 ? Math.round(td.count/total*100) : 0}%</span>
                         </div>
                       ))}
                     </div>
@@ -544,6 +562,23 @@ export default function Analytics() {
                 <p className="text-[11px] text-dashboard-secondary mt-0.5">per lead across portfolio</p>
               </div>
             </div>
+
+            {/* Source bar chart — visual commission by source */}
+            {roiData.filter(r => r.pipelineCommission > 0).length > 0 && (
+              <div className="bg-white rounded-xl border border-dashboard-border p-5">
+                <h3 className="text-base font-semibold text-dashboard-black mb-4">Estimated Commission by Source</h3>
+                <div className="h-48">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart data={roiData.filter(r => r.pipelineCommission > 0).slice(0, 8)} margin={{ bottom: 20 }}>
+                      <XAxis dataKey="source" tick={{ fontSize: 11 }} tickFormatter={(s: string) => (sourceLabels[s] ?? s).replace('CINC Platform','CINC').replace('Website (IDX)','Website').replace('Cold Call','Cold Call').replace('Social Media','Social').replace('Facebook Ads','Facebook').replace('Military Referral','Military').replace('Open House QR','Open House')} angle={-20} textAnchor="end" />
+                      <YAxis tick={{ fontSize: 11 }} tickFormatter={(v: number) => v >= 1000 ? `$${(v/1000).toFixed(0)}K` : `$${v}`} />
+                      <Tooltip formatter={(v: number) => [`$${v.toLocaleString()}`, 'Est. Commission']} />
+                      <Bar dataKey="pipelineCommission" fill="#C9A84C" radius={[4,4,0,0]} name="Commission" />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </div>
+              </div>
+            )}
 
             {/* Source ROI table */}
             <div className="bg-white rounded-xl border border-dashboard-border overflow-hidden">
