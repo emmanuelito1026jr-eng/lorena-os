@@ -230,8 +230,13 @@ export default function Deals() {
   // Summary stats
   const allDealsList = allDeals ?? Object.values(dealsByStage ?? {}).flat();
   const activeDeals = allDealsList.filter(d => !['closed', 'fallen_through'].includes(d.stage));
+  const closedDeals = allDealsList.filter(d => d.stage === 'closed');
   const totalVolume = activeDeals.reduce((sum, d) => sum + (d.sale_price ?? d.list_price ?? 0), 0);
   const totalCommission = activeDeals.reduce((sum, d) => {
+    const price = d.sale_price ?? d.list_price ?? 0;
+    return sum + (price * (d.commission_rate ?? 3) / 100);
+  }, 0);
+  const closedCommissionYTD = closedDeals.reduce((sum, d) => {
     const price = d.sale_price ?? d.list_price ?? 0;
     return sum + (price * (d.commission_rate ?? 3) / 100);
   }, 0);
@@ -245,7 +250,8 @@ export default function Deals() {
             {t('deals.title')}
           </h1>
           <p className="font-lato text-sm text-dashboard-secondary mt-1">
-            {activeDeals.length} {activeDeals.length !== 1 ? t('deals.activeDeals') : t('deals.activeDeal')} &middot; {formatCurrency(totalVolume)} {t('deals.volume')} &middot; {formatCurrency(totalCommission)} {t('deals.commission')}
+            {activeDeals.length} {activeDeals.length !== 1 ? t('deals.activeDeals') : t('deals.activeDeal')} &middot; {formatCurrency(totalVolume)} {t('deals.volume')} &middot; {formatCurrency(totalCommission)} est. commission
+            {closedCommissionYTD > 0 && <span className="ml-1.5 text-green-600 font-medium">· {formatCurrency(closedCommissionYTD)} earned YTD</span>}
           </p>
         </div>
         <div className="flex items-center gap-2">

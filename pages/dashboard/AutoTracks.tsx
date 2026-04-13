@@ -52,7 +52,14 @@ export default function AutoTracks() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="font-playfair text-2xl md:text-3xl font-bold text-dashboard-black">{t('autotracks.title')}</h1>
-          <p className="font-lato text-sm text-dashboard-secondary mt-1">{t('autotracks.subtitle')}</p>
+          <p className="font-lato text-sm text-dashboard-secondary mt-1">
+            {t('autotracks.subtitle')}
+            {enrollmentCounts && (() => {
+              let totalActive = 0;
+              enrollmentCounts.forEach(s => { totalActive += s.active; });
+              return totalActive > 0 ? <span className="ml-1.5 text-dashboard-gold font-medium">· {totalActive.toLocaleString()} leads enrolled</span> : null;
+            })()}
+          </p>
         </div>
         <button onClick={openCreateModal} className="px-4 py-2.5 bg-dashboard-gold hover:bg-[#B8952F] text-white font-lato font-medium text-sm rounded-lg transition-colors min-h-[44px] flex items-center gap-1.5">
           <Plus size={16} /> {t('autotracks.createNew')}
