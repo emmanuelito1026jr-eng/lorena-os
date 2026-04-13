@@ -12,6 +12,7 @@ import type { Tables, ShowingWithLead } from '../../lib/supabase/database.types'
 import { format, startOfWeek, endOfWeek, addWeeks, subWeeks, isToday, isTomorrow, parseISO, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, addMonths, subMonths } from 'date-fns';
 import { usePageTitle } from '../../hooks/usePageTitle';
 import { useTranslation } from '../../lib/i18n/LanguageContext';
+import { OpenHouseQRGenerator } from '../../components/dashboard/OpenHouseQRGenerator';
 
 type ViewMode = 'list' | 'week' | 'month';
 
@@ -82,6 +83,9 @@ export default function Showings() {
           <Plus size={16} /> {t('showings.newShowing')}
         </button>
       </div>
+
+      {/* Open House QR Generator */}
+      <OpenHouseQRGenerator />
 
       {/* View Mode + Navigation */}
       <div className="flex items-center justify-between">

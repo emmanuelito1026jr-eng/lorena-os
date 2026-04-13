@@ -5,18 +5,19 @@ import {
   Copy, Check, X,
 } from 'lucide-react';
 import { supabase } from '../../lib/supabase/client';
+import { useQuery } from '@tanstack/react-query';
 import { useAuth } from '../../hooks/useAuth';
 import { usePageTitle } from '../../hooks/usePageTitle';
 
 interface Message { id: string; role: 'user' | 'assistant'; content: string; timestamp: Date; }
 interface AgentCard { id: string; name: string; icon: React.ElementType; description: string; status: 'active' | 'idle' | 'running'; lastAction: string; }
 
-const AGENTS: AgentCard[] = [
+const AGENTS_BASE: AgentCard[] = [
   { id: 'lead-qualifier', name: 'Lead Qualifier', icon: Users, description: '60-second lead response via SMS', status: 'idle', lastAction: 'Ready to qualify new leads' },
-  { id: 'follow-up', name: 'Follow-Up Agent', icon: Zap, description: 'Drip sequences & lead reactivation', status: 'active', lastAction: 'Running 3 active drip sequences' },
+  { id: 'follow-up', name: 'Follow-Up Agent', icon: Zap, description: 'Drip sequences & lead reactivation', status: 'idle', lastAction: 'Monitoring drip sequences' },
   { id: 'email-composer', name: 'Email Composer', icon: Mail, description: 'Professional email drafting', status: 'idle', lastAction: 'Ready to draft emails' },
   { id: 'showing-coordinator', name: 'Showing Coordinator', icon: Calendar, description: 'Scheduling, reminders & feedback', status: 'idle', lastAction: 'No showings today' },
-  { id: 'market-analyst', name: 'Market Analyst', icon: TrendingUp, description: 'Daily El Paso market intelligence', status: 'idle', lastAction: 'Last briefing: this morning' },
+  { id: 'market-analyst', name: 'Market Analyst', icon: TrendingUp, description: 'Daily El Paso market intelligence', status: 'idle', lastAction: 'Monitoring El Paso market' },
   { id: 'cma-agent', name: 'CMA Agent', icon: FileText, description: 'Instant comp analysis reports', status: 'idle', lastAction: 'Ready to generate CMA' },
 ];
 
@@ -93,6 +94,36 @@ export default function AITeam() {
 
   useEffect(() => { messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' }); }, [messages, loading]);
 
+  // Pull real stats for agent status cards
+  const { data: agentStats } = useQuery({
+    queryKey: ['ai-team-stats'],
+    queryFn: async () => {
+      const [enrollments, hotLeads, cmaCounts, showings] = await Promise.all([
+        supabase.from('drip_enrollments').select('id', { count: 'exact' }).eq('status', 'active'),
+        supabase.from('leads').select('id', { count: 'exact' }).gte('score', 80),
+        supabase.from('cma_reports').select('id', { count: 'exact' }),
+        supabase.from('showings').select('id', { count: 'exact' }).gte('showing_date', new Date().toISOString().slice(0, 10)),
+      ]);
+      return {
+        activeEnrollments: enrollments.count ?? 0,
+        hotLeads: hotLeads.count ?? 0,
+        cmaCount: cmaCounts.count ?? 0,
+        upcomingShowings: showings.count ?? 0,
+      };
+    },
+    staleTime: 1000 * 60 * 5,
+  });
+
+  // Build dynamic agents with real data
+  const AGENTS: AgentCard[] = [
+    { ...AGENTS_BASE[0], status: (agentStats?.hotLeads ?? 0) > 0 ? 'active' : 'idle', lastAction: agentStats?.hotLeads ? `${agentStats.hotLeads} hot leads ready to qualify` : 'Watching for new leads' },
+    { ...AGENTS_BASE[1], status: (agentStats?.activeEnrollments ?? 0) > 0 ? 'active' : 'idle', lastAction: agentStats?.activeEnrollments ? `${agentStats.activeEnrollments.toLocaleString()} leads in active sequences` : 'No active sequences' },
+    { ...AGENTS_BASE[2], status: 'idle', lastAction: 'Ready to draft professional emails' },
+    { ...AGENTS_BASE[3], status: (agentStats?.upcomingShowings ?? 0) > 0 ? 'active' : 'idle', lastAction: agentStats?.upcomingShowings ? `${agentStats.upcomingShowings} upcoming showings` : 'No showings scheduled' },
+    { ...AGENTS_BASE[4], status: 'active', lastAction: 'Monitoring El Paso market daily' },
+    { ...AGENTS_BASE[5], status: (agentStats?.cmaCount ?? 0) > 0 ? 'idle' : 'idle', lastAction: agentStats?.cmaCount ? `${agentStats.cmaCount} CMA reports generated` : 'Ready to generate CMAs' },
+  ];
+
   const buildContext = (): string => {
     const lines: string[] = [];
     if (profile?.full_name) lines.push(`Realtor: ${profile.full_name}`);
@@ -154,7 +185,7 @@ export default function AITeam() {
       <div className="w-64 flex-shrink-0 flex flex-col gap-4 overflow-y-auto">
         <div className="bg-white rounded-2xl border border-[#E5E5E0] p-4">
           <div className="flex items-center justify-between mb-3"><h3 className="font-playfair text-sm font-bold text-dashboard-dark">Your AI Team</h3><span className="font-lato text-[10px] text-dashboard-secondary bg-[#F5F5F0] px-2 py-0.5 rounded-full">6 agents</span></div>
-          <div className="space-y-2">{AGENTS.map(agent => <AgentStatusCard key={agent.id} agent={agent} onClick={handleAgentClick} />)}</div>
+          <div className="space-y-2">{AGENTS_BASE.map(agent => <AgentStatusCard key={agent.id} agent={agent} onClick={handleAgentClick} />)}</div>
         </div>
         <button onClick={() => setEmailModal(true)} className="w-full bg-dashboard-gold text-white rounded-2xl p-4 hover:bg-dashboard-gold/90 transition-colors text-left">
           <div className="flex items-center gap-2 mb-2"><Mail size={16} /><span className="font-playfair text-sm font-bold">Email Composer</span></div>

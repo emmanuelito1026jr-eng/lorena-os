@@ -1,27 +1,29 @@
 /**
- * Open House QR Generator
- * Generates printable QR codes linking to /open-house?address=...&price=...
- * Lorena prints this and puts it at every open house
+ * Open House QR Code Generator
+ * Generates a printable QR code card for each property showing
+ * Visitors scan → /open-house?address=...&price=...
+ * Captures lead, routes through capture-lead edge function
  */
 import { useState } from 'react';
 import { QrCode, Printer, Copy, Check, ExternalLink } from 'lucide-react';
-import { useTranslation } from '../../lib/i18n/LanguageContext';
 
 const BASE_URL = 'https://lorena-os.vercel.app';
 
-interface QRConfig {
-  address: string;
-  price: string;
+function buildUrl(address: string, price: string): string {
+  const params = new URLSearchParams();
+  if (address) params.set('address', address);
+  if (price) params.set('price', price);
+  return `${BASE_URL}/open-house?${params.toString()}`;
 }
 
-function QRCodeDisplay({ url, size = 200 }: { url: string; size?: number }) {
-  // Use Google Charts QR API (free, no key needed)
-  const qrUrl = `https://chart.googleapis.com/chart?cht=qr&chs=${size}x${size}&chl=${encodeURIComponent(url)}&choe=UTF-8&chld=H|1`;
+// Minimal QR code using Google Charts API (no npm package needed)
+function QRCodeImage({ url, size = 200 }: { url: string; size?: number }) {
+  const apiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=${size}x${size}&data=${encodeURIComponent(url)}&bgcolor=ffffff&color=1a1a1a&margin=10&format=png`;
   return (
-    <img
-      src={qrUrl}
-      alt="QR Code"
-      width={size}
+    <img 
+      src={apiUrl} 
+      alt="QR Code" 
+      width={size} 
       height={size}
       className="rounded-lg"
     />
@@ -29,23 +31,65 @@ function QRCodeDisplay({ url, size = 200 }: { url: string; size?: number }) {
 }
 
 export function OpenHouseQRGenerator() {
-  const [config, setConfig] = useState<QRConfig>({ address: '', price: '' });
+  const [address, setAddress] = useState('');
+  const [price, setPrice] = useState('');
   const [copied, setCopied] = useState(false);
-  const [generated, setGenerated] = useState(false);
 
-  const generatedUrl = config.address
-    ? `${BASE_URL}/open-house?address=${encodeURIComponent(config.address)}${config.price ? `&price=${encodeURIComponent(config.price)}` : ''}`
-    : '';
+  const url = buildUrl(address, price);
+  const isReady = address.trim().length > 5;
 
-  const handleCopy = async () => {
-    if (!generatedUrl) return;
-    await navigator.clipboard.writeText(generatedUrl);
+  const copyUrl = () => {
+    navigator.clipboard.writeText(url);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
 
   const handlePrint = () => {
-    window.print();
+    const printWindow = window.open('', '_blank');
+    if (!printWindow) return;
+    
+    const qrApiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(url)}&bgcolor=ffffff&color=1a1a1a&margin=15&format=png`;
+    
+    printWindow.document.write(`
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <title>Open House QR — ${address}</title>
+        <style>
+          * { margin: 0; padding: 0; box-sizing: border-box; }
+          body { font-family: 'Georgia', serif; background: white; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+          .card { width: 4in; border: 3px solid #C9A84C; border-radius: 16px; padding: 32px; text-align: center; }
+          .logo { font-size: 11px; text-transform: uppercase; letter-spacing: 2px; color: #999; margin-bottom: 20px; }
+          h1 { font-size: 24px; color: #1a1a1a; margin-bottom: 4px; }
+          .sub { font-size: 14px; color: #666; margin-bottom: 24px; }
+          .qr { margin: 0 auto 20px; }
+          .address { font-size: 13px; color: #333; font-weight: bold; margin-bottom: 6px; }
+          .price { font-size: 22px; color: #C9A84C; font-weight: bold; margin-bottom: 20px; }
+          .cta { background: #C9A84C; color: white; padding: 10px 24px; border-radius: 8px; font-size: 13px; display: inline-block; margin-bottom: 16px; }
+          .agent { font-size: 12px; color: #666; }
+          .phone { font-size: 14px; color: #C9A84C; font-weight: bold; }
+          @media print { body { -webkit-print-color-adjust: exact; print-color-adjust: exact; } }
+        </style>
+      </head>
+      <body>
+        <div class="card">
+          <div class="logo">Casas En El Paso · InnoClose</div>
+          <h1>Welcome!</h1>
+          <div class="sub">Scan to get property details & updates</div>
+          <div class="qr">
+            <img src="${qrApiUrl}" width="220" height="220" />
+          </div>
+          ${address ? `<div class="address">${address}</div>` : ''}
+          ${price ? `<div class="price">${price}</div>` : ''}
+          <div class="cta">Scan for Home Details</div>
+          <div class="agent">Lorena Ontiveros-Ortega · REALTOR®</div>
+          <div class="phone">(915) 500-0573</div>
+        </div>
+      </body>
+      </html>
+    `);
+    printWindow.document.close();
+    setTimeout(() => printWindow.print(), 500);
   };
 
   return (
@@ -55,8 +99,8 @@ export function OpenHouseQRGenerator() {
           <QrCode size={16} className="text-dashboard-gold" />
         </div>
         <div>
-          <p className="text-sm font-semibold text-dashboard-black">Open House QR Generator</p>
-          <p className="text-xs text-dashboard-secondary">Print & place at every showing</p>
+          <h3 className="text-sm font-semibold text-dashboard-black">Open House QR Generator</h3>
+          <p className="text-xs text-dashboard-secondary">Print QR codes for every showing</p>
         </div>
       </div>
 
@@ -64,65 +108,61 @@ export function OpenHouseQRGenerator() {
         <div>
           <label className="text-xs text-dashboard-secondary mb-1 block">Property Address *</label>
           <input
-            value={config.address}
-            onChange={e => setConfig(p => ({ ...p, address: e.target.value }))}
-            placeholder="4521 Mesa Hills Dr, El Paso TX 79912"
-            className="w-full border border-dashboard-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-dashboard-gold"
+            value={address}
+            onChange={e => setAddress(e.target.value)}
+            placeholder="e.g. 1234 Mesa Hills Dr, El Paso TX 79912"
+            className="w-full border border-dashboard-border rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-dashboard-gold"
           />
         </div>
         <div>
-          <label className="text-xs text-dashboard-secondary mb-1 block">Listing Price (optional)</label>
+          <label className="text-xs text-dashboard-secondary mb-1 block">Asking Price</label>
           <input
-            value={config.price}
-            onChange={e => setConfig(p => ({ ...p, price: e.target.value }))}
-            placeholder="$329,000"
-            className="w-full border border-dashboard-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-dashboard-gold"
+            value={price}
+            onChange={e => setPrice(e.target.value)}
+            placeholder="e.g. $299,000"
+            className="w-full border border-dashboard-border rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-dashboard-gold"
           />
         </div>
-        <button
-          onClick={() => setGenerated(true)}
-          disabled={!config.address}
-          className="w-full py-2.5 bg-dashboard-gold hover:bg-dashboard-gold-dark disabled:bg-gray-200 text-white rounded-lg text-sm font-medium transition-colors"
-        >
-          Generate QR Code
-        </button>
       </div>
 
-      {generated && generatedUrl && (
-        <div className="border border-dashboard-border rounded-xl p-4 text-center print:border-0">
-          <div className="flex justify-center mb-3">
-            <QRCodeDisplay url={generatedUrl} size={180} />
-          </div>
-          <p className="text-xs font-semibold text-dashboard-black mb-0.5">Scan for property details</p>
-          <p className="text-[11px] text-dashboard-secondary mb-3">{config.address}</p>
-
-          <div className="flex gap-2 print:hidden">
-            <button
-              onClick={handleCopy}
-              className="flex-1 flex items-center justify-center gap-1.5 py-2 border border-dashboard-border rounded-lg text-xs text-dashboard-body hover:bg-dashboard-surface transition-colors"
-            >
-              {copied ? <Check size={12} className="text-green-500" /> : <Copy size={12} />}
-              {copied ? 'Copied!' : 'Copy URL'}
-            </button>
-            <a
-              href={generatedUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex-1 flex items-center justify-center gap-1.5 py-2 border border-dashboard-border rounded-lg text-xs text-dashboard-body hover:bg-dashboard-surface transition-colors"
-            >
-              <ExternalLink size={12} />
-              Preview
-            </a>
-            <button
-              onClick={handlePrint}
-              className="flex-1 flex items-center justify-center gap-1.5 py-2 bg-dashboard-gold text-white rounded-lg text-xs font-medium hover:bg-dashboard-gold-dark transition-colors"
-            >
-              <Printer size={12} />
-              Print
-            </button>
+      {isReady && (
+        <div className="flex flex-col items-center gap-4 py-4 border border-dashboard-border rounded-xl bg-dashboard-surface/30 mb-4">
+          <QRCodeImage url={url} size={180} />
+          <div className="text-center">
+            <p className="text-xs font-medium text-dashboard-black">{address}</p>
+            {price && <p className="text-sm font-bold text-dashboard-gold mt-0.5">{price}</p>}
           </div>
         </div>
       )}
+
+      <div className="flex gap-2">
+        <button
+          onClick={handlePrint}
+          disabled={!isReady}
+          className="flex items-center gap-1.5 px-4 py-2.5 bg-dashboard-gold hover:bg-[#B8952F] disabled:bg-gray-200 disabled:text-gray-400 text-white rounded-lg text-sm font-medium transition-colors flex-1 justify-center"
+        >
+          <Printer size={14} /> Print QR Card
+        </button>
+        <button
+          onClick={copyUrl}
+          disabled={!isReady}
+          className="flex items-center gap-1.5 px-3 py-2.5 border border-dashboard-border hover:border-dashboard-gold rounded-lg text-sm font-medium transition-colors disabled:opacity-40"
+          title="Copy link"
+        >
+          {copied ? <Check size={14} className="text-green-500" /> : <Copy size={14} />}
+        </button>
+        {isReady && (
+          <a
+            href={url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-1.5 px-3 py-2.5 border border-dashboard-border hover:border-dashboard-gold rounded-lg text-sm font-medium transition-colors"
+            title="Preview page"
+          >
+            <ExternalLink size={14} />
+          </a>
+        )}
+      </div>
     </div>
   );
 }
