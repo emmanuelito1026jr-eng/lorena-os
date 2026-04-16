@@ -142,9 +142,28 @@ export default function AITeam() {
       const history = [...messages, userMsg].slice(-12).map(m => ({ role: m.role, content: m.content }));
       const { data, error } = await supabase.functions.invoke('ai-staff', { body: { messages: history, agent: 'ceo', context: buildContext() } });
       if (error) throw error;
-      setMessages(prev => [...prev, { id: generateId(), role: 'assistant', content: (data as { text?: string })?.text ?? 'Sorry, try again.', timestamp: new Date() }]);
-    } catch {
-      setMessages(prev => [...prev, { id: generateId(), role: 'assistant', content: "I'm having trouble connecting. Make sure the ai-staff Edge Function is deployed.", timestamp: new Date() }]);
+      const responseData = data as { text?: string; csv?: { data: string; filename: string } | null };
+      const text = responseData?.text ?? 'Sorry, I had trouble with that. Please try again.';
+      
+      // Handle CSV download if present
+      if (responseData?.csv) {
+        const { data: b64, filename } = responseData.csv;
+        const csvContent = decodeURIComponent(escape(atob(b64)));
+        const blob = new Blob([csvContent], { type: 'text/csv' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        a.click();
+        URL.revokeObjectURL(url);
+      }
+      
+      setMessages(prev => [...prev, { id: generateId(), role: 'assistant', content: text, timestamp: new Date() }]);
+    } catch (err) {
+      const errMsg = err instanceof Error ? err.message : 'Connection error';
+      setMessages(prev => [...prev, { id: generateId(), role: 'assistant', content: `⚠️ ${errMsg}
+
+If this persists, the ai-staff Edge Function may need to be deployed. Check Settings → Integrations.`, timestamp: new Date() }]);
     } finally { setLoading(false); inputRef.current?.focus(); }
   };
 
